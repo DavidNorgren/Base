@@ -23,6 +23,13 @@ void windowMouseButtonCallback(GLFWwindow* handle, int button, int action, int m
         }
         w->mouseDown[button] = false;
     }
+    
+    // Call event and set cursor
+    if (w->mouseEventFunc) {
+        w->currentCursor = w->cursorArrow;
+        w->mouseEventFunc();
+        w->setCursor(w->currentCursor);
+    }
 }
 
 
@@ -32,6 +39,13 @@ void windowCursorPosCallback(GLFWwindow* handle, double x, double y)
     w->mousePrevious = w->mouse;
     w->mouse = { (int)x, (int)y };
     w->mouseMove =  w->mouse - w->mousePrevious;
+    
+    // Call event and set cursor
+    if (w->mouseEventFunc) {
+        w->currentCursor = w->cursorArrow;
+        w->mouseEventFunc();
+        w->setCursor(w->currentCursor);
+    }
 }
 
 
@@ -54,12 +68,18 @@ void windowKeyCallback(GLFWwindow* handle, int key, int scancode, int action, in
         }
         w->keyDown[key] = false;
     }
+    
+    if (w->keyEventFunc) {
+        w->keyEventFunc();
+    }
 }
 
 
 void windowCharModsCallback(GLFWwindow* handle, unsigned int codepoint, int mods)
 {
-    
+    if (w->keyEventFunc) {
+        w->keyEventFunc();
+    }
 }
 
 
@@ -115,8 +135,8 @@ Base::Window::Window()
 
 
 void Base::Window::open(std::function<void()> loopEventFunc,
-                        std::function<void(MouseEvent*)> mouseEventFunc,
-                        std::function<void(KeyEvent*)> keyEventFunc,
+                        std::function<void()> mouseEventFunc,
+                        std::function<void()> keyEventFunc,
                         std::function<void()> resizeEventFunc)
 {
     this->loopEventFunc = loopEventFunc;
@@ -136,16 +156,10 @@ void Base::Window::open(std::function<void()> loopEventFunc,
         // Clear screen
         glClearColor(0.f, 0.f, 0.f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        // Reset cursor
-        currentCursor = cursorArrow;
-        
+                
         // Call loop function
         loopEventFunc();
 
-        // Set cursor
-        setCursor(currentCursor);
-        
         // Reset input
         for (uint k = 0; k < GLFW_KEY_LAST; k++) {
             keyPressed[k] = false;

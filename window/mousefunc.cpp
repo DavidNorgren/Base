@@ -60,7 +60,7 @@ void Base::mouseClear()
 void Base::mouseSetCursor(Cursor cursor)
 {
     if (cursor == ARROW) {
-        appHandler->mainWindow->currentCursor =appHandler->mainWindow->cursorArrow;
+        appHandler->mainWindow->currentCursor = appHandler->mainWindow->cursorArrow;
     }
     else if (cursor == HANDPOINT) {
         appHandler->mainWindow->currentCursor = appHandler->mainWindow->cursorHandpoint;

@@ -46,7 +46,7 @@ Base::AppHandler::AppHandler()
 void Base::AppHandler::launch()
 {
     mainWindow->open(std::bind(&AppHandler::loopEvent, this),
-                     std::bind(&AppHandler::mouseEvent, this, std::placeholders::_1),
-                     std::bind(&AppHandler::keyEvent, this, std::placeholders::_1),
+                     std::bind(&AppHandler::mouseEvent, this),
+                     std::bind(&AppHandler::keyEvent, this),
                      std::bind(&AppHandler::resizeEvent, this));
 }

@@ -13,21 +13,6 @@
 namespace Base
 {
     
-    /* Stores a mouse event. */
-    struct MouseEvent
-    {
-        ScreenPos pos, lastPos;
-        
-    };
-    
-    
-    /* Stores a key event. */
-    struct KeyEvent
-    {
-        
-    };
-    
-    
     /* Opens and manages a resizable window. */
     class Window
     {
@@ -38,8 +23,8 @@ namespace Base
 
             /* Opens the window. */
             void open(std::function<void()> loopEventFunc,
-                      std::function<void(MouseEvent*)> mouseEventFunc,
-                      std::function<void(KeyEvent*)> keyEventFunc,
+                      std::function<void()> mouseEventFunc = nullptr,
+                      std::function<void()> keyEventFunc = nullptr,
                       std::function<void()> resizeEventFunc = nullptr);
 
             /* Sets the title of the window caption. */
@@ -72,8 +57,8 @@ namespace Base
 
             GLFWwindow* handle;
             std::function<void()> loopEventFunc, resizeEventFunc;
-            std::function<void(MouseEvent*)> mouseEventFunc;
-            std::function<void(KeyEvent*)> keyEventFunc;
+            std::function<void()> mouseEventFunc;
+            std::function<void()> keyEventFunc;
             Mat4x4 ortho;
     };
 

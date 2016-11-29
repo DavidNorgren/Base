@@ -28,8 +28,8 @@ namespace Base
 
             /* Called by the main window. Implemented by the child. */
             virtual void loopEvent() = 0;
-            virtual void mouseEvent(MouseEvent* event) = 0;
-            virtual void keyEvent(KeyEvent* event) = 0;
+            virtual void mouseEvent() = 0;
+            virtual void keyEvent() = 0;
             virtual void resizeEvent() = 0;
 
             /* Opens the window and starts the window loop. */
