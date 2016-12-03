@@ -28,6 +28,9 @@ namespace Base
     /* Creates a list of all the substrings in str separated by sep. */
     string_list stringSplit(string str, string sep);
     wstring_list wstringSplit(wstring wstr, wstring sep);
+    
+    string stringSubstring(string str, int from, int length);
+    string stringDelete(string str, int from, int length);
 
     /* Replaces all occurrences of the given substring and returns the modified string. */
     string stringReplace(string str, string from, string to);

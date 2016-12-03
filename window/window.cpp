@@ -77,9 +77,11 @@ void windowKeyCallback(GLFWwindow* handle, int key, int scancode, int action, in
 
 void windowCharModsCallback(GLFWwindow* handle, unsigned int codepoint, int mods)
 {
+    w->charPressed = (char)codepoint;
     if (w->keyEventFunc) {
         w->keyEventFunc();
     }
+    w->charPressed = 0;
 }
 
 
@@ -116,6 +118,7 @@ Base::Window::Window()
     glfwSetWindowSizeCallback(handle, windowSizeCallback);
     
     // Initialize input
+    charPressed = 0;
     for (uint k = 0; k < GLFW_KEY_LAST; k++) {
         keyDown[k] = false;
         keyPressed[k] = false;
@@ -130,6 +133,7 @@ Base::Window::Window()
     // Initialize cursors
     cursorArrow = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
     cursorHandpoint = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+    cursorBeam = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
     currentCursor = cursorArrow;
 }
 

@@ -1,4 +1,4 @@
-#include "window/mousefunc.hpp"
+#include "input/mousefunc.hpp"
 #include "apphandler.hpp"
 
 
@@ -64,5 +64,8 @@ void Base::mouseSetCursor(Cursor cursor)
     }
     else if (cursor == HANDPOINT) {
         appHandler->mainWindow->currentCursor = appHandler->mainWindow->cursorHandpoint;
+    }
+    else if (cursor == BEAM) {
+        appHandler->mainWindow->currentCursor = appHandler->mainWindow->cursorBeam;
     }
 }

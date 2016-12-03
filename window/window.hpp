@@ -49,10 +49,12 @@ namespace Base
 
             /* Keyboard status. */
             bool keyDown[GLFW_KEY_LAST], keyPressed[GLFW_KEY_LAST], keyReleased[GLFW_KEY_LAST];
+            char charPressed;
             
             /* Cursors. */
             GLFWcursor* cursorArrow;
             GLFWcursor* cursorHandpoint;
+            GLFWcursor* cursorBeam;
             GLFWcursor* currentCursor;
 
             GLFWwindow* handle;

@@ -8,7 +8,8 @@ namespace Base
     
     enum Cursor {
         ARROW,
-        HANDPOINT
+        HANDPOINT,
+        BEAM
     };
 
     /* Returns whether the mouse is in a box. */
