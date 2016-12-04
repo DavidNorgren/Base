@@ -8,27 +8,20 @@ void Base::drawBegin()
 }
 
 
-void Base::drawText(string text, ScreenPos pos, Color color)
-{
-    drawText(text, appHandler->drawingFont, pos, color);
-}
-
-
-void Base::drawText(string text, Font* font, ScreenPos pos, Color color)
+void Base::drawText(string text, ScreenPos pos, Color color, Font* font)
 {
     // Init position and texture coordinate buffers
-    uint textLength = text.size();
-    Vec3 posData[textLength * 6];
-    Vec2 texCoordData[textLength * 6];
-    ScreenPos charPos = { 0, 0 };
+    Vec3 posData[text.length() * 6];
+    Vec2 texCoordData[text.length() * 6];
+    
+    if (!font) {
+        font = appHandler->drawingFont;
+    }
 
-    for (uint c = 0; c < textLength; c++)
+    ScreenPos charPos = { 0, 0 };
+    for (uint c = 0; c < text.length(); c++)
     {
         uchar curChar = text[c];
-
-        if (curChar < font->start || curChar > font->end) {
-            continue;
-        }
 
         if (curChar == '\n') {
             charPos.x = 0;
@@ -36,9 +29,14 @@ void Base::drawText(string text, Font* font, ScreenPos pos, Color color)
             continue;
         }
 
+        if (curChar < font->start || curChar > font->end) {
+            continue;
+        }
+
         CharInfo curCharInfo = font->chars[curChar];
 
-        if (curCharInfo.width && curCharInfo.height) {
+        if (curCharInfo.width && curCharInfo.height)
+        {
             float vx = charPos.x + curCharInfo.left;
             float vy = charPos.y + font->height - curCharInfo.top;
             float vw = curCharInfo.width;
@@ -70,18 +68,16 @@ void Base::drawText(string text, Font* font, ScreenPos pos, Color color)
     Mat4x4 mat = appHandler->mainWindow->ortho *
                  Mat4x4::translate({ pos.x, pos.y, 0 });
                  
-    appHandler->drawingShader->render2D(mat, posData, texCoordData, textLength * 6, font->texture, color);
+    appHandler->drawingShader->render2D(mat, posData, texCoordData, text.length() * 6, font->texture, color);
 }
 
 
-void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX, TextAlignY alignY, Color color)
+void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX, TextAlignY alignY, Color color, Font* font)
 {
-    drawTextAligned(text, appHandler->drawingFont, pos, alignX, alignY, color);
-}
-
-
-void Base::drawTextAligned(string text, Font* font, ScreenPos pos, TextAlignX alignX, TextAlignY alignY, Color color)
-{
+    if (!font) {
+        font = appHandler->drawingFont;
+    }
+    
     // Vertical alignment
     if (alignY != TOP)
     {
@@ -93,12 +89,11 @@ void Base::drawTextAligned(string text, Font* font, ScreenPos pos, TextAlignX al
         else if (alignY == BOTTOM) {
             pos.y -= height;
         }
-        
     }
         
     // Horizontal alignment
     if (alignX == LEFT) {
-        drawText(text, font, pos, color);
+        drawText(text, pos, color, font);
     }
     else {
         string_list lines = stringSplit(text, "\n");
@@ -113,9 +108,147 @@ void Base::drawTextAligned(string text, Font* font, ScreenPos pos, TextAlignX al
                 pos.x -= width;
             }
             
-            drawText(line, font, pos, color);
+            drawText(line, pos, color, font);
         }
     }
+}
+
+
+void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endIndex, Color color, Color selectColor, Color selectTextColor, Font* font)
+{
+    if (startIndex == endIndex) {
+        drawText(text, pos, color, font);
+        return;
+    }
+    
+    // Init position and texture coordinate buffers
+    int selectedLines = stringGetCount(stringSubstring(text, startIndex, endIndex - startIndex), "\n") + 1;
+    int selectedChars = (endIndex - startIndex) - selectedLines + 1;
+    Vec3 textPosData[(text.length() - selectedChars) * 6];
+    Vec2 textTexCoordData[(text.length() - selectedChars) * 6];
+    Vec3 selectPosData[selectedLines * 6];
+    Vec2 selectTexCoordData[selectedLines * 6];
+    Vec3 selectTextPosData[selectedChars * 6];
+    Vec2 selectTextTexCoordData[selectedChars * 6];
+    
+    if (!font) {
+        font = appHandler->drawingFont;
+    }
+
+    int i = 0, j = 0, k = 0;
+    ScreenPos charPos = { 0, 0 };
+    
+    for (uint c = 0; c < text.length(); c++)
+    {
+        uchar curChar = text[c];
+
+        if (c == startIndex)
+        {
+            selectPosData[j + 0] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
+            selectPosData[j + 1] = { (float)charPos.x, (float)charPos.y, 0.f };
+            selectPosData[j + 5] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
+        }
+        
+        // Linebreak
+        if (curChar == '\n')
+        {
+            if (c >= startIndex && c < endIndex)
+            {
+                int space = font->chars[' '].advanceX;
+                selectPosData[j + 2] = { (float)charPos.x + space, (float)charPos.y, 0.f };
+                selectPosData[j + 3] = { (float)charPos.x + space, (float)charPos.y, 0.f };
+                selectPosData[j + 4] = { (float)charPos.x + space, (float)charPos.y + font->height * LINE_SPACE, 0.f };
+                j += 6;
+            }
+            
+            charPos.x = 0;
+            charPos.y += font->height * LINE_SPACE;
+            
+            if (c >= startIndex && c < endIndex)
+            {
+                selectPosData[j] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
+                selectPosData[j + 1] = { (float)charPos.x, (float)charPos.y, 0.f };
+                selectPosData[j + 5] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
+            }
+            continue;
+        }
+
+        if (curChar < font->start || curChar > font->end) {
+            continue;
+        }
+
+        CharInfo curCharInfo = font->chars[curChar];
+
+        if (curCharInfo.width && curCharInfo.height)
+        {
+            float vx = charPos.x + curCharInfo.left;
+            float vy = charPos.y + font->height - curCharInfo.top;
+            float vw = curCharInfo.width;
+            float vh = curCharInfo.height;
+            float tx = curCharInfo.mapX / font->width;
+            float tw = curCharInfo.width / font->width;
+            float th = curCharInfo.height / font->height;
+
+            if (c >= startIndex && c < endIndex) 
+            {
+                selectTextPosData[k + 0] = { vx, vy, 0.f };
+                selectTextPosData[k + 1] = { vx, vy + vh, 0.f };
+                selectTextPosData[k + 2] = { vx + vw, vy, 0.f };
+                selectTextPosData[k + 3] = { vx + vw, vy, 0.f };
+                selectTextPosData[k + 4] = { vx, vy + vh, 0.f };
+                selectTextPosData[k + 5] = { vx + vw, vy + vh, 0.f };
+
+                selectTextTexCoordData[k + 0] = { tx, 0.f };
+                selectTextTexCoordData[k + 1] = { tx, th };
+                selectTextTexCoordData[k + 2] = { tx + tw, 0.f };
+                selectTextTexCoordData[k + 3] = { tx + tw, 0.f };
+                selectTextTexCoordData[k + 4] = { tx, th };
+                selectTextTexCoordData[k + 5] = { tx + tw, th };
+                
+                k += 6;
+            }
+            else
+            {
+                textPosData[i + 0] = { vx, vy, 0.f };
+                textPosData[i + 1] = { vx, vy + vh, 0.f };
+                textPosData[i + 2] = { vx + vw, vy, 0.f };
+                textPosData[i + 3] = { vx + vw, vy, 0.f };
+                textPosData[i + 4] = { vx, vy + vh, 0.f };
+                textPosData[i + 5] = { vx + vw, vy + vh, 0.f };
+
+                textTexCoordData[i + 0] = { tx, 0.f };
+                textTexCoordData[i + 1] = { tx, th };
+                textTexCoordData[i + 2] = { tx + tw, 0.f };
+                textTexCoordData[i + 3] = { tx + tw, 0.f };
+                textTexCoordData[i + 4] = { tx, th };
+                textTexCoordData[i + 5] = { tx + tw, th };
+                
+                i += 6;
+            }
+        }
+
+        charPos += { (int)curCharInfo.advanceX, (int)curCharInfo.advanceY };
+        
+        if (c == endIndex - 1)
+        {
+            selectPosData[j + 2] = { (float)charPos.x, (float)charPos.y, 0.f };
+            selectPosData[j + 3] = { (float)charPos.x, (float)charPos.y, 0.f };
+            selectPosData[j + 4] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
+            
+            j += 6;
+        }
+    }
+
+    Mat4x4 mat = appHandler->mainWindow->ortho *
+                 Mat4x4::translate({ pos.x, pos.y, 0 });
+                 
+    for (int t = 0; t < selectedLines * 6; t++) {
+        selectTexCoordData[t] = { 0, 0 };
+    }
+                 
+    appHandler->drawingShader->render2D(mat, textPosData, textTexCoordData, (text.length() - selectedChars) * 6, font->texture, color);
+    appHandler->drawingShader->render2D(mat, selectPosData, selectTexCoordData, selectedLines * 6, appHandler->solidColor->texture, selectColor);
+    appHandler->drawingShader->render2D(mat, selectTextPosData, selectTextTexCoordData, selectedChars * 6, font->texture, selectTextColor);
 }
 
 
@@ -201,7 +334,7 @@ void Base::drawBox(ScreenArea box, Color color, bool outline, int outlineThickne
     }
 
     glLineWidth(outlineThickness);
-    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 5, appHandler->solidTexture->texture, color, outline ? GL_LINE_STRIP : GL_TRIANGLE_STRIP);
+    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 5, appHandler->solidColor->texture, color, outline ? GL_LINE_STRIP : GL_TRIANGLE_STRIP);
 }
 
 
@@ -281,7 +414,7 @@ void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edge
         texCoordData[i] = { 0, 0 };
     }
     
-    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, numVertex, appHandler->solidTexture->texture, color, GL_TRIANGLE_FAN);
+    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, numVertex, appHandler->solidColor->texture, color, GL_TRIANGLE_FAN);
 }
 
 
@@ -298,5 +431,5 @@ void Base::drawLine(ScreenPos start, ScreenPos end, Color color, int thickness)
     texCoordData[1] = { 0, 0 };
     
     glLineWidth(thickness);
-    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 2, appHandler->solidTexture->texture, color, GL_LINES);
+    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 2, appHandler->solidColor->texture, color, GL_LINES);
 }

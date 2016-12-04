@@ -11,13 +11,19 @@ void windowMouseButtonCallback(GLFWwindow* handle, int button, int action, int m
     }
 
     // A mouse button was pressed!
-    if (action == GLFW_PRESS) {
+    if (action == GLFW_PRESS)
+    {
+        if (button == GLFW_MOUSE_BUTTON_LEFT) {
+            w->mouseLastClickDuration = glfwGetTime() - w->mouselastClickTime;
+            w->mouselastClickTime = glfwGetTime();
+        }
         if (!w->mouseDown[button]) {
             w->mousePressed[button] = true;
         }
         w->mouseDown[button] = true;
     }
-    else if (action == GLFW_RELEASE) {
+    else if (action == GLFW_RELEASE)
+    {
         if (w->mouseDown[button]) {
             w->mouseReleased[button] = true;
         }

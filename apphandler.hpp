@@ -44,7 +44,7 @@ namespace Base
             ResourceHandler* resourceHandler;
             Font* drawingFont;
             Shader* drawingShader;
-            Image* solidTexture;
+            Image* solidColor;
     };
 
 }

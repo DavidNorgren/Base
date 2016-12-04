@@ -46,6 +46,12 @@ bool Base::mouseLeftReleased()
 }
 
 
+double Base::mouseLastClickDuration()
+{
+    return appHandler->mainWindow->mouseLastClickDuration;
+}
+
+
 bool Base::mouseRightDown()
 {
     return appHandler->mainWindow->mouseDown[GLFW_MOUSE_BUTTON_RIGHT];
@@ -72,6 +78,7 @@ void Base::mouseClear()
         window->mousePressed[m] = false;
         window->mouseReleased[m] = false;
     }
+    mouseSetCursor(ARROW);
 }
 
 

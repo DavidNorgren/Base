@@ -39,7 +39,7 @@ Base::AppHandler::AppHandler()
     resourceHandler = new ResourceHandler();
     drawingFont = (Font*)resourceHandler->find(DRAWING_FONT)->loaded;
     drawingShader = (Shader*)resourceHandler->find(DRAWING_SHADER)->loaded;
-    solidTexture = new Image(COLOR_WHITE, 1, 1);
+    solidColor = new Image(COLOR_WHITE, 1, 1);
 }
 
 

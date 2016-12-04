@@ -109,10 +109,10 @@ string Base::stringInsert(string str, string substr, int index)
 }
 
 
-int Base::stringGetCount(string str, string sub)
+int Base::stringGetCount(string str, string sub, int index)
 {
     int count = 0;
-    size_t pos = str.find(sub, 0);
+    size_t pos = str.find(sub, index);
     
     while(pos != string::npos) {
         count++;
@@ -123,10 +123,10 @@ int Base::stringGetCount(string str, string sub)
 }
 
 
-int Base::stringGetCount(wstring wstr, wstring sub)
+int Base::stringGetCount(wstring wstr, wstring sub, int index)
 {
     int count = 0;
-    size_t pos = wstr.find(sub, 0);
+    size_t pos = wstr.find(sub, index);
     
     while(pos != string::npos) {
         count++;

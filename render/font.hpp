@@ -10,7 +10,7 @@
 #include "util/stringfunc.hpp"
 #include "file/resourcehandler.hpp"
 
-#define LINE_SPACE  1.25
+#define LINE_SPACE  1.25f
 
 
 namespace Base

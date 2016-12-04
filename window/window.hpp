@@ -48,6 +48,7 @@ namespace Base
             ScreenPos mousePos, mousePosPrevious;
             Vec2 mouseMove;
             bool mouseDown[GLFW_MOUSE_BUTTON_LAST], mousePressed[GLFW_MOUSE_BUTTON_LAST], mouseReleased[GLFW_MOUSE_BUTTON_LAST];
+            double mouselastClickTime = 0, mouseLastClickDuration = 0;
 
             /* Keyboard status. */
             bool keyDown[GLFW_KEY_LAST], keyPressed[GLFW_KEY_LAST], keyReleased[GLFW_KEY_LAST];

@@ -38,8 +38,8 @@ namespace Base
     wstring stringReplace(wstring wstr, wstring from, wstring to);
 
     /* Returns the amount of occurrences of a substring. */
-    int stringGetCount(string str, string sub);
-    int stringGetCount(wstring wstr, wstring sub);
+    int stringGetCount(string str, string sub, int index = 0);
+    int stringGetCount(wstring wstr, wstring sub, int index = 0);
 
     /* Returns the width of a string when rendered. */
     int stringGetWidth(string str);

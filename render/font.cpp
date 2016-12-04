@@ -117,13 +117,13 @@ int Base::Font::stringGetWidth(string text)
     for (uint c = 0; c < text.size(); c++)
     {
         uchar curChar = text[c];
-        
-        if (curChar < start || curChar > end) {
-            continue;
-        }
 
         if (curChar == '\n') {
             dx = 0;
+            continue;
+        }
+        
+        if (curChar < start || curChar > end) {
             continue;
         }
         

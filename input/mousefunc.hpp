@@ -25,6 +25,7 @@ namespace Base
     bool mouseLeftDown();
     bool mouseLeftPressed();
     bool mouseLeftReleased();
+    double mouseLastClickDuration();
 
     /* Returns the state of the right mouse button. */
     bool mouseRightDown();
