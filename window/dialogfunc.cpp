@@ -38,7 +38,7 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
 
 #ifdef _WIN32 // Windows
 	
-    wstring filterString = L"", defaultExt = wstringSplit(filters[1], L";")[0];
+    wstring filterString = L"", defaultExt = stringSplit(filters[1], L";")[0];
     wchar_t buf[MAX_MULTIPLE * MAX_FILENAME];
     OPENFILENAMEW ofn;
 
@@ -153,7 +153,7 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
                 command += " of type {";
 
                 for (int i = 1; i < filters.size(); i += 2) {
-                    wstring_list filterList = wstringSplit(filters[i], ";");
+                    wstring_list filterList = stringSplit(filters[i], ";");
                     for (int j = 0; j < filterList.size(); j++) {
                         if (filterN++ > 0) {
                             command += ", ";
@@ -221,7 +221,7 @@ wstring Base::dialogSaveFile(wstring title, wstring location, wstring_list filte
 
 #ifdef _WIN32
 
-    wstring filterString = L"", defaultExt = wstringSplit(filters[1], L";")[0];
+    wstring filterString = L"", defaultExt = stringSplit(filters[1], L";")[0];
     wchar_t buf[MAX_FILENAME];
     OPENFILENAMEW ofn;
 

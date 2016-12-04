@@ -2,9 +2,27 @@
 #include "apphandler.hpp"
 
 
+Base::ScreenPos Base::mousePos()
+{
+    return appHandler->mainWindow->mousePos;
+}
+
+
+Base::ScreenPos Base::mousePreviousPos()
+{
+    return appHandler->mainWindow->mousePosPrevious;
+}
+
+
+Base::Vec2 Base::mouseMove()
+{
+    return appHandler->mainWindow->mouseMove;
+}
+
+
 bool Base::mouseInBox(ScreenArea box)
 {
-    ScreenPos mouse = appHandler->mainWindow->mouse;
+    ScreenPos mouse = appHandler->mainWindow->mousePos;
     return (mouse.x >= box.pos.x && mouse.x < box.pos.x + box.width
          && mouse.y >= box.pos.y && mouse.y < box.pos.y + box.height);
 }

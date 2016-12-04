@@ -36,9 +36,10 @@ void windowMouseButtonCallback(GLFWwindow* handle, int button, int action, int m
 void windowCursorPosCallback(GLFWwindow* handle, double x, double y)
 {
     // Mouse was moved!
-    w->mousePrevious = w->mouse;
-    w->mouse = { (int)x, (int)y };
-    w->mouseMove =  w->mouse - w->mousePrevious;
+    w->mousePosPrevious = w->mousePos;
+    w->mousePos = { (int)x, (int)y };
+    w->mouseMove = Base::Vec2(w->mousePos.x - w->mousePosPrevious.x,
+                              w->mousePos.y - w->mousePosPrevious.y);
     
     // Call event and set cursor
     if (w->mouseEventFunc) {
@@ -67,6 +68,8 @@ void windowKeyCallback(GLFWwindow* handle, int key, int scancode, int action, in
             w->keyReleased[key] = true;
         }
         w->keyDown[key] = false;
+    } else if (action == GLFW_REPEAT) {
+        w->keyPressed[key] = true;
     }
     
     if (w->keyEventFunc) {

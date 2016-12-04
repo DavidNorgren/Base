@@ -43,7 +43,7 @@ string_list Base::stringSplit(string str, string sep)
 }
 
 
-wstring_list Base::wstringSplit(wstring wstr, wstring sep)
+wstring_list Base::stringSplit(wstring wstr, wstring sep)
 {
     wstring_list result;
     string::size_type lastPos = wstr.find_first_not_of(sep, 0);
@@ -75,7 +75,7 @@ string Base::stringReplace(string str, string from, string to)
 }
 
 
-wstring Base::wstringReplace(wstring wstr, wstring from, wstring to)
+wstring Base::stringReplace(wstring wstr, wstring from, wstring to)
 {
     if (from.empty()) {
         return wstr;
@@ -88,6 +88,24 @@ wstring Base::wstringReplace(wstring wstr, wstring from, wstring to)
     }
     
     return wstr;
+}
+
+
+string Base::stringSubstring(string str, int from, int length)
+{
+    return str.substr(from, length);
+}
+
+
+string Base::stringErase(string str, int from, int length)
+{
+    return str.erase(from, length);
+}
+
+
+string Base::stringInsert(string str, string substr, int index)
+{
+    return str.insert(index, substr);
 }
 
 
@@ -105,7 +123,7 @@ int Base::stringGetCount(string str, string sub)
 }
 
 
-int Base::wstringGetCount(wstring wstr, wstring sub)
+int Base::stringGetCount(wstring wstr, wstring sub)
 {
     int count = 0;
     size_t pos = wstr.find(sub, 0);
@@ -122,6 +140,12 @@ int Base::wstringGetCount(wstring wstr, wstring sub)
 int Base::stringGetWidth(string str)
 {
     return appHandler->drawingFont->stringGetWidth(str);
+}
+
+
+int Base::stringGetHeight(string str)
+{
+    return appHandler->drawingFont->stringGetHeight(str);
 }
 
 

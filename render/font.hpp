@@ -33,7 +33,8 @@ namespace Base
             int stringGetWidth(string text);
             int stringGetHeight(string text);
 
-            uint start, end, size, width, height;
+            uint start, end, size;
+            int width, height;
             GLuint texture;
             CharInfo* chars;
 

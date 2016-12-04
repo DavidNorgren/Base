@@ -1,6 +1,7 @@
 #pragma once
 
 #include "window/screenarea.hpp"
+#include "util/math/vec2.hpp"
 
 
 namespace Base
@@ -12,9 +13,14 @@ namespace Base
         BEAM
     };
 
+    /* Returns the mouse position. */
+    ScreenPos mousePos();
+    ScreenPos mousePreviousPos();
+    Vec2 mouseMove();
+    
     /* Returns whether the mouse is in a box. */
     bool mouseInBox(ScreenArea box);
-
+    
     /* Returns the state of the left mouse button. */
     bool mouseLeftDown();
     bool mouseLeftPressed();

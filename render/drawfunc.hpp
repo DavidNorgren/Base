@@ -40,7 +40,10 @@ namespace Base
     void drawSubImage(Image* image, int subImage, ScreenPos pos, Color color = COLOR_WHITE, float rotation = 0.f, Vec2 scale = { 1.f, 1.f });
 
     /* Draws a colored box. */
-    void drawBox(ScreenArea box, Color color, bool outline = false);
+    void drawBox(ScreenArea box, Color color, bool outline = false, int outlineThickness = 1);
     void drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edgeTopLeft = true, bool edgeTopRight = true, bool edgeBottomRight = true, bool edgeBottomLeft = true);
+    
+    /* Draws a line */
+    void drawLine(ScreenPos start, ScreenPos end, Color color, int thickness = 1);
     
 }

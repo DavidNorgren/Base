@@ -4,6 +4,7 @@
 
 #include "GLFW/glfw3.h"
 
+#include "util/math/vec2.hpp"
 #include "util/math/mat4x4.hpp"
 #include "util/math/mathfunc.hpp"
 #include "util/stringfunc.hpp"
@@ -44,7 +45,8 @@ namespace Base
             int fps;
 
             /* Mouse position and button status. */
-            ScreenPos mouse, mousePrevious, mouseMove;
+            ScreenPos mousePos, mousePosPrevious;
+            Vec2 mouseMove;
             bool mouseDown[GLFW_MOUSE_BUTTON_LAST], mousePressed[GLFW_MOUSE_BUTTON_LAST], mouseReleased[GLFW_MOUSE_BUTTON_LAST];
 
             /* Keyboard status. */

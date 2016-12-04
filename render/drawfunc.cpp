@@ -26,13 +26,13 @@ void Base::drawText(string text, Font* font, ScreenPos pos, Color color)
     {
         uchar curChar = text[c];
 
-        if (curChar == '\n') {
-            charPos.x = 0;
-            charPos.y += font->height * LINE_SPACE;
+        if (curChar < font->start || curChar > font->end) {
             continue;
         }
 
-        if (curChar < font->start || curChar > font->end) {
+        if (curChar == '\n') {
+            charPos.x = 0;
+            charPos.y += font->height * LINE_SPACE;
             continue;
         }
 
@@ -183,7 +183,7 @@ void Base::drawSubImage(Image* image, int subImage, ScreenPos pos, Color color, 
 }
 
 
-void Base::drawBox(ScreenArea box, Color color, bool outline)
+void Base::drawBox(ScreenArea box, Color color, bool outline, int outlineThickness)
 {
     ScreenPos& pos = box.pos;
     Vec3 posData[5] = {
@@ -194,12 +194,13 @@ void Base::drawBox(ScreenArea box, Color color, bool outline)
         { pos.x, pos.y, 0 }
     };
     
-    // No texture data (solid color texture))
+    // No texture data (solid color texture)
     Vec2 texCoordData[5];
     for (int i = 0; i < 5; i++) {
         texCoordData[i] = { 0, 0 };
     }
 
+    glLineWidth(outlineThickness);
     appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 5, appHandler->solidTexture->texture, color, outline ? GL_LINE_STRIP : GL_TRIANGLE_STRIP);
 }
 
@@ -281,4 +282,21 @@ void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edge
     }
     
     appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, numVertex, appHandler->solidTexture->texture, color, GL_TRIANGLE_FAN);
+}
+
+
+void Base::drawLine(ScreenPos start, ScreenPos end, Color color, int thickness)
+{
+    Vec3 posData[2] = {
+        { start.x, start.y, 0 },
+        { end.x, end.y, 0 }
+    };
+    
+    // No texture data (solid color texture)
+    Vec2 texCoordData[2];
+    texCoordData[0] = { 0, 0 };
+    texCoordData[1] = { 0, 0 };
+    
+    glLineWidth(thickness);
+    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 2, appHandler->solidTexture->texture, color, GL_LINES);
 }

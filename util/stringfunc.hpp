@@ -27,18 +27,19 @@ namespace Base
 
     /* Creates a list of all the substrings in str separated by sep. */
     string_list stringSplit(string str, string sep);
-    wstring_list wstringSplit(wstring wstr, wstring sep);
+    wstring_list stringSplit(wstring wstr, wstring sep);
     
     string stringSubstring(string str, int from, int length);
-    string stringDelete(string str, int from, int length);
+    string stringErase(string str, int from, int length);
+    string stringInsert(string str, string substr, int index);
 
     /* Replaces all occurrences of the given substring and returns the modified string. */
     string stringReplace(string str, string from, string to);
-    wstring wstringReplace(wstring wstr, wstring from, wstring to);
+    wstring stringReplace(wstring wstr, wstring from, wstring to);
 
     /* Returns the amount of occurrences of a substring. */
     int stringGetCount(string str, string sub);
-    int wstringGetCount(wstring wstr, wstring sub);
+    int stringGetCount(wstring wstr, wstring sub);
 
     /* Returns the width of a string when rendered. */
     int stringGetWidth(string str);
