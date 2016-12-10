@@ -23,7 +23,7 @@ void Base::drawText(string text, ScreenPos pos, Color color, Font* font)
     {
         uchar curChar = text[c];
 
-        if (curChar == '\n') {
+        if (curChar == '\n' || curChar == '\r') {
             charPos.x = 0;
             charPos.y += font->height * LINE_SPACE;
             continue;
@@ -122,7 +122,8 @@ void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endI
     }
     
     // Init position and texture coordinate buffers
-    int selectedLines = stringGetCount(stringSubstring(text, startIndex, endIndex - startIndex), "\n") + 1;
+    int selectedLines = stringGetCount(stringSubstring(text, startIndex, endIndex - startIndex), "\n") +
+                        stringGetCount(stringSubstring(text, startIndex, endIndex - startIndex), "\r") + 1;
     int selectedChars = (endIndex - startIndex) - selectedLines + 1;
     Vec3 textPosData[(text.length() - selectedChars) * 6];
     Vec2 textTexCoordData[(text.length() - selectedChars) * 6];
@@ -147,6 +148,14 @@ void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endI
             selectPosData[j + 0] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
             selectPosData[j + 1] = { (float)charPos.x, (float)charPos.y, 0.f };
             selectPosData[j + 5] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
+        }
+        
+        // Wrap break
+        if (curChar == '\r')
+        {
+            charPos.x = 0;
+            charPos.y += font->height * LINE_SPACE;
+            continue;
         }
         
         // Linebreak
@@ -238,13 +247,13 @@ void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endI
             j += 6;
         }
     }
-
-    Mat4x4 mat = appHandler->mainWindow->ortho *
-                 Mat4x4::translate({ pos.x, pos.y, 0 });
                  
     for (int t = 0; t < selectedLines * 6; t++) {
         selectTexCoordData[t] = { 0, 0 };
     }
+
+    Mat4x4 mat = appHandler->mainWindow->ortho *
+                 Mat4x4::translate({ pos.x, pos.y, 0 });
                  
     appHandler->drawingShader->render2D(mat, textPosData, textTexCoordData, (text.length() - selectedChars) * 6, font->texture, color);
     appHandler->drawingShader->render2D(mat, selectPosData, selectTexCoordData, selectedLines * 6, appHandler->solidColor->texture, selectColor);
@@ -409,7 +418,7 @@ void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edge
         posData[i++] = { pos.x, pos.y, 0 };
     }
     
-    // No texture data (solid color texture))
+    // No texture data (solid color texture)
     for (int i = 0; i < numVertex; i++) {
         texCoordData[i] = { 0, 0 };
     }

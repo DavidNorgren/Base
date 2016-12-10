@@ -77,6 +77,7 @@ namespace Base
                 u.x*u.z*(1.f-c)-u.y*s,    u.y*u.z*(1.f-c)+u.x*s,    u.z*u.z+(1.f-u.z*u.z)*c,  0.f,
                 0.f,                      0.f,                      0.f,                      1.f
             );*/
+            // TODO: Work for any angle
             return Mat4x4(
 		dcos(angle), -dsin(angle), 0.f, 0.f,
 		dsin(angle), dcos(angle), 0.f, 0.f,
