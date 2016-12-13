@@ -143,19 +143,35 @@ void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endI
     {
         uchar curChar = text[c];
 
+        // Wrap break
+        if (curChar == '\r')
+        {
+            if (c > startIndex && c < endIndex)
+            {
+                int space = font->chars[' '].advanceX;
+                selectPosData[j + 2] = { (float)charPos.x + space, (float)charPos.y, 0.f };
+                selectPosData[j + 3] = { (float)charPos.x + space, (float)charPos.y, 0.f };
+                selectPosData[j + 4] = { (float)charPos.x + space, (float)charPos.y + font->height * LINE_SPACE, 0.f };
+                j += 6;
+            }
+            
+            charPos.x = 0;
+            charPos.y += font->height * LINE_SPACE;
+            
+            if (c >= startIndex && c < endIndex)
+            {
+                selectPosData[j] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
+                selectPosData[j + 1] = { (float)charPos.x, (float)charPos.y, 0.f };
+                selectPosData[j + 5] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
+            }
+            continue;
+        }
+
         if (c == startIndex)
         {
             selectPosData[j + 0] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
             selectPosData[j + 1] = { (float)charPos.x, (float)charPos.y, 0.f };
             selectPosData[j + 5] = { (float)charPos.x, (float)charPos.y + font->height * LINE_SPACE, 0.f };
-        }
-        
-        // Wrap break
-        if (curChar == '\r')
-        {
-            charPos.x = 0;
-            charPos.y += font->height * LINE_SPACE;
-            continue;
         }
         
         // Linebreak

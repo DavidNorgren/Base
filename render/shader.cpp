@@ -27,7 +27,7 @@ void Base::Shader::load(string source)
     glGenBuffers(1, &vbo);
     
     // Split the source code by the comments into a Vertex and Fragment shader
-    string_list sourceSplit = stringSplit(source, "// Fragment\n");
+    string_list sourceSplit = stringSplit(stringReplace(source, "\r\n", "\n"), "// Fragment\n");
     string vertexSource = sourceSplit[0];
     string fragmentSource = sourceSplit[1];
     

@@ -16,6 +16,7 @@ void windowMouseButtonCallback(GLFWwindow* handle, int button, int action, int m
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
             w->mouseLastClickDuration = glfwGetTime() - w->mouselastClickTime;
             w->mouselastClickTime = glfwGetTime();
+            w->mousePosClick = w->mousePos;
         }
         if (!w->mouseDown[button]) {
             w->mousePressed[button] = true;
@@ -143,6 +144,8 @@ Base::Window::Window()
     cursorArrow = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
     cursorHandpoint = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
     cursorBeam = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+    cursorHResize = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+    cursorVResize = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
     currentCursor = cursorArrow;
 }
 

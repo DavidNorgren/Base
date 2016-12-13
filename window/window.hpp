@@ -45,7 +45,7 @@ namespace Base
             int fps;
 
             /* Mouse position and button status. */
-            ScreenPos mousePos, mousePosPrevious;
+            ScreenPos mousePos, mousePosPrevious, mousePosClick;
             Vec2 mouseMove;
             bool mouseDown[GLFW_MOUSE_BUTTON_LAST], mousePressed[GLFW_MOUSE_BUTTON_LAST], mouseReleased[GLFW_MOUSE_BUTTON_LAST];
             double mouselastClickTime = 0, mouseLastClickDuration = 0;
@@ -58,6 +58,8 @@ namespace Base
             GLFWcursor* cursorArrow;
             GLFWcursor* cursorHandpoint;
             GLFWcursor* cursorBeam;
+            GLFWcursor* cursorHResize;
+            GLFWcursor* cursorVResize;
             GLFWcursor* currentCursor;
 
             GLFWwindow* handle;

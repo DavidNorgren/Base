@@ -10,12 +10,15 @@ namespace Base
     enum Cursor {
         ARROW,
         HANDPOINT,
-        BEAM
+        BEAM,
+        WERESIZE,
+        NSRESIZE
     };
 
     /* Returns the mouse position. */
     ScreenPos mousePos();
-    ScreenPos mousePreviousPos();
+    ScreenPos mousePosPrevious();
+    ScreenPos mousePosClick();
     Vec2 mouseMove();
     
     /* Returns whether the mouse is in a box. */

@@ -8,9 +8,15 @@ Base::ScreenPos Base::mousePos()
 }
 
 
-Base::ScreenPos Base::mousePreviousPos()
+Base::ScreenPos Base::mousePosPrevious()
 {
     return appHandler->mainWindow->mousePosPrevious;
+}
+
+
+Base::ScreenPos Base::mousePosClick()
+{
+    return appHandler->mainWindow->mousePosClick;
 }
 
 
@@ -84,13 +90,29 @@ void Base::mouseClear()
 
 void Base::mouseSetCursor(Cursor cursor)
 {
-    if (cursor == ARROW) {
-        appHandler->mainWindow->currentCursor = appHandler->mainWindow->cursorArrow;
+    GLFWcursor* glfwcursor;
+    switch (cursor)
+    {
+        case ARROW: {
+            glfwcursor = appHandler->mainWindow->cursorArrow;
+            break;
+        }
+        case HANDPOINT: {
+            glfwcursor = appHandler->mainWindow->cursorHandpoint;
+            break;
+        }
+        case BEAM: {
+            glfwcursor = appHandler->mainWindow->cursorBeam;
+            break;
+        }
+        case WERESIZE: {
+            glfwcursor = appHandler->mainWindow->cursorHResize;
+            break;
+        }
+        case NSRESIZE: {
+            glfwcursor = appHandler->mainWindow->cursorVResize;
+            break;
+        }
     }
-    else if (cursor == HANDPOINT) {
-        appHandler->mainWindow->currentCursor = appHandler->mainWindow->cursorHandpoint;
-    }
-    else if (cursor == BEAM) {
-        appHandler->mainWindow->currentCursor = appHandler->mainWindow->cursorBeam;
-    }
+    appHandler->mainWindow->currentCursor = glfwcursor;
 }

@@ -38,6 +38,7 @@ Base::AppHandler::AppHandler()
     // Resources
     resourceHandler = new ResourceHandler();
     drawingFont = (Font*)resourceHandler->find(DRAWING_FONT)->loaded;
+    drawingFontBold = (Font*)resourceHandler->find(DRAWING_FONT_BOLD)->loaded;
     drawingShader = (Shader*)resourceHandler->find(DRAWING_SHADER)->loaded;
     solidColor = new Image(COLOR_WHITE, 1, 1);
 }
