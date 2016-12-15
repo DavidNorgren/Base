@@ -28,9 +28,9 @@ namespace Base
     void drawBegin();
 
     /* Draws a piece of text using the drawing font. */
-    void drawText(string text, ScreenPos pos, Color color = COLOR_BLACK, Font* font = nullptr);
-    void drawTextAligned(string text, ScreenPos pos, TextAlignX alignX = LEFT, TextAlignY alignY = TOP, Color color = COLOR_BLACK, Font* font = nullptr);
-    void drawTextSelected(string text, ScreenPos pos, int startIndex, int endIndex, Color color = COLOR_BLACK, Color selectColor = COLOR_BLUE, Color selectTextColor = COLOR_WHITE, Font* font = nullptr);
+    void drawText(string text, ScreenPos pos, Color color = COLOR_BLACK, FontStyle fontStyle = NORMAL);
+    void drawTextAligned(string text, ScreenPos pos, TextAlignX alignX = LEFT, TextAlignY alignY = TOP, Color color = COLOR_BLACK, FontStyle fontStyle = NORMAL);
+    void drawTextSelected(string text, ScreenPos pos, int startIndex, int endIndex, Color color = COLOR_BLACK, Color selectColor = COLOR_BLUE, Color selectTextColor = COLOR_WHITE, FontStyle fontStyle = NORMAL);
 
     /* Draws an image. */
     void drawImage(string name, ScreenPos pos, Color color = COLOR_WHITE, float rotation = 0.f, Vec2 scale = { 1.f, 1.f });

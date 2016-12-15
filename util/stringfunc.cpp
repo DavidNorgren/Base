@@ -137,15 +137,19 @@ int Base::stringGetCount(wstring wstr, wstring sub, int index)
 }
 
 
-int Base::stringGetWidth(string str)
+int Base::stringGetWidth(string str, FontStyle fontStyle)
 {
-    return appHandler->drawingFont->stringGetWidth(str);
+    return (fontStyle == NORMAL) ?
+            appHandler->drawingFont->stringGetWidth(str) :
+            appHandler->drawingFontBold->stringGetWidth(str);
 }
 
 
-int Base::stringGetHeight(string str)
+int Base::stringGetHeight(string str, FontStyle fontStyle)
 {
-    return appHandler->drawingFont->stringGetHeight(str);
+    return (fontStyle == NORMAL) ?
+            appHandler->drawingFont->stringGetHeight(str) :
+            appHandler->drawingFontBold->stringGetHeight(str);
 }
 
 

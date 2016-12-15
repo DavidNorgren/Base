@@ -8,15 +8,14 @@ void Base::drawBegin()
 }
 
 
-void Base::drawText(string text, ScreenPos pos, Color color, Font* font)
+void Base::drawText(string text, ScreenPos pos, Color color, FontStyle fontStyle)
 {
+    // Set font
+    Font* font = (fontStyle == NORMAL) ? appHandler->drawingFont : appHandler->drawingFontBold;
+
     // Init position and texture coordinate buffers
     Vec3 posData[text.length() * 6];
     Vec2 texCoordData[text.length() * 6];
-    
-    if (!font) {
-        font = appHandler->drawingFont;
-    }
 
     ScreenPos charPos = { 0, 0 };
     for (uint c = 0; c < text.length(); c++)
@@ -72,16 +71,12 @@ void Base::drawText(string text, ScreenPos pos, Color color, Font* font)
 }
 
 
-void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX, TextAlignY alignY, Color color, Font* font)
+void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX, TextAlignY alignY, Color color, FontStyle fontStyle)
 {
-    if (!font) {
-        font = appHandler->drawingFont;
-    }
-    
     // Vertical alignment
     if (alignY != TOP)
     {
-        int height = font->stringGetHeight(text);
+        int height = stringGetHeight(text, fontStyle);
         
         if (alignY == MIDDLE) {
             pos.y -= height / 2;
@@ -93,13 +88,13 @@ void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX, TextAl
         
     // Horizontal alignment
     if (alignX == LEFT) {
-        drawText(text, pos, color, font);
+        drawText(text, pos, color, fontStyle);
     }
     else {
         string_list lines = stringSplit(text, "\n");
         for (string line : lines)
         {
-            int width = font->stringGetWidth(line);
+            int width = stringGetWidth(line, fontStyle);
             
             if (alignX == CENTER) {
                 pos.x -= width / 2;
@@ -108,18 +103,21 @@ void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX, TextAl
                 pos.x -= width;
             }
             
-            drawText(line, pos, color, font);
+            drawText(line, pos, color, fontStyle);
         }
     }
 }
 
 
-void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endIndex, Color color, Color selectColor, Color selectTextColor, Font* font)
+void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endIndex, Color color, Color selectColor, Color selectTextColor, FontStyle fontStyle)
 {
     if (startIndex == endIndex) {
-        drawText(text, pos, color, font);
+        drawText(text, pos, color, fontStyle);
         return;
     }
+
+    // Set font
+    Font* font = (fontStyle == NORMAL) ? appHandler->drawingFont : appHandler->drawingFontBold;
     
     // Init position and texture coordinate buffers
     int selectedLines = stringGetCount(stringSubstring(text, startIndex, endIndex - startIndex), "\n") +
@@ -131,10 +129,6 @@ void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endI
     Vec2 selectTexCoordData[selectedLines * 6];
     Vec3 selectTextPosData[selectedChars * 6];
     Vec2 selectTextTexCoordData[selectedChars * 6];
-    
-    if (!font) {
-        font = appHandler->drawingFont;
-    }
 
     int i = 0, j = 0, k = 0;
     ScreenPos charPos = { 0, 0 };

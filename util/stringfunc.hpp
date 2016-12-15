@@ -17,6 +17,11 @@ typedef std::vector<wstring> wstring_list;
 
 namespace Base
 {
+    enum FontStyle
+    {
+        NORMAL,
+        BOLD
+    };
     
     /* Escapes quotations in the given string. */
     string stringEscapeQuotes(string str);
@@ -42,10 +47,10 @@ namespace Base
     int stringGetCount(wstring wstr, wstring sub, int index = 0);
 
     /* Returns the width of a string when rendered. */
-    int stringGetWidth(string str);
+    int stringGetWidth(string str, FontStyle fontStyle = NORMAL);
 
     /* Returns the height of a string when rendered. */
-    int stringGetHeight(string str);
+    int stringGetHeight(string str, FontStyle fontStyle = NORMAL);
 
     /* Converts a float into a string with a given amount of decimal places. */
     string toStringPrec(float val, int prec);

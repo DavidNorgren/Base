@@ -1,5 +1,7 @@
 #pragma once
 
+#include "util/math/mathfunc.hpp"
+
 
 namespace Base
 {
@@ -8,6 +10,11 @@ namespace Base
     struct ScreenPos
     {
         int x, y;
+
+        static inline int distance(ScreenPos a, ScreenPos b)
+        {
+            return sqrt(pow(b.x - a.x, 2) + pow(b.y - a.y, 2));
+        }
     };
 
 
