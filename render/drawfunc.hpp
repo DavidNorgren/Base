@@ -27,6 +27,10 @@ namespace Base
     /* Begins drawing. */
     void drawBegin();
 
+    /* Set alpha (opacity). */
+    void setDrawingAlpha(float alpha);
+    float getDrawingAlpha();
+
     /* Draws a piece of text using the drawing font. */
     void drawText(string text, ScreenPos pos, Color color = COLOR_BLACK, FontStyle fontStyle = NORMAL);
     void drawTextAligned(string text, ScreenPos pos, TextAlignX alignX = LEFT, TextAlignY alignY = TOP, Color color = COLOR_BLACK, FontStyle fontStyle = NORMAL);

@@ -31,3 +31,5 @@
 #include "window/dialogfunc.hpp"
 #include "window/window.hpp"
 #include "apphandler.hpp"
+
+using namespace Base;

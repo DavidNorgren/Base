@@ -46,6 +46,7 @@ namespace Base
             Font* drawingFont;
             Font* drawingFontBold;
             Shader* drawingShader;
+            float drawingAlpha = 1.f;
             Image* solidColor;
     };
 

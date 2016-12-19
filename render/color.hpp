@@ -29,28 +29,35 @@ namespace Base
         }
 
 
-        Color(int r, int g, int b, int a = 255)
+        Color(int red, int green, int blue, int alpha = 255)
         {
-            this->r = (float)r / 255.f;
-            this->g = (float)g / 255.f;
-            this->b = (float)b / 255.f;
-            this->a = (float)a / 255.f;
+            this->r = (float)red / 255.f;
+            this->g = (float)green / 255.f;
+            this->b = (float)blue / 255.f;
+            this->a = (float)alpha / 255.f;
         }
 
 
-        Color(float v)
+        Color(float value)
         {
-            r = g = b = v;
+            r = g = b = value;
             a = 1.f;
         }
 
 
-        Color(float r, float g, float b, float a = 1.f)
+        Color(float value, float alpha)
         {
-            this->r = r;
-            this->g = g;
-            this->b = b;
-            this->a = a;
+            r = g = b = value;
+            this->a = alpha;
+        }
+
+
+        Color(float red, float green, float blue, float alpha = 1.f)
+        {
+            this->r = red;
+            this->g = green;
+            this->b = blue;
+            this->a = alpha;
         }
 
 
@@ -60,6 +67,15 @@ namespace Base
             g = color.g;
             b = color.b;
             a = color.a;
+        }
+
+
+        Color(const Color& color, float alpha)
+        {
+            r = color.r;
+            g = color.g;
+            b = color.b;
+            a = color.a * alpha;
         }
 
 

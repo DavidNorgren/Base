@@ -8,6 +8,18 @@ void Base::drawBegin()
 }
 
 
+void Base::setDrawingAlpha(float alpha)
+{
+    appHandler->drawingAlpha = alpha;
+}
+
+
+float Base::getDrawingAlpha()
+{
+    return appHandler->drawingAlpha;
+}
+
+
 void Base::drawText(string text, ScreenPos pos, Color color, FontStyle fontStyle)
 {
     // Set font
@@ -67,7 +79,8 @@ void Base::drawText(string text, ScreenPos pos, Color color, FontStyle fontStyle
     Mat4x4 mat = appHandler->mainWindow->ortho *
                  Mat4x4::translate({ pos.x, pos.y, 0 });
                  
-    appHandler->drawingShader->render2D(mat, posData, texCoordData, text.length() * 6, font->texture, color);
+    appHandler->drawingShader->render2D(mat, posData, texCoordData, text.length() * 6,
+                                        font->texture, Color(color, appHandler->drawingAlpha));
 }
 
 
@@ -265,9 +278,12 @@ void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endI
     Mat4x4 mat = appHandler->mainWindow->ortho *
                  Mat4x4::translate({ pos.x, pos.y, 0 });
                  
-    appHandler->drawingShader->render2D(mat, textPosData, textTexCoordData, (text.length() - selectedChars) * 6, font->texture, color);
-    appHandler->drawingShader->render2D(mat, selectPosData, selectTexCoordData, selectedLines * 6, appHandler->solidColor->texture, selectColor);
-    appHandler->drawingShader->render2D(mat, selectTextPosData, selectTextTexCoordData, selectedChars * 6, font->texture, selectTextColor);
+    appHandler->drawingShader->render2D(mat, textPosData, textTexCoordData, (text.length() - selectedChars) * 6,
+                                        font->texture, Color(color, appHandler->drawingAlpha));
+    appHandler->drawingShader->render2D(mat, selectPosData, selectTexCoordData, selectedLines * 6,
+                                        appHandler->solidColor->texture, Color(selectColor, appHandler->drawingAlpha));
+    appHandler->drawingShader->render2D(mat, selectTextPosData, selectTextTexCoordData, selectedChars * 6,
+                                        font->texture, Color(selectTextColor, appHandler->drawingAlpha));
 }
 
 
@@ -297,7 +313,9 @@ void Base::drawImage(Image* image, ScreenPos pos, Color color, float rotation, V
                  Mat4x4::rotate({ 0.f, 0.f, 1.f }, rotation) *
                  Mat4x4::scale({ scale.x, scale.y, 1.f });
 
-    appHandler->drawingShader->render2D(mat, posData, texCoordData, 4, image->texture, color, GL_TRIANGLE_STRIP);
+    appHandler->drawingShader->render2D(mat, posData, texCoordData, 4,
+                                        image->texture, Color(color, appHandler->drawingAlpha),
+                                        GL_TRIANGLE_STRIP);
 }
 
 
@@ -331,7 +349,9 @@ void Base::drawSubImage(Image* image, int subImage, ScreenPos pos, Color color, 
                  Mat4x4::rotate({ 0.f, 0.f, 1.f }, rotation) *
                  Mat4x4::scale({ scale.x, scale.y, 1.f });
                  
-    appHandler->drawingShader->render2D(mat, posData, texCoordData, 4, image->texture, color, GL_TRIANGLE_STRIP);
+    appHandler->drawingShader->render2D(mat, posData, texCoordData, 4, 
+                                        image->texture, Color(color, appHandler->drawingAlpha),
+                                        GL_TRIANGLE_STRIP);
 }
 
 
@@ -353,7 +373,9 @@ void Base::drawBox(ScreenArea box, Color color, bool outline, int outlineThickne
     }
 
     glLineWidth(outlineThickness);
-    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 5, appHandler->solidColor->texture, color, outline ? GL_LINE_STRIP : GL_TRIANGLE_STRIP);
+    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 5,
+                                        appHandler->solidColor->texture, Color(color, appHandler->drawingAlpha),
+                                        outline ? GL_LINE_STRIP : GL_TRIANGLE_FAN);
 }
 
 
@@ -433,7 +455,9 @@ void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edge
         texCoordData[i] = { 0, 0 };
     }
     
-    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, numVertex, appHandler->solidColor->texture, color, GL_TRIANGLE_FAN);
+    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, numVertex,
+                                        appHandler->solidColor->texture, Color(color, appHandler->drawingAlpha),
+                                        GL_TRIANGLE_FAN);
 }
 
 
@@ -450,5 +474,7 @@ void Base::drawLine(ScreenPos start, ScreenPos end, Color color, int thickness)
     texCoordData[1] = { 0, 0 };
     
     glLineWidth(thickness);
-    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 2, appHandler->solidColor->texture, color, GL_LINES);
+    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 2,
+                                        appHandler->solidColor->texture, Color(color, appHandler->drawingAlpha),
+                                        GL_LINES);
 }
