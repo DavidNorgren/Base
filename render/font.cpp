@@ -76,7 +76,7 @@ void Base::Font::load(FT_Face& face)
         };
 
         width += glyph->bitmap.width;
-        height = max(height, (uint)glyph->bitmap.rows);
+        height = max(height, (int)glyph->bitmap.rows);
     }
 
     // Create map texture
@@ -139,5 +139,5 @@ int Base::Font::stringGetWidth(string text)
 
 int Base::Font::stringGetHeight(string text)
 {
-    return (stringGetCount(text, "\n") + 1) * height * LINE_SPACE;
+    return (stringGetCount(text, "\n") + stringGetCount(text, "\r") + 1) * height * LINE_SPACE;
 }

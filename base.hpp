@@ -28,6 +28,7 @@
 #include "util/math/mathfunc.hpp"
 #include "util/datefunc.hpp"
 #include "util/stringfunc.hpp"
+#include "util/utilfunc.hpp"
 #include "window/dialogfunc.hpp"
 #include "window/window.hpp"
 #include "apphandler.hpp"

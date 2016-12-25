@@ -18,7 +18,6 @@ namespace Base
     class Window
     {
         public:
-
             /* Creates the window and OpenGL context. */
             Window();
 

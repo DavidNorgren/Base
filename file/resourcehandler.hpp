@@ -19,12 +19,10 @@ namespace Base
     class ResourceHandler
     {
         public:
-
             ResourceHandler();
             File* find(string name);
 
         private:
-
             std::map<string, File*> resMap;
     };
 

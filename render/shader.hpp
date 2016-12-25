@@ -21,7 +21,6 @@ namespace Base
     class Shader
     {
         public:
-
             /* Loads shader code from a file and compiles it.
                The different shader types are separated in the file
                with comments. */
@@ -47,7 +46,6 @@ namespace Base
             void render2D(Mat4x4 matrix, Vec3* posData, Vec2* texCoordData, int vertices, GLuint texture, Color color = { 1.f }, GLenum mode = GL_TRIANGLES);
 
         private:
-
             void load(string source);
 
             string name;

@@ -24,7 +24,6 @@ namespace Base
     class Font {
 
         public:
-
             /* Load a new font from a file. */
             Font(string filename, uint size, uint start, uint end);
             Font(File* file,      uint size, uint start, uint end);
@@ -39,7 +38,6 @@ namespace Base
             CharInfo* chars;
 
         private:
-
             void load(FT_Face& face);
 
     };

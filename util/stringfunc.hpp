@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <string.h>
+#include <string>
 #include <wchar.h>
 #include <stdlib.h>
 #include <iomanip>
@@ -52,7 +52,20 @@ namespace Base
     /* Returns the height of a string when rendered. */
     int stringGetHeight(string str, FontStyle fontStyle = NORMAL);
 
-    /* Converts a float into a string with a given amount of decimal places. */
-    string toStringPrec(float val, int prec);
+    /* Converts a value into a string. */
+    template<typename T> inline string toString(T val)
+    {
+        std::stringstream ss;
+        ss << val;
+        return ss.str();
+    }    
+
+    /* Converts a value into a string with a given amount of decimal places. */
+    template<typename T> inline string toStringPrec(T val, int prec)
+    {
+        std::stringstream ss;
+        ss << std::setprecision(prec) << val;
+        return ss.str();
+    }    
     
 }

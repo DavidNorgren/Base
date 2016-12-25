@@ -27,6 +27,11 @@ namespace Base
     /* Begins drawing. */
     void drawBegin();
 
+    /* Sets a render area. */
+    void setDrawingArea(ScreenArea area);
+    ScreenArea getDrawingArea();
+    void resetDrawingArea();
+
     /* Set alpha (opacity). */
     void setDrawingAlpha(float alpha);
     float getDrawingAlpha();

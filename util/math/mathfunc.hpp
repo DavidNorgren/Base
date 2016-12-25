@@ -10,27 +10,27 @@ typedef unsigned char uchar;
 namespace Base
 {
     
-    inline float min(float x, float y)
+    template<typename T> inline T min(T x, T y)
     {
         return x < y ? x : y;
     }
 
 
-    inline float max(float x, float y)
+    template<typename T> inline T max(T x, T y)
     {
         return x > y ? x : y;
     }
 
 
-    inline long mod(long a, long b)
+    template<typename T> inline T mod(T a, T b)
     {
         return (a % b + b) % b;
     }
 
 
-    inline float clamp(float x, float mi, float ma)
+    template<typename T> inline T clamp(T x, T mi, T ma)
     {
-        return min(ma, max(mi, x));
+        return max(mi, min(ma, x));
     }
 
 

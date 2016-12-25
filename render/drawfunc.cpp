@@ -5,6 +5,27 @@
 void Base::drawBegin()
 {
     appHandler->drawingShader->select();
+    appHandler->drawingArea = { 0, 0, appHandler->mainWindow->width, appHandler->mainWindow->height };
+}
+
+
+void Base::setDrawingArea(ScreenArea area)
+{
+    glEnable(GL_SCISSOR_TEST);
+    appHandler->drawingArea = area;
+    glScissor(area.pos.x, appHandler->mainWindow->height - (area.pos.y + area.height), area.width, area.height);
+}
+
+
+Base::ScreenArea Base::getDrawingArea()
+{
+    return appHandler->drawingArea;
+}
+
+
+void Base::resetDrawingArea()
+{
+    glDisable(GL_SCISSOR_TEST);
 }
 
 

@@ -151,11 +151,3 @@ int Base::stringGetHeight(string str, FontStyle fontStyle)
             appHandler->drawingFont->stringGetHeight(str) :
             appHandler->drawingFontBold->stringGetHeight(str);
 }
-
-
-string Base::toStringPrec(float val, int prec)
-{
-    std::stringstream ss;
-    ss << std::setprecision(prec) << val;
-    return ss.str();
-}    

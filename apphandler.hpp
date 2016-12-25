@@ -10,6 +10,7 @@
 #include "render/image.hpp"
 #include "render/shader.hpp"
 #include "window/window.hpp"
+#include "window/screenarea.hpp"
 
 #define DRAWING_FONT        "fonts/opensans.ttf"
 #define DRAWING_FONT_BOLD   "fonts/opensansbold.ttf"
@@ -23,7 +24,6 @@ namespace Base
     class AppHandler
     {
         protected:
-
             /* Setup OpenGL and load resources. */
             AppHandler();
 
@@ -37,7 +37,6 @@ namespace Base
             void launch();
 
         public:
-
             // Window
             Window* mainWindow;
 
@@ -47,6 +46,7 @@ namespace Base
             Font* drawingFontBold;
             Shader* drawingShader;
             float drawingAlpha = 1.f;
+            ScreenArea drawingArea;
             Image* solidColor;
     };
 

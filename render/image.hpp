@@ -14,7 +14,6 @@ namespace Base
     class Image
     {
         public:
-
             /* Loads an image from a file. */
             Image(wstring filename);
             Image(File* file);
@@ -26,7 +25,6 @@ namespace Base
             int width, height;
 
         private:
-
             void load(void* data);
     };
     

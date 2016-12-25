@@ -9,6 +9,7 @@
 #define COLOR_RED       Color(1.f, 0.f, 0.f)
 #define COLOR_LIME      Color(0.f, 1.f, 0.f)
 #define COLOR_BLUE      Color(0.f, 0.f, 1.f)
+#define COLOR_YELLOW    Color(1.f, 1.f, 0.f)
 #define COLOR_GREEN     Color(0.f, 0.8f, 0.f)
 
 
