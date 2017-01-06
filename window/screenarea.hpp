@@ -2,6 +2,7 @@
 
 #include "window/screenpos.hpp"
 
+#include <iostream>
 
 namespace Base
 {
@@ -18,10 +19,17 @@ namespace Base
             ScreenPos end = { min(a.pos.x + a.width, b.pos.x + b.width), min(a.pos.y + a.height, b.pos.y + b.height) };
             return {
                 start,
-                end.x - start.x,
-                end.y - start.y
+                max(0, end.x - start.x),
+                max(0, end.y - start.y)
             };
         }
     };
+    
+    //// Unary operators ////
+
+    inline std::ostream& operator << (std::ostream& cout, const ScreenArea& a)
+    {
+        return std::cout << "({ " << a.pos.x << "," << a.pos.y << " }," << a.width << "," << a.height << ")" << std::endl;
+    }
 
 }

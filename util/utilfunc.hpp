@@ -19,6 +19,15 @@ namespace Base
         vec.erase(vec.begin() + index);
     }
 
+    template<typename T> inline void vectorErase(std::vector<T>& vec, T value)
+    {
+        auto i = std::find(vec.begin(), vec.end(), value);
+        if (i == vec.end()) {
+            return;
+        }
+        vec.erase(i);
+    }
+
     template<typename T> inline void vectorInsert(std::vector<T>& vec, int index, T value)
     {
         vec.insert(vec.begin() + index, value);

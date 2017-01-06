@@ -37,6 +37,7 @@ namespace Base
     string stringSubstring(string str, int from, int length);
     string stringErase(string str, int from, int length);
     string stringInsert(string str, string substr, int index);
+    string stringRepeat(string str, int count);
 
     /* Replaces all occurrences of the given substring and returns the modified string. */
     string stringReplace(string str, string from, string to);

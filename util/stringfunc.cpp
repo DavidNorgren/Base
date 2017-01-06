@@ -109,6 +109,15 @@ string Base::stringInsert(string str, string substr, int index)
 }
 
 
+string Base::stringRepeat(string str, int count)
+{
+    string repeatStr = "";
+    for (int i = 0; i < count; i++) {
+        repeatStr += str;
+    }
+    return repeatStr;
+}
+
 int Base::stringGetCount(string str, string sub, int index)
 {
     int count = 0;
