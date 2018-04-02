@@ -7,7 +7,6 @@ string Base::stringEscapeQuotes(string str)
     return stringReplace(str, "\"", "\\\"");
 }
 
-
 string Base::wstringToString(wstring wstr)
 {
     string result;
@@ -15,7 +14,6 @@ string Base::wstringToString(wstring wstr)
     wcstombs(&result[0], &wstr[0], result.length());
     return result;
 }
-
 
 wstring Base::stringToWstring(string str)
 {
@@ -25,7 +23,6 @@ wstring Base::stringToWstring(string str)
     return result;
 }
 
-
 string_list Base::stringSplit(string str, string sep)
 {
     str += sep;
@@ -33,7 +30,8 @@ string_list Base::stringSplit(string str, string sep)
     string::size_type pos = str.find(sep);
     string::size_type lastPos = 0;
 
-    while (pos != string::npos) {
+    while (pos != string::npos)
+    {
         result.push_back(str.substr(lastPos, pos - lastPos));
         lastPos = pos + sep.size();
         pos = str.find(sep, lastPos);
@@ -42,14 +40,14 @@ string_list Base::stringSplit(string str, string sep)
     return result;
 }
 
-
 wstring_list Base::stringSplit(wstring wstr, wstring sep)
 {
     wstring_list result;
     string::size_type lastPos = wstr.find_first_not_of(sep, 0);
     string::size_type pos     = wstr.find_first_of(sep, lastPos);
 
-    while (wstring::npos != pos || wstring::npos != lastPos) {
+    while (wstring::npos != pos || wstring::npos != lastPos)
+    {
         result.push_back(wstr.substr(lastPos, pos - lastPos));
         lastPos = wstr.find_first_not_of(sep, pos);
         pos = wstr.find_first_of(sep, lastPos);
@@ -58,15 +56,14 @@ wstring_list Base::stringSplit(wstring wstr, wstring sep)
     return result;
 }
 
-
 string Base::stringReplace(string str, string from, string to)
 {
-    if (from.empty()) {
+    if (from.empty())
         return str;
-    }
     
     size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != string::npos) {
+    while((start_pos = str.find(from, start_pos)) != string::npos)
+    {
         str.replace(start_pos, from.length(), to);
         start_pos += to.length();
     }
@@ -74,15 +71,14 @@ string Base::stringReplace(string str, string from, string to)
     return str;
 }
 
-
 wstring Base::stringReplace(wstring wstr, wstring from, wstring to)
 {
-    if (from.empty()) {
+    if (from.empty())
         return wstr;
-    }
     
     size_t start_pos = 0;
-    while((start_pos = wstr.find(from, start_pos)) != wstring::npos) {
+    while((start_pos = wstr.find(from, start_pos)) != wstring::npos)
+    {
         wstr.replace(start_pos, from.length(), to);
         start_pos += to.length();
     }
@@ -90,31 +86,26 @@ wstring Base::stringReplace(wstring wstr, wstring from, wstring to)
     return wstr;
 }
 
-
 string Base::stringSubstring(string str, int from, int length)
 {
     return str.substr(from, length);
 }
-
 
 string Base::stringErase(string str, int from, int length)
 {
     return str.erase(from, length);
 }
 
-
 string Base::stringInsert(string str, string substr, int index)
 {
     return str.insert(index, substr);
 }
 
-
 string Base::stringRepeat(string str, int count)
 {
     string repeatStr = "";
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++)
         repeatStr += str;
-    }
     return repeatStr;
 }
 
@@ -123,7 +114,8 @@ int Base::stringGetCount(string str, string sub, int index)
     int count = 0;
     size_t pos = str.find(sub, index);
     
-    while(pos != string::npos) {
+    while(pos != string::npos)
+    {
         count++;
         pos = str.find(sub, pos + 1);
     }
@@ -131,13 +123,13 @@ int Base::stringGetCount(string str, string sub, int index)
     return count;
 }
 
-
 int Base::stringGetCount(wstring wstr, wstring sub, int index)
 {
     int count = 0;
     size_t pos = wstr.find(sub, index);
     
-    while(pos != string::npos) {
+    while(pos != string::npos)
+    {
         count++;
         pos = wstr.find(sub, pos + 1);
     }
@@ -145,14 +137,12 @@ int Base::stringGetCount(wstring wstr, wstring sub, int index)
     return count;
 }
 
-
 int Base::stringGetWidth(string str, FontStyle fontStyle)
 {
     return (fontStyle == NORMAL) ?
             appHandler->drawingFont->stringGetWidth(str) :
             appHandler->drawingFontBold->stringGetWidth(str);
 }
-
 
 int Base::stringGetHeight(string str, FontStyle fontStyle)
 {

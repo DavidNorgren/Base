@@ -6,8 +6,8 @@
 
 namespace Base
 {
-    
-    enum Cursor {
+    enum Cursor
+    {
         ARROW,
         HANDPOINT,
         BEAM,
@@ -40,5 +40,4 @@ namespace Base
     
     /* Sets the mouse cursor. */
     void mouseSetCursor(Cursor cursor);
-
 }

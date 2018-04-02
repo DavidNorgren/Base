@@ -10,14 +10,12 @@ Base::Shader::Shader(wstring filename, std::function<void(GLuint)> setup)
     load(wstringToString(fileGetContents(filename)));
 }
 
-
 Base::Shader::Shader(File* file, std::function<void(GLuint)> setup)
 {
     name = file->name;
     this->setup = setup;
     load(string(file->rawData, file->size));
 }
-
 
 void Base::Shader::load(string source)
 {
@@ -41,7 +39,8 @@ void Base::Shader::load(string source)
     glAttachShader(program, vs);
 
     // Vertex shader error handling
-    if (!isCompiled) {
+    if (!isCompiled)
+    {
         GLint errorLength;
         string error;
         glGetShaderiv(vs, GL_INFO_LOG_LENGTH, &errorLength);
@@ -59,7 +58,8 @@ void Base::Shader::load(string source)
     glAttachShader(program, fs);
 
     // Fragment shader error handling
-    if (!isCompiled) {
+    if (!isCompiled)
+    {
         GLint errorLength;
         string error;
         glGetShaderiv(fs, GL_INFO_LOG_LENGTH, &errorLength);
@@ -74,12 +74,10 @@ void Base::Shader::load(string source)
     std::cout << "Shader compiled" << std::endl;
 }
 
-
 void Base::Shader::select()
 {
     glUseProgram(program);
 }
-
 
 void Base::Shader::render2D(Mat4x4 matrix, Vec3* posData, Vec2* texCoordData, int vertices, GLuint texture, Color color, GLenum mode)
 {

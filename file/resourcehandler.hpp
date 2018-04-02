@@ -15,7 +15,6 @@
 
 namespace Base
 {
-    
     class ResourceHandler
     {
         public:
@@ -25,5 +24,4 @@ namespace Base
         private:
             std::map<string, File*> resMap;
     };
-
 }

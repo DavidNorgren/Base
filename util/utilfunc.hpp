@@ -4,13 +4,11 @@
 
 namespace Base
 {
-
     template<typename T> inline int vectorFind(std::vector<T>& vec, T value)
     {
         auto i = std::find(vec.begin(), vec.end(), value);
-        if (i == vec.end()) {
+        if (i == vec.end())
             return -1;
-        }
         return std::distance(vec.begin(), i);
     }
 
@@ -22,9 +20,8 @@ namespace Base
     template<typename T> inline void vectorErase(std::vector<T>& vec, T value)
     {
         auto i = std::find(vec.begin(), vec.end(), value);
-        if (i == vec.end()) {
+        if (i == vec.end())
             return;
-        }
         vec.erase(i);
     }
 
@@ -32,5 +29,4 @@ namespace Base
     {
         vec.insert(vec.begin() + index, value);
     }
-
 }

@@ -14,10 +14,8 @@
 #include "render/color.hpp"
 #include "render/font.hpp"
 
-
 namespace Base
 {
-    
     class Shader
     {
         public:
@@ -52,5 +50,4 @@ namespace Base
             GLuint program, vbo;
             std::function<void(GLuint)> setup;
     };
-
 }

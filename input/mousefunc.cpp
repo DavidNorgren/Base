@@ -79,7 +79,8 @@ bool Base::mouseRightReleased()
 void Base::mouseClear()
 {
     Window* window = appHandler->mainWindow;
-    for (uint m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++) {
+    for (uint m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++)
+    {
         window->mouseDown[m] = false;
         window->mousePressed[m] = false;
         window->mouseReleased[m] = false;
@@ -93,26 +94,25 @@ void Base::mouseSetCursor(Cursor cursor)
     GLFWcursor* glfwcursor;
     switch (cursor)
     {
-        case ARROW: {
+        case ARROW:
             glfwcursor = appHandler->mainWindow->cursorArrow;
             break;
-        }
-        case HANDPOINT: {
+        
+        case HANDPOINT:
             glfwcursor = appHandler->mainWindow->cursorHandpoint;
             break;
-        }
-        case BEAM: {
+        
+        case BEAM:
             glfwcursor = appHandler->mainWindow->cursorBeam;
             break;
-        }
-        case WERESIZE: {
+        
+        case WERESIZE:
             glfwcursor = appHandler->mainWindow->cursorHResize;
             break;
-        }
-        case NSRESIZE: {
+        
+        case NSRESIZE:
             glfwcursor = appHandler->mainWindow->cursorVResize;
             break;
-        }
     }
     appHandler->mainWindow->currentCursor = glfwcursor;
 }

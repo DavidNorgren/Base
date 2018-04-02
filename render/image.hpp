@@ -10,7 +10,6 @@
 
 namespace Base
 {
-    
     class Image
     {
         public:
@@ -27,5 +26,4 @@ namespace Base
         private:
             void load(void* data);
     };
-    
 }

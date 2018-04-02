@@ -68,5 +68,4 @@ namespace Base
         ss << std::setprecision(prec) << val;
         return ss.str();
     }    
-    
 }

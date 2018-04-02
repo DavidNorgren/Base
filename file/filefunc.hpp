@@ -16,7 +16,6 @@
 
 namespace Base
 {
-    
     /* Represents a file stored in memory. */
     struct File
     {
@@ -52,5 +51,4 @@ namespace Base
 
     /* Returns whether the given directory exists. */
     bool directoryExists(wstring directory);
-
 }

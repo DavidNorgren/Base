@@ -6,39 +6,38 @@ Base::Window* w;
 
 void windowMouseButtonCallback(GLFWwindow* handle, int button, int action, int mods)
 {
-    if (button < 0) {
+    if (button < 0)
         return;
-    }
 
     // A mouse button was pressed!
     if (action == GLFW_PRESS)
     {
-        if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (button == GLFW_MOUSE_BUTTON_LEFT)
+        {
             w->mouseLastClickDuration = glfwGetTime() - w->mouselastClickTime;
             w->mouselastClickTime = glfwGetTime();
             w->mousePosClick = w->mousePos;
         }
-        if (!w->mouseDown[button]) {
+
+        if (!w->mouseDown[button])
             w->mousePressed[button] = true;
-        }
         w->mouseDown[button] = true;
     }
     else if (action == GLFW_RELEASE)
     {
-        if (w->mouseDown[button]) {
+        if (w->mouseDown[button])
             w->mouseReleased[button] = true;
-        }
         w->mouseDown[button] = false;
     }
     
     // Call event and set cursor
-    if (w->mouseEventFunc) {
+    if (w->mouseEventFunc)
+    {
         w->currentCursor = w->cursorArrow;
         w->mouseEventFunc();
         w->setCursor(w->currentCursor);
     }
 }
-
 
 void windowCursorPosCallback(GLFWwindow* handle, double x, double y)
 {
@@ -49,51 +48,46 @@ void windowCursorPosCallback(GLFWwindow* handle, double x, double y)
                               w->mousePos.y - w->mousePosPrevious.y);
     
     // Call event and set cursor
-    if (w->mouseEventFunc) {
+    if (w->mouseEventFunc)
+    {
         w->currentCursor = w->cursorArrow;
         w->mouseEventFunc();
         w->setCursor(w->currentCursor);
     }
 }
 
-
 void windowKeyCallback(GLFWwindow* handle, int key, int scancode, int action, int mods)
 {
-    if (key < 0) {
+    if (key < 0)
         return;
-    }
 
     // A keyboard key was pressed!
-    if (action == GLFW_PRESS) {
-        if (!w->keyDown[key]) {
+    if (action == GLFW_PRESS)
+    {
+        if (!w->keyDown[key])
             w->keyPressed[key] = true;
-        }
         w->keyDown[key] = true;
     }
-    else if (action == GLFW_RELEASE) {
-        if (w->keyDown[key]) {
+    else if (action == GLFW_RELEASE)
+    {
+        if (w->keyDown[key])
             w->keyReleased[key] = true;
-        }
         w->keyDown[key] = false;
-    } else if (action == GLFW_REPEAT) {
+    }
+    else if (action == GLFW_REPEAT)
         w->keyPressed[key] = true;
-    }
     
-    if (w->keyEventFunc) {
+    if (w->keyEventFunc)
         w->keyEventFunc();
-    }
 }
-
 
 void windowCharModsCallback(GLFWwindow* handle, unsigned int codepoint, int mods)
 {
     w->charPressed = (char)codepoint;
-    if (w->keyEventFunc) {
+    if (w->keyEventFunc)
         w->keyEventFunc();
-    }
     w->charPressed = 0;
 }
-
 
 void windowSizeCallback(GLFWwindow* handle, int width, int height)
 {
@@ -107,11 +101,9 @@ void windowSizeCallback(GLFWwindow* handle, int width, int height)
     w->height = height;
     w->ratio = (float)width / height;
     
-    if (w->resizeEventFunc) {
+    if (w->resizeEventFunc)
         w->resizeEventFunc();
-    }
 }
-
 
 Base::Window::Window()
 {
@@ -129,12 +121,15 @@ Base::Window::Window()
     
     // Initialize input
     charPressed = 0;
-    for (uint k = 0; k < GLFW_KEY_LAST; k++) {
+    for (uint k = 0; k < GLFW_KEY_LAST; k++)
+    {
         keyDown[k] = false;
         keyPressed[k] = false;
         keyReleased[k] = false;
     }
-    for (uint m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++) {
+
+    for (uint m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++)
+    {
         mouseDown[m] = false;
         mousePressed[m] = false;
         mouseReleased[m] = false;
@@ -148,7 +143,6 @@ Base::Window::Window()
     cursorVResize = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
     currentCursor = cursorArrow;
 }
-
 
 void Base::Window::open(std::function<void()> loopEventFunc,
                         std::function<void()> mouseEventFunc,
@@ -177,19 +171,24 @@ void Base::Window::open(std::function<void()> loopEventFunc,
         loopEventFunc();
 
         // Reset input
-        for (uint k = 0; k < GLFW_KEY_LAST; k++) {
+        for (uint k = 0; k < GLFW_KEY_LAST; k++)
+        {
             keyPressed[k] = false;
             keyReleased[k] = false;
         }
-        for (uint m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++) {
+
+        for (uint m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++)
+        {
             mousePressed[m] = false;
             mouseReleased[m] = false;
         }
+
         w->mouseMove = { 0, 0 };
 
         // Update FPS
         frame++;
-        if (lastTime != (int)glfwGetTime()) {
+        if (lastTime != (int)glfwGetTime())
+        {
             fps = frame;
             frame = 0;
         }
@@ -203,7 +202,6 @@ void Base::Window::open(std::function<void()> loopEventFunc,
     glfwTerminate();
 }
 
-
 void Base::Window::maximize()
 {
 //#ifdef _WIN32
@@ -215,12 +213,10 @@ void Base::Window::maximize()
 #endif*/
 }
 
-
 void Base::Window::setTitle(string title)
 {
     glfwSetWindowTitle(handle, &title[0]);
 }
-
 
 void Base::Window::setCursor(GLFWcursor* cursor)
 {

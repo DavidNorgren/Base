@@ -10,7 +10,6 @@
 
 namespace Base
 {
-
     /* Text alignment. */
     enum TextAlignX {
         LEFT,
@@ -53,5 +52,4 @@ namespace Base
     
     /* Draws a line */
     void drawLine(ScreenPos start, ScreenPos end, Color color, int thickness = 1);
-    
 }

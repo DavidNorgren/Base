@@ -43,7 +43,6 @@ Base::AppHandler::AppHandler()
     solidColor = new Image(COLOR_WHITE, 1, 1);
 }
 
-
 void Base::AppHandler::launch()
 {
     mainWindow->open(std::bind(&AppHandler::loopEvent, this),

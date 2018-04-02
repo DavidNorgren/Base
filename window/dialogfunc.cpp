@@ -16,16 +16,13 @@ bool detectEnvironment(string env)
     return found;
 }
 
-
 int getEnvironment()
 {
-    if (detectEnvironment("kdialog")) {
+    if (detectEnvironment("kdialog"))
         return ENV_KDIALOG;
-    }
     
-    if (detectEnvironment("osascript")) {
+    if (detectEnvironment("osascript"))
         return ENV_APPLE;
-    }
     
     return -1;
 }
@@ -50,9 +47,8 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
     ofn.nMaxFile = sizeof(buf);
 
     // Generate filter string
-    for (uint i = 0; i < filters.size(); i++) {
+    for (uint i = 0; i < filters.size(); i++)
         filterString += filters[i] + L'\0';
-    }
     filterString += L'\0';
 
     ofn.lpstrFilter = &filterString[0];
@@ -61,32 +57,32 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
     ofn.lpstrTitle = &title[0];
 
     ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-    if (multiSelect) {
+    if (multiSelect)
         ofn.Flags |= OFN_ALLOWMULTISELECT;
-    }
     
     ofn.lpstrFileTitle = NULL;
     ofn.nMaxFileTitle = MAX_FILENAME + MAX_EXT;
     ofn.lpstrCustomFilter = NULL;
     ofn.lpstrDefExt = NULL;
-    if (defaultExt != L".*") {
+    if (defaultExt != L".*")
         ofn.lpstrDefExt = &defaultExt[0];
-    }
     
-    if (!GetOpenFileNameW(&ofn)) {
+    if (!GetOpenFileNameW(&ofn))
         return selFiles; // Cancel
-    }
     
-    if (buf[wcslen(buf) + 1] == L'\0') { // Single file
+    if (buf[wcslen(buf) + 1] == L'\0') // Single file
         selFiles.push_back(buf);
-    } else {
+    else
+    {
         // Buffer starts with the directory, then each file (short) separated by 0. Last one ends with 00.
         wstring dir = buf;
         wchar_t *p = buf;
-        do {
+        do
+        {
             p += wcslen(p) + 1;
             selFiles.push_back(dir + L"\\" + p);
-        } while (*(p + wcslen(p) + 1) != L'\0');
+        }
+        while (*(p + wcslen(p) + 1) != L'\0');
     }
 
 #else // Mac, Linux
@@ -96,30 +92,32 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
     string command;
     FILE *f;
 
-    switch (env) {
-        case ENV_KDIALOG: {
+    switch (env)
+    {
+        case ENV_KDIALOG:
+        {
             // https://techbase.kde.org/Development/Tutorials/Shell_Scripting_with_KDE_Dialogs#Example_28._--getopenfilename_dialog_box
             command = "kdialog --getopenfilename";
 
-            if (!location.empty()) {
+            if (!location.empty())
                 command += wstringToString(location);
-            } else {
+            else
                 command += " :";
-            }
+            
 
             // Add filters
-            if (filters.size()) {
+            if (filters.size())
+            {
                 command += " \"";
 
-                for (int i = 1; i < filters.size(); i += 2) {
+                for (int i = 1; i < filters.size(); i += 2)
                     command += stringReplace(wstringToString(filters[i]), ";", " ") + " ";
-                }
-
+                
                 command += "|";
-                for (int i = 0; i < filters.size(); i += 2) {
-                    if (i > 0) {
+                for (int i = 0; i < filters.size(); i += 2)
+                {
+                    if (i > 0)
                         command += ", ";
-                    }
                     command += stringEscapeQuotes(wstringToString(filters[i]));
                 }
 
@@ -127,37 +125,38 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
 
             }
 
-            if (multiSelect) {
+            if (multiSelect)
                 command += " --multiple --separate-output";
-            }
 
             break;
         }
 
-        case ENV_APPLE: {
+        case ENV_APPLE:
+        {
             // https://developer.apple.com/library/mac/documentation/AppleScript/Conceptual/AppleScriptLangGuide/reference/ASLR_cmds.html#//apple_ref/doc/uid/TP40000983-CH216-SW4
             command = "osascript -e '";
 
-            if (multiSelect) { // Store results in a list
+            if (multiSelect) // Store results in a list
                 command += "set fileList to ";
-            } else {
+            else
                 command += "POSIX path of (";
-            }
             
             command += "choose file";
 
             // Add filters
-            if (filters.size()) {
+            if (filters.size())
+            {
                 int filterN = 0;
 
                 command += " of type {";
 
-                for (int i = 1; i < filters.size(); i += 2) {
+                for (int i = 1; i < filters.size(); i += 2)
+                {
                     wstring_list filterList = stringSplit(filters[i], ";");
-                    for (int j = 0; j < filterList.size(); j++) {
-                        if (filterN++ > 0) {
+                    for (int j = 0; j < filterList.size(); j++)
+                    {
+                        if (filterN++ > 0)
                             command += ", ";
-                        }
                         command += "\"" + stringReplace(wstringToString(filterList[j]), "*", "public") + "\"";
                     }
                 }
@@ -165,15 +164,14 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
                 command += "}";
             }
 
-            if (!title.empty()) {
+            if (!title.empty())
                 command += " with prompt \"" + stringEscapeQuotes(wstringToString(title)) + "\"";
-            }
             
-            if (!location.empty()) {
+            if (!location.empty())
                 command += " default location \"" + wstringToString(location) + "\"";
-            }
             
-            if (multiSelect) {
+            if (multiSelect)
+            {
                 command += " multiple selections allowed true'";
                 command += " -e 'set fileString to POSIX path of item 1 in fileList'";
                 command += " -e 'repeat with i from 2 to the count of fileList'";
@@ -181,16 +179,15 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
                 command += " -e 'set fileString to fileString & POSIX path of item i of fileList'";
                 command += " -e 'end repeat'";
                 command += " -e 'fileString'";
-            } else {
-                command += ")'";
             }
+            else
+                command += ")'";
 
             break;
         }
 
-        default: {
+        default:
             return selFiles; // Cancel
-        }
     }
     cout << command << endl;
 
@@ -201,7 +198,8 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
     // Read results (one line per file selected)
     buf[0] = '\0';
     p = buf;
-    while (fgets(p, MAX_FILENAME, f) != NULL) {
+    while (fgets(p, MAX_FILENAME, f) != NULL)
+    {
         *(p + strlen(p) - 1) = '\0';
         selFiles.push_back(stringToWstring(p));
         p += strlen(p);
@@ -213,7 +211,6 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
 
     return selFiles;
 }
-
 
 wstring Base::dialogSaveFile(wstring title, wstring location, wstring_list filters)
 {
@@ -233,9 +230,8 @@ wstring Base::dialogSaveFile(wstring title, wstring location, wstring_list filte
     ofn.nMaxFile = sizeof(buf);
 
     // Generate filter string
-    for (uint i = 0; i < filters.size(); i++) {
+    for (uint i = 0; i < filters.size(); i++)
         filterString += filters[i] + L'\0';
-    }
     filterString += L'\0';
 
     ofn.lpstrFilter = &filterString[0];
@@ -249,13 +245,11 @@ wstring Base::dialogSaveFile(wstring title, wstring location, wstring_list filte
     ofn.nMaxFileTitle = MAX_FILENAME + MAX_EXT;
     ofn.lpstrCustomFilter = NULL;
     ofn.lpstrDefExt = NULL;
-    if (defaultExt != L".*") {
+    if (defaultExt != L".*")
         ofn.lpstrDefExt = &defaultExt[0];
-    }
     
-    if (!GetSaveFileNameW(&ofn)) {
+    if (!GetSaveFileNameW(&ofn))
         return selFile; // Cancel
-    }
     
     selFile = buf;
     

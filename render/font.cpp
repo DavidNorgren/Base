@@ -15,14 +15,14 @@ Base::Font::Font(string filename, uint start, uint end, uint size)
     std::cout << "Loading " << filename << "..." << std::endl;
 
     // Create the font map from a file on the disk
-    if (FT_New_Face(lib, &filename[0], 0, &face)) {
+    if (FT_New_Face(lib, &filename[0], 0, &face))
+    {
         std::cout << "Could not open font!" << std::endl;
         return;
     }
     
     load(face);
 }
-
 
 Base::Font::Font(File* file, uint size, uint start, uint end)
 {
@@ -38,14 +38,14 @@ Base::Font::Font(File* file, uint size, uint start, uint end)
     std::cout << "Loading " << file->name << "..." << std::endl;
 
     // Create the font map from a file in memory
-    if (FT_New_Memory_Face(lib, (uchar*)file->rawData, file->size, 0, &face)) {
+    if (FT_New_Memory_Face(lib, (uchar*)file->rawData, file->size, 0, &face))
+    {
         std::cout << "Could not open font!" << std::endl;
         return;
     }
     
     load(face);
 }
-
 
 void Base::Font::load(FT_Face& face)
 {
@@ -61,9 +61,8 @@ void Base::Font::load(FT_Face& face)
     height = 0;
     for (uint i = start; i < end; i++)
     {
-        if (FT_Load_Char(face, i, FT_LOAD_RENDER)) {
+        if (FT_Load_Char(face, i, FT_LOAD_RENDER))
             continue;
-        }
 
         chars[i] = {
             (float)glyph->bitmap.width,
@@ -91,15 +90,13 @@ void Base::Font::load(FT_Face& face)
     {
         CharInfo curChar = chars[i];
 
-        if (FT_Load_Char(face, i, FT_LOAD_RENDER)) {
+        if (FT_Load_Char(face, i, FT_LOAD_RENDER))
             continue;
-        }
 
         // Convert buffer to RGBA
         Color* glyphBuf = new Color[(int)curChar.width * (int)curChar.height];
-        for (uint j = 0; j < curChar.width * curChar.height; j++) {
+        for (uint j = 0; j < curChar.width * curChar.height; j++)
             glyphBuf[j] = Color(1.f, 1.f, 1.f, glyph->bitmap.buffer[j] / 255.f);
-        }
 
         glTexSubImage2D(GL_TEXTURE_2D, 0, curChar.mapX, 0, curChar.width, curChar.height, GL_RGBA, GL_FLOAT, glyphBuf);
 
@@ -109,7 +106,6 @@ void Base::Font::load(FT_Face& face)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-
 int Base::Font::stringGetWidth(string text)
 {
     int width = 0, dx = 0;
@@ -118,14 +114,14 @@ int Base::Font::stringGetWidth(string text)
     {
         uchar curChar = text[c];
 
-        if (curChar == '\n') {
+        if (curChar == '\n')
+        {
             dx = 0;
             continue;
         }
         
-        if (curChar < start || curChar > end) {
+        if (curChar < start || curChar > end)
             continue;
-        }
         
         CharInfo curCharInfo = chars[curChar];
         dx += curCharInfo.advanceX;
@@ -135,7 +131,6 @@ int Base::Font::stringGetWidth(string text)
     
     return width;
 }
-
 
 int Base::Font::stringGetHeight(string text)
 {

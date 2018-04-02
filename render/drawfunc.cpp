@@ -8,7 +8,6 @@ void Base::drawBegin()
     resetDrawingArea();
 }
 
-
 void Base::setDrawingArea(ScreenArea area)
 {
     glEnable(GL_SCISSOR_TEST);
@@ -16,12 +15,10 @@ void Base::setDrawingArea(ScreenArea area)
     glScissor(area.pos.x, appHandler->mainWindow->height - (area.pos.y + area.height), area.width, area.height);
 }
 
-
 Base::ScreenArea Base::getDrawingArea()
 {
     return appHandler->drawingArea;
 }
-
 
 void Base::resetDrawingArea()
 {
@@ -29,18 +26,15 @@ void Base::resetDrawingArea()
     glDisable(GL_SCISSOR_TEST);
 }
 
-
 void Base::setDrawingAlpha(float alpha)
 {
     appHandler->drawingAlpha = alpha;
 }
 
-
 float Base::getDrawingAlpha()
 {
     return appHandler->drawingAlpha;
 }
-
 
 void Base::drawText(string text, ScreenPos pos, Color color, FontStyle fontStyle)
 {
@@ -56,15 +50,15 @@ void Base::drawText(string text, ScreenPos pos, Color color, FontStyle fontStyle
     {
         uchar curChar = text[c];
 
-        if (curChar == '\n' || curChar == '\r') {
+        if (curChar == '\n' || curChar == '\r')
+        {
             charPos.x = 0;
             charPos.y += font->height * LINE_SPACE;
             continue;
         }
 
-        if (curChar < font->start || curChar > font->end) {
+        if (curChar < font->start || curChar > font->end)
             continue;
-        }
 
         CharInfo curCharInfo = font->chars[curChar];
 
@@ -105,7 +99,6 @@ void Base::drawText(string text, ScreenPos pos, Color color, FontStyle fontStyle
                                         font->texture, Color(color, appHandler->drawingAlpha));
 }
 
-
 void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX, TextAlignY alignY, Color color, FontStyle fontStyle)
 {
     // Vertical alignment
@@ -113,40 +106,38 @@ void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX, TextAl
     {
         int height = stringGetHeight(text, fontStyle);
         
-        if (alignY == MIDDLE) {
+        if (alignY == MIDDLE)
             pos.y -= height / 2;
-        }
-        else if (alignY == BOTTOM) {
+
+        else if (alignY == BOTTOM)
             pos.y -= height;
-        }
     }
         
     // Horizontal alignment
-    if (alignX == LEFT) {
+    if (alignX == LEFT)
         drawText(text, pos, color, fontStyle);
-    }
-    else {
+    else
+    {
         string_list lines = stringSplit(text, "\n");
         for (string line : lines)
         {
             int width = stringGetWidth(line, fontStyle);
             
-            if (alignX == CENTER) {
+            if (alignX == CENTER)
                 pos.x -= width / 2;
-            }
-            else if (alignX == RIGHT) {
+
+            else if (alignX == RIGHT)
                 pos.x -= width;
-            }
             
             drawText(line, pos, color, fontStyle);
         }
     }
 }
 
-
 void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endIndex, Color color, Color selectColor, Color selectTextColor, FontStyle fontStyle)
 {
-    if (startIndex == endIndex) {
+    if (startIndex == endIndex)
+    {
         drawText(text, pos, color, fontStyle);
         return;
     }
@@ -227,9 +218,8 @@ void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endI
             continue;
         }
 
-        if (curChar < font->start || curChar > font->end) {
+        if (curChar < font->start || curChar > font->end)
             continue;
-        }
 
         CharInfo curCharInfo = font->chars[curChar];
 
@@ -293,9 +283,8 @@ void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endI
         }
     }
                  
-    for (int t = 0; t < selectedLines * 6; t++) {
+    for (int t = 0; t < selectedLines * 6; t++)
         selectTexCoordData[t] = { 0, 0 };
-    }
 
     Mat4x4 mat = appHandler->mainWindow->ortho *
                  Mat4x4::translate({ pos.x, pos.y, 0 });
@@ -308,12 +297,10 @@ void Base::drawTextSelected(string text, ScreenPos pos, int startIndex, int endI
                                         font->texture, Color(selectTextColor, appHandler->drawingAlpha));
 }
 
-
 void Base::drawImage(string name, ScreenPos pos, Color color, float rotation, Vec2 scale)
 {
     drawImage((Image*)appHandler->resourceHandler->find(name)->loaded, pos, color, rotation, scale);
 }
-
 
 void Base::drawImage(Image* image, ScreenPos pos, Color color, float rotation, Vec2 scale)
 {
@@ -340,12 +327,10 @@ void Base::drawImage(Image* image, ScreenPos pos, Color color, float rotation, V
                                         GL_TRIANGLE_STRIP);
 }
 
-
 void Base::drawSubImage(string name, int subImage, ScreenPos pos, Color color, float rotation, Vec2 scale)
 {
     drawSubImage((Image*)appHandler->resourceHandler->find(name)->loaded, subImage, pos, color, rotation, scale);
 }
-
 
 void Base::drawSubImage(Image* image, int subImage, ScreenPos pos, Color color, float rotation, Vec2 scale)
 {
@@ -376,7 +361,6 @@ void Base::drawSubImage(Image* image, int subImage, ScreenPos pos, Color color, 
                                         GL_TRIANGLE_STRIP);
 }
 
-
 void Base::drawBox(ScreenArea box, Color color, bool outline, int outlineThickness)
 {
     ScreenPos& pos = box.pos;
@@ -390,16 +374,14 @@ void Base::drawBox(ScreenArea box, Color color, bool outline, int outlineThickne
     
     // No texture data (solid color texture)
     Vec2 texCoordData[5];
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
         texCoordData[i] = { 0, 0 };
-    }
 
     glLineWidth(outlineThickness);
     appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 5,
                                         appHandler->solidColor->texture, Color(color, appHandler->drawingAlpha),
                                         outline ? GL_LINE_STRIP : GL_TRIANGLE_FAN);
 }
-
 
 void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edgeTopLeft, bool edgeTopRight, bool edgeBottomRight, bool edgeBottomLeft)
 {
@@ -421,67 +403,63 @@ void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edge
     posData[i++] = { pos.x + box.width / 2, pos.y + box.height / 2, 0 };
     
     // Top right
-    if (edgeTopLeft) {
+    if (edgeTopLeft)
+    {
         posData[i++] = { pos.x, pos.y + edgeHeight, 0 };
         posData[i++] = { pos.x + edgeWidth, pos.y + edgeHeight, 0 };
         posData[i++] = { pos.x + edgeWidth, pos.y, 0 };
         drawImage(edgeImage, { pos.x + edgeWidth, pos.y + edgeHeight }, color, 180.f);
     }
-    else {
+    else
         posData[i++] = { pos.x, pos.y, 0 };
-    }
     
     // Top left
-    if (edgeTopRight) {
+    if (edgeTopRight)
+    {
         posData[i++] = { pos.x + box.width - edgeWidth, pos.y, 0 };
         posData[i++] = { pos.x + box.width - edgeWidth, pos.y + edgeHeight, 0 };
         posData[i++] = { pos.x + box.width, pos.y + edgeHeight, 0 };
         drawImage(edgeImage, { pos.x + box.width - edgeWidth, pos.y + edgeHeight }, color, -90.f);
     }
-    else {
+    else
         posData[i++] = { pos.x + box.width, pos.y, 0 };
-    }
     
     // Bottom left
-    if (edgeBottomRight) {
+    if (edgeBottomRight)
+    {
         posData[i++] = { pos.x + box.width, pos.y + box.height - edgeHeight, 0 };
         posData[i++] = { pos.x + box.width - edgeWidth, pos.y + box.height - edgeHeight, 0 };
         posData[i++] = { pos.x + box.width - edgeWidth, pos.y + box.height, 0 };
         drawImage(edgeImage, { pos.x + box.width - edgeWidth, pos.y + box.height - edgeHeight }, color, 0.f);
     }
-    else {
+    else
         posData[i++] = { pos.x + box.width, pos.y + box.height, 0 };
-    }
     
     // Bottom right
-    if (edgeBottomLeft) {
+    if (edgeBottomLeft)
+    {
         posData[i++] = { pos.x + edgeWidth, pos.y + box.height, 0 };
         posData[i++] = { pos.x + edgeWidth, pos.y + box.height - edgeHeight, 0 };
         posData[i++] = { pos.x, pos.y + box.height - edgeHeight, 0 };
         drawImage(edgeImage, { pos.x + edgeWidth, pos.y + box.height - edgeHeight }, color, 90.f);
     }
-    else {
+    else
         posData[i++] = { pos.x, pos.y + box.height, 0 };
-    }
     
     // Final
-    if (edgeTopLeft) {
+    if (edgeTopLeft)
         posData[i++] = { pos.x, pos.y + edgeHeight, 0 };
-    }
-    else {
+    else
         posData[i++] = { pos.x, pos.y, 0 };
-    }
     
     // No texture data (solid color texture)
-    for (int i = 0; i < numVertex; i++) {
+    for (int i = 0; i < numVertex; i++)
         texCoordData[i] = { 0, 0 };
-    }
     
     appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, numVertex,
                                         appHandler->solidColor->texture, Color(color, appHandler->drawingAlpha),
                                         GL_TRIANGLE_FAN);
 }
-
 
 void Base::drawLine(ScreenPos start, ScreenPos end, Color color, int thickness)
 {

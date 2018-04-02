@@ -6,7 +6,6 @@
 
 namespace Base
 {
-
     /* 3D vector */
     struct Vec3 
     {
@@ -19,12 +18,10 @@ namespace Base
             x = y = z = 0.f;
         }
 
-
         Vec3(float x)
         {
             this->x = y = z = x;
         }
-
 
         Vec3(float x, float y, float z)
         {
@@ -33,14 +30,12 @@ namespace Base
             this->z = z;
         }
 
-
         Vec3(int x, int y, int z)
         {
             this->x = x;
             this->y = y;
             this->z = z;
         }
-
 
         Vec3(float x[3])
         {
@@ -49,14 +44,12 @@ namespace Base
             this->z = x[2];
         }
 
-
         inline Vec3(const Vec3& other)
         {
             x = other.x;
             y = other.y;
             z = other.z;
         }
-
 
         inline Vec3& operator=(const Vec3& other)
         {
@@ -66,14 +59,12 @@ namespace Base
             return *this;
         }
 
-
         //// Functions ////
 
         static inline float length(const Vec3& a)
         {
             return sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
         }
-
 
         static inline Vec3 normalize(const Vec3& a)
         {
@@ -84,18 +75,15 @@ namespace Base
             return Vec3(a.x / len, a.y / len, a.z / len);
         }
 
-
         static inline float distance(const Vec3& a, const Vec3& b)
         {
             return length(Vec3(a.x - b.x, a.y - b.y, a.z - b.z));
         }
 
-
         static inline float dot(const Vec3& a, const Vec3& b)
         {
             return a.x * b.x + a.y * b.y + a.z * b.z;
         }
-
 
         /* TODO
         static inline Vec3 cross(const Vec3& a, const Vec3& b)
@@ -103,12 +91,10 @@ namespace Base
             return embree::cross(a.eVec, b.eVec);
         }
 
-
         static inline Vec3 reflect(const Vec3& incidence, const Vec3& normal)
         {
             return embree::reflect(incidence.eVec, normal.eVec);
         }
-
 
         static inline Vec3 refract(const Vec3& incidence, const Vec3& normal, const float& ior)
         {
@@ -133,14 +119,11 @@ namespace Base
 
         }
 
-
         static inline Vec3 rotate(const Vec3& vec, const Vec3& around, float angle)
         {
             return embree::xfmVector(embree::AffineSpace3fa::rotate(around.eVec, embree::deg2rad(angle)), vec.eVec);
         }*/
-
     };
-
 
     //// Unary operators ////
 
@@ -149,12 +132,10 @@ namespace Base
         return Vec3(-a.x, -a.y, -a.z);
     }
 
-
     inline std::ostream& operator << (std::ostream& cout, const Vec3& a)
     {
         return cout << "(" << a.x << "," << a.y << "," << a.z << ")" << std::endl;
     }
-
 
     //// Binary operators ////
 
@@ -163,7 +144,6 @@ namespace Base
         return Vec3(a.x + b.x, a.y + b.y, a.z + b.z);
     }
 
-
     inline void operator += (Vec3& a, const Vec3& b)
     {
         a.x += b.x;
@@ -171,12 +151,10 @@ namespace Base
         a.z += b.z;
     }
 
-
     inline Vec3 operator - (const Vec3& a, const Vec3& b)
     {
         return Vec3(a.x - b.x, a.y - b.y, a.z - b.z); 
     }
-
 
     inline void operator -= (Vec3& a, const Vec3& b)
     {
@@ -185,18 +163,15 @@ namespace Base
         a.z -= b.z;
     }
 
-
     inline Vec3 operator * (const float& a, const Vec3& b)
     {
         return Vec3(a * b.x, a * b.y, a * b.z);
     }
 
-
     inline Vec3 operator * (const Vec3& a, const float& b)
     {
         return Vec3(b * a.x, b * a.y, b * a.z);
     }
-
 
     inline void operator *= (Vec3& a, const float& b)
     {
@@ -205,7 +180,6 @@ namespace Base
         a.z *= b;
     }
 
-
     //// Comparison operators ////
 
     inline bool operator == (const Vec3& a, const Vec3& b)
@@ -213,10 +187,8 @@ namespace Base
         return (a.x == b.x && a.y == b.y && a.z == b.z);
     }
 
-
     inline bool operator != (const Vec3& a, const Vec3& b)
     {
         return !(a == b);
     }
-
 }

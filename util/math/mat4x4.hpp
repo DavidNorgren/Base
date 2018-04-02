@@ -6,7 +6,6 @@
 
 namespace Base
 {
-
     /* 4x4 Matrix */
     struct Mat4x4
     {
@@ -23,7 +22,6 @@ namespace Base
             e[3] = 0.f; e[7] = 0.f; e[11] = 0.f; e[15] = 1.f;
         }
 
-
         Mat4x4(float x1, float y1, float z1, float w1,
                float x2, float y2, float z2, float w2,
                float x3, float y3, float z3, float w3,
@@ -35,13 +33,11 @@ namespace Base
             e[3] = x4; e[7] = y4; e[11] = z4; e[15] = w4;
         }
 
-
         inline Mat4x4(const Mat4x4& other)
         {
             for (int i = 0; i < 16; i++)
                 e[i] = other.e[i];
         }
-
 
         inline Mat4x4& operator=(const Mat4x4& other)
         {
@@ -49,7 +45,6 @@ namespace Base
                 e[i] = other.e[i];
             return *this;
         }
-
 
         //// Functions ////
 
@@ -63,7 +58,6 @@ namespace Base
                 0.f, 0.f, 0.f, 1.f
             );
         }
-
 
         // Builds a rotation matrix around an axis.
         static inline Mat4x4 rotate(const Vec3& around, float angle)
@@ -79,13 +73,12 @@ namespace Base
             );*/
             // TODO: Work for any angle
             return Mat4x4(
-		dcos(angle), -dsin(angle), 0.f, 0.f,
-		dsin(angle), dcos(angle), 0.f, 0.f,
-		0.f, 0.f, 1.f, 0.f,
-		0.f, 0.f, 0.f, 1.f
+                dcos(angle), -dsin(angle), 0.f, 0.f,
+                dsin(angle), dcos(angle), 0.f, 0.f,
+                0.f, 0.f, 1.f, 0.f,
+                0.f, 0.f, 0.f, 1.f
             );
         }
-
 
         // Builds a scaling matrix.
         static inline Mat4x4 scale(const Vec3& s)
@@ -98,7 +91,6 @@ namespace Base
             );
         }
 
-
         // Builds an orthographic matrix.
         static inline Mat4x4 ortho(float left, float right, float bottom, float top, float znear, float zfar)
         {
@@ -109,7 +101,6 @@ namespace Base
                 0.f, 0.f, 0.f, 1.f
             );
         }
-
 
         // Builds a perspective matrix.
         static inline Mat4x4 perspective(float tFov, float ratio, float znear, float zfar)
@@ -123,7 +114,6 @@ namespace Base
             );
         }
 
-
         // Builds a view matrix from a x, y and z axis.
         static inline Mat4x4 view(const Vec3& xaxis, const Vec3& yaxis, const Vec3& zaxis)
         {
@@ -136,7 +126,6 @@ namespace Base
         }
     };
 
-
     //// Unary operators ////
 
     inline std::ostream& operator << (std::ostream& cout, const Mat4x4& a)
@@ -144,14 +133,11 @@ namespace Base
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 4; j++)
-            {
                 cout << a.e[j * 4 + i] << (j < 3 ? "," : "");
-            }
             cout << std::endl;
         }
         return cout;
     }
-
 
     //// Binary operators ////
 
@@ -165,14 +151,11 @@ namespace Base
                 product.e[j * 4 + i] = 0.f;
 
                 for (int k = 0; k < 4; k++)
-                {
                     product.e[j * 4 + i] += a.e[k * 4 + i] * b.e[j * 4 + k];
-                }
             }
         }
         return product;
     }
-
 
     inline Vec3 operator * (const Mat4x4& a, const Vec3& b)
     {
@@ -183,10 +166,8 @@ namespace Base
         );
     }
 
-
     inline void operator *= (Mat4x4& a, const Mat4x4& b)
     {
         a = a * b;
     }
-
 }

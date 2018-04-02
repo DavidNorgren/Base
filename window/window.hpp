@@ -10,10 +10,8 @@
 #include "util/stringfunc.hpp"
 #include "window/screenpos.hpp"
 
-
 namespace Base
 {
-    
     /* Opens and manages a resizable window. */
     class Window
     {
@@ -67,5 +65,4 @@ namespace Base
             std::function<void()> keyEventFunc;
             Mat4x4 ortho;
     };
-
 }

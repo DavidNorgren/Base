@@ -2,11 +2,24 @@
  * 
  *  Base - Collection of base functionality for awesome projects
  * 
- *  OpenGL window, drawing functions, resources, files, shaders,
- *  fonts, images, vector and matrix math, dialogues, date, strings,
- *  zip/unzip, mouse, keyboard
+ *  - OpenGL window
+ *  - Drawing functions
+ *  - Audio playback (TODO)
+ *  - Audio/Video generation (TODO)
+ *  - HTTP (TODO)
+ *  - Embedded resources
+ *  - File handling
+ *  - Shaders
+ *  - Fonts
+ *  - Images
+ *  - Vector and matrix math
+ *  - Dialogues (WIP)
+ *  - Date (TODO)
+ *  - Strings
+ *  - Zip/Unzip (WIP)
+ *  - Mouse/Keyboard input
  * 
- *  Author: David @ www.stuffbydavid.com
+ *  Author: David Norgren @ www.stuffbydavid.com
  * 
  */
 

@@ -17,10 +17,8 @@
 #include "util/stringfunc.hpp"
 #include "file/filefunc.hpp"
 
-
 namespace Base
 {
-    
     /* Shows a file dialog for opening a file, starting at the given location ("" for last visited).
        Returns a list of the files selected. Use filters to select specific formats only. */
     wstring_list dialogOpenFile(wstring title, wstring location, wstring_list filters, bool multiSelect = false);
@@ -28,5 +26,4 @@ namespace Base
     /* Shows a file dialog for saving a file, starting at the given location ("" for last visited).
        Use filters to select specific formats only. */
     wstring dialogSaveFile(wstring title, wstring location, wstring_list filters);
-
 }

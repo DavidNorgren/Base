@@ -15,14 +15,13 @@
 
 namespace Base
 {
-    
     struct CharInfo
     {
         float width, height, left, top, advanceX, advanceY, mapX;
     };
 
-    class Font {
-
+    class Font
+    {
         public:
             /* Load a new font from a file. */
             Font(string filename, uint size, uint start, uint end);
@@ -39,7 +38,5 @@ namespace Base
 
         private:
             void load(FT_Face& face);
-
     };
-    
 }

@@ -19,7 +19,6 @@
 
 namespace Base
 {
-    
     /* Handles an OpenGL application. Used as a parent for the project class. */
     class AppHandler
     {
@@ -49,7 +48,6 @@ namespace Base
             ScreenArea drawingArea;
             Image* solidColor;
     };
-
 }
 
 extern Base::AppHandler* appHandler;

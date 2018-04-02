@@ -6,7 +6,6 @@
 
 namespace Base
 {
-
     /* Used to define an area on the screen. */
     struct ScreenArea
     {
@@ -31,5 +30,4 @@ namespace Base
     {
         return std::cout << "({ " << a.pos.x << "," << a.pos.y << " }," << a.width << "," << a.height << ")" << std::endl;
     }
-
 }
