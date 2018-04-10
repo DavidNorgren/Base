@@ -2,21 +2,22 @@
  * 
  *  Base - Collection of base functionality for awesome projects
  * 
- *  - OpenGL window
+ *  - OpenGL windows
  *  - Drawing functions
- *  - Audio playback (TODO)
- *  - Audio/Video generation (TODO)
- *  - HTTP (TODO)
+ *  - Audio playbac
+ *  - Audio/Video generation
+ *  - HTTP
  *  - Embedded resources
- *  - File handling
+ *  - Filesystem operations
+ *  - JSON in/out
  *  - Shaders
  *  - Fonts
  *  - Images
  *  - Vector and matrix math
- *  - Dialogues (WIP)
- *  - Date (TODO)
+ *  - Dialogues
+ *  - Date
  *  - Strings
- *  - Zip/Unzip (WIP)
+ *  - Zip/Unzip
  *  - Mouse/Keyboard input
  * 
  *  Author: David Norgren @ www.stuffbydavid.com
@@ -26,6 +27,7 @@
 #pragma once
 
 #include "file/filefunc.hpp"
+#include "file/json.hpp"
 #include "file/resourcehandler.hpp"
 #include "file/zipfunc.hpp"
 #include "input/keyboardfunc.hpp"

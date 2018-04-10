@@ -15,7 +15,6 @@
 
 #include "util/stringfunc.hpp"
 
-
 namespace Base
 {
     /* Represents a file stored in memory. */
