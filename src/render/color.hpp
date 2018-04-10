@@ -4,13 +4,13 @@
 
 #include "util/math/mathfunc.hpp"
 
-#define COLOR_BLACK     Color(0.f)
-#define COLOR_WHITE     Color(1.f)
-#define COLOR_RED       Color(1.f, 0.f, 0.f)
-#define COLOR_LIME      Color(0.f, 1.f, 0.f)
-#define COLOR_BLUE      Color(0.f, 0.f, 1.f)
-#define COLOR_YELLOW    Color(1.f, 1.f, 0.f)
-#define COLOR_GREEN     Color(0.f, 0.8f, 0.f)
+#define COLOR_BLACK     Base::Color(0.f)
+#define COLOR_WHITE     Base::Color(1.f)
+#define COLOR_RED       Base::Color(1.f, 0.f, 0.f)
+#define COLOR_LIME      Base::Color(0.f, 1.f, 0.f)
+#define COLOR_BLUE      Base::Color(0.f, 0.f, 1.f)
+#define COLOR_YELLOW    Base::Color(1.f, 1.f, 0.f)
+#define COLOR_GREEN     Base::Color(0.f, 0.8f, 0.f)
 
 
 namespace Base

@@ -3,11 +3,11 @@
 #include "render/shader.hpp"
 
 
-Base::Shader::Shader(wstring filename, std::function<void(GLuint)> setup)
+Base::Shader::Shader(string filename, std::function<void(GLuint)> setup)
 {
-    name = wstringToString(filename);
+    name = filename;
     this->setup = setup;
-    load(wstringToString(fileGetContents(filename)));
+    load(fileGetContents(filename));
 }
 
 Base::Shader::Shader(File* file, std::function<void(GLuint)> setup)
@@ -25,7 +25,7 @@ void Base::Shader::load(string source)
     glGenBuffers(1, &vbo);
     
     // Split the source code by the comments into a Vertex and Fragment shader
-    string_list sourceSplit = stringSplit(stringReplace(source, "\r\n", "\n"), "// Fragment\n");
+    std::vector<string> sourceSplit = stringSplit(stringReplace(source, "\r\n", "\n"), "// Fragment\n");
     string vertexSource = sourceSplit[0];
     string fragmentSource = sourceSplit[1];
     

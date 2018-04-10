@@ -29,13 +29,13 @@ int getEnvironment()
 
 #endif
 
-wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list filters, bool multiSelect)
+std::vector<string> Base::dialogOpenFile(string title, string location, std::vector<string> filters, bool multiSelect)
 {
-    wstring_list selFiles;
-
+    std::vector<string> selFiles;
+/*
 #ifdef _WIN32 // Windows
 	
-    wstring filterString = L"", defaultExt = stringSplit(filters[1], L";")[0];
+    string filterString = "", defaultExt = stringSplit(filters[1], ";")[0];
     wchar_t buf[MAX_MULTIPLE * MAX_FILENAME];
     OPENFILENAMEW ofn;
 
@@ -48,8 +48,8 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
 
     // Generate filter string
     for (uint i = 0; i < filters.size(); i++)
-        filterString += filters[i] + L'\0';
-    filterString += L'\0';
+        filterString += filters[i] + '\0';
+    filterString += '\0';
 
     ofn.lpstrFilter = &filterString[0];
     ofn.nFilterIndex = 0;
@@ -64,25 +64,25 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
     ofn.nMaxFileTitle = MAX_FILENAME + MAX_EXT;
     ofn.lpstrCustomFilter = NULL;
     ofn.lpstrDefExt = NULL;
-    if (defaultExt != L".*")
+    if (defaultExt != ".*")
         ofn.lpstrDefExt = &defaultExt[0];
     
     if (!GetOpenFileNameW(&ofn))
         return selFiles; // Cancel
     
-    if (buf[wcslen(buf) + 1] == L'\0') // Single file
+    if (buf[wcslen(buf) + 1] == '\0') // Single file
         selFiles.push_back(buf);
     else
     {
         // Buffer starts with the directory, then each file (short) separated by 0. Last one ends with 00.
-        wstring dir = buf;
+        string dir = buf;
         wchar_t *p = buf;
         do
         {
             p += wcslen(p) + 1;
-            selFiles.push_back(dir + L"\\" + p);
+            selFiles.push_back(dir + "\\" + p);
         }
-        while (*(p + wcslen(p) + 1) != L'\0');
+        while (*(p + wcslen(p) + 1) != '\0');
     }
 
 #else // Mac, Linux
@@ -100,7 +100,7 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
             command = "kdialog --getopenfilename";
 
             if (!location.empty())
-                command += wstringToString(location);
+                command += stringToString(location);
             else
                 command += " :";
             
@@ -111,14 +111,14 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
                 command += " \"";
 
                 for (int i = 1; i < filters.size(); i += 2)
-                    command += stringReplace(wstringToString(filters[i]), ";", " ") + " ";
+                    command += stringReplace(stringToString(filters[i]), ";", " ") + " ";
                 
                 command += "|";
                 for (int i = 0; i < filters.size(); i += 2)
                 {
                     if (i > 0)
                         command += ", ";
-                    command += stringEscapeQuotes(wstringToString(filters[i]));
+                    command += stringEscapeQuotes(stringToString(filters[i]));
                 }
 
                 command += "\"";
@@ -152,12 +152,12 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
 
                 for (int i = 1; i < filters.size(); i += 2)
                 {
-                    wstring_list filterList = stringSplit(filters[i], ";");
+                    std::vector<string> filterList = stringSplit(filters[i], ";");
                     for (int j = 0; j < filterList.size(); j++)
                     {
                         if (filterN++ > 0)
                             command += ", ";
-                        command += "\"" + stringReplace(wstringToString(filterList[j]), "*", "public") + "\"";
+                        command += "\"" + stringReplace(stringToString(filterList[j]), "*", "public") + "\"";
                     }
                 }
 
@@ -165,10 +165,10 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
             }
 
             if (!title.empty())
-                command += " with prompt \"" + stringEscapeQuotes(wstringToString(title)) + "\"";
+                command += " with prompt \"" + stringEscapeQuotes(stringToString(title)) + "\"";
             
             if (!location.empty())
-                command += " default location \"" + wstringToString(location) + "\"";
+                command += " default location \"" + stringToString(location) + "\"";
             
             if (multiSelect)
             {
@@ -201,24 +201,25 @@ wstring_list Base::dialogOpenFile(wstring title, wstring location, wstring_list 
     while (fgets(p, MAX_FILENAME, f) != NULL)
     {
         *(p + strlen(p) - 1) = '\0';
-        selFiles.push_back(stringToWstring(p));
+        selFiles.push_back(stringTostring(p));
         p += strlen(p);
     }
 
     pclose(f);
 
 #endif
-
+*/
     return selFiles;
 }
 
-wstring Base::dialogSaveFile(wstring title, wstring location, wstring_list filters)
+string Base::dialogSaveFile(string title, string location, std::vector<string> filters)
 {
-    wstring selFile;
-
+    
+    string selFile;
+/*
 #ifdef _WIN32
 
-    wstring filterString = L"", defaultExt = stringSplit(filters[1], L";")[0];
+    string filterString = "", defaultExt = stringSplit(filters[1], ";")[0];
     wchar_t buf[MAX_FILENAME];
     OPENFILENAMEW ofn;
 
@@ -231,8 +232,8 @@ wstring Base::dialogSaveFile(wstring title, wstring location, wstring_list filte
 
     // Generate filter string
     for (uint i = 0; i < filters.size(); i++)
-        filterString += filters[i] + L'\0';
-    filterString += L'\0';
+        filterString += filters[i] + '\0';
+    filterString += '\0';
 
     ofn.lpstrFilter = &filterString[0];
     ofn.nFilterIndex = 0;
@@ -245,7 +246,7 @@ wstring Base::dialogSaveFile(wstring title, wstring location, wstring_list filte
     ofn.nMaxFileTitle = MAX_FILENAME + MAX_EXT;
     ofn.lpstrCustomFilter = NULL;
     ofn.lpstrDefExt = NULL;
-    if (defaultExt != L".*")
+    if (defaultExt != ".*")
         ofn.lpstrDefExt = &defaultExt[0];
     
     if (!GetSaveFileNameW(&ofn))
@@ -256,6 +257,6 @@ wstring Base::dialogSaveFile(wstring title, wstring location, wstring_list filte
 #else
 
 #endif
-
+*/
     return selFile;
 }

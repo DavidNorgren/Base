@@ -158,13 +158,12 @@ void Base::Window::open(std::function<void()> loopEventFunc,
     int lastTime = -1, frame = 0;
     fps = 0;
     
-    // Maximize
     maximize();
 
     while (!glfwWindowShouldClose(handle))
     {
         // Clear screen
-        glClearColor(0.f, 0.f, 0.f, 1.f);
+        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 
         // Call loop function

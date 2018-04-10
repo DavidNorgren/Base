@@ -9,6 +9,7 @@
 #include "util/math/mathfunc.hpp"
 #include "util/stringfunc.hpp"
 #include "window/screenpos.hpp"
+#include "render/color.hpp"
 
 namespace Base
 {
@@ -37,6 +38,9 @@ namespace Base
             /* Window size. */
             int width, height;
             float ratio;
+
+            /* Background. */
+            Color backgroundColor = COLOR_BLACK;
 
             /* Window render FPS. */
             int fps;

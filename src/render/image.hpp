@@ -14,7 +14,7 @@ namespace Base
     {
         public:
             /* Loads an image from a file. */
-            Image(wstring filename);
+            Image(string filename);
             Image(File* file);
 
             /* Generates an image from a solid color. */

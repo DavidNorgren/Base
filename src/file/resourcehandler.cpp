@@ -62,7 +62,7 @@ Base::ResourceHandler::ResourceHandler()
         zip_fclose(zf);
         
         // Process into a manageable format
-        wstring ext = fileGetExtension(stringToWstring(filename));
+        string ext = fileGetExtension(filename);
         if (ext == FONTS_EXT)
             f->loaded = (void*)new Font(f, FONTS_SIZE, FONTS_START, FONTS_END);
         else if (ext == SHADERS_EXT)

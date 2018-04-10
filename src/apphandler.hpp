@@ -12,10 +12,6 @@
 #include "window/window.hpp"
 #include "window/screenarea.hpp"
 
-#define DRAWING_FONT        "fonts/opensans.ttf"
-#define DRAWING_FONT_BOLD   "fonts/opensansbold.ttf"
-#define DRAWING_SHADER      "shaders/texture.glsl"
-
 
 namespace Base
 {
@@ -42,7 +38,6 @@ namespace Base
             // Resources
             ResourceHandler* resourceHandler;
             Font* drawingFont;
-            Font* drawingFontBold;
             Shader* drawingShader;
             float drawingAlpha = 1.f;
             ScreenArea drawingArea;

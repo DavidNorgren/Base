@@ -7,24 +7,20 @@ Base::ScreenPos Base::mousePos()
     return appHandler->mainWindow->mousePos;
 }
 
-
 Base::ScreenPos Base::mousePosPrevious()
 {
     return appHandler->mainWindow->mousePosPrevious;
 }
-
 
 Base::ScreenPos Base::mousePosClick()
 {
     return appHandler->mainWindow->mousePosClick;
 }
 
-
 Base::Vec2 Base::mouseMove()
 {
     return appHandler->mainWindow->mouseMove;
 }
-
 
 bool Base::mouseInBox(ScreenArea box)
 {
@@ -33,48 +29,40 @@ bool Base::mouseInBox(ScreenArea box)
          && mouse.y >= box.pos.y && mouse.y < box.pos.y + box.height);
 }
 
-
 bool Base::mouseLeftDown()
 {
     return appHandler->mainWindow->mouseDown[GLFW_MOUSE_BUTTON_LEFT];
 }
-
 
 bool Base::mouseLeftPressed()
 {
     return appHandler->mainWindow->mousePressed[GLFW_MOUSE_BUTTON_LEFT];
 }
 
-
 bool Base::mouseLeftReleased()
 {
     return appHandler->mainWindow->mouseReleased[GLFW_MOUSE_BUTTON_LEFT];
 }
-
 
 double Base::mouseLastClickDuration()
 {
     return appHandler->mainWindow->mouseLastClickDuration;
 }
 
-
 bool Base::mouseRightDown()
 {
     return appHandler->mainWindow->mouseDown[GLFW_MOUSE_BUTTON_RIGHT];
 }
-
 
 bool Base::mouseRightPressed()
 {
     return appHandler->mainWindow->mousePressed[GLFW_MOUSE_BUTTON_RIGHT];
 }
 
-
 bool Base::mouseRightReleased()
 {
     return appHandler->mainWindow->mouseReleased[GLFW_MOUSE_BUTTON_RIGHT];
 }
-
 
 void Base::mouseClear()
 {
@@ -87,7 +75,6 @@ void Base::mouseClear()
     }
     mouseSetCursor(ARROW);
 }
-
 
 void Base::mouseSetCursor(Cursor cursor)
 {

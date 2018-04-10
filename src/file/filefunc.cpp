@@ -1,19 +1,17 @@
 #include "file/filefunc.hpp"
 
 
-bool Base::fileExists(wstring filename)
+bool Base::fileExists(string filename)
 {
-    std::ifstream file(wstringToString(filename));
-    return (bool)file;
+	return boost::filesystem::exists(filename);
 }
 
-int Base::fileGetSize(wstring filename)
+int Base::fileGetSize(string filename)
 {
-    std::ifstream file(wstringToString(filename), std::ios::binary | std::ios::ate);
-    return file.tellg();
+    return boost::filesystem::file_size(filename);
 }
 
-wstring Base::fileGetName(wstring filename)
+string Base::fileGetName(string filename)
 {
     size_t pos = filename.find_last_of(SLASH);
 
@@ -23,7 +21,7 @@ wstring Base::fileGetName(wstring filename)
     return filename.substr(pos + 1, filename.size() - pos - 1);
 }
 
-wstring Base::fileGetPath(wstring filename)
+string Base::fileGetPath(string filename)
 {
     size_t pos = filename.find_last_of(SLASH);
 
@@ -33,7 +31,7 @@ wstring Base::fileGetPath(wstring filename)
     return filename.substr(0, pos + 1);
 }
 
-wstring Base::fileGetDirectory(wstring filename)
+string Base::fileGetDirectory(string filename)
 {
     size_t pos = filename.find_last_of(SLASH);
 
@@ -43,21 +41,21 @@ wstring Base::fileGetDirectory(wstring filename)
     return filename.substr(0, pos);
 }
 
-wstring Base::fileGetExtension(wstring filename)
+string Base::fileGetExtension(string filename)
 {
-    wstring fn = fileGetName(filename);
+    string fn = fileGetName(filename);
     size_t pos = fn.find_last_of(DOT);
 
     if (pos == string::npos)
-        return L"";
+        return "";
 
     return fn.substr(pos, fn.size() - pos);
 }
 
-wstring Base::fileSetExtension(wstring filename, wstring ext)
+string Base::fileSetExtension(string filename, string ext)
 {
-    wstring fn = fileGetName(filename);
-    wstring fp = fileGetPath(filename);
+    string fn = fileGetName(filename);
+    string fp = fileGetPath(filename);
     size_t pos = fn.find_last_of(DOT);
 
     if (pos != string::npos)
@@ -66,9 +64,9 @@ wstring Base::fileSetExtension(wstring filename, wstring ext)
     return fp + fn + ext;
 }
 
-wstring Base::fileGetContents(wstring filename)
+string Base::fileGetContents(string filename)
 {
-    std::ifstream file(wstringToString(filename));
+    std::ifstream file(filename);
     string line, contents = "";
     
     while (getline(file, line))
@@ -76,14 +74,14 @@ wstring Base::fileGetContents(wstring filename)
     
     file.close();
     
-    return stringToWstring(contents);
+    return contents;
 }
 
-bool Base::directoryExists(wstring directory)
+bool Base::directoryExists(string directory)
 {
     struct stat info;
     
-    if (stat(&wstringToString(directory)[0], &info) != 0)
+    if (stat(&directory[0], &info) != 0)
         return false;
 
     return (info.st_mode & S_IFDIR);

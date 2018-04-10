@@ -19,13 +19,18 @@ namespace Base
     class Shader
     {
         public:
-            /* Loads shader code from a file and compiles it.
-               The different shader types are separated in the file
-               with comments. */
-            Shader(wstring filename, std::function<void(GLuint)> setup = nullptr);
+            /*!
+             * Loads shader code from a file and compiles it.
+             * The different shader types are separated in the file
+             * with comments.
+             */
+            Shader(string filename, std::function<void(GLuint)> setup = nullptr);
             Shader(File* file, std::function<void(GLuint)> setup = nullptr);
 
             /* Selects the shader for usage */
+
+            /// <summary>Sorts the list to by the given column</summary>
+            /// <returns>Documentation of return type</returns>
             void select();
 
             /*!

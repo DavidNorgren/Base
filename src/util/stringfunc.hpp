@@ -8,12 +8,8 @@
 #include <stdlib.h>
 #include <iomanip>
 
-typedef std::string string;
-typedef std::wstring wstring;
-
-typedef std::vector<string> string_list;
-typedef std::vector<wstring> wstring_list;
-
+using std::string;
+using std::wstring;
 
 namespace Base
 {
@@ -31,8 +27,7 @@ namespace Base
     wstring stringToWstring(string wstr);
 
     /* Creates a list of all the substrings in str separated by sep. */
-    string_list stringSplit(string str, string sep);
-    wstring_list stringSplit(wstring wstr, wstring sep);
+    std::vector<string> stringSplit(string str, string sep);
     
     string stringSubstring(string str, int from, int length);
     string stringErase(string str, int from, int length);
@@ -41,17 +36,9 @@ namespace Base
 
     /* Replaces all occurrences of the given substring and returns the modified string. */
     string stringReplace(string str, string from, string to);
-    wstring stringReplace(wstring wstr, wstring from, wstring to);
 
     /* Returns the amount of occurrences of a substring. */
     int stringGetCount(string str, string sub, int index = 0);
-    int stringGetCount(wstring wstr, wstring sub, int index = 0);
-
-    /* Returns the width of a string when rendered. */
-    int stringGetWidth(string str, FontStyle fontStyle = NORMAL);
-
-    /* Returns the height of a string when rendered. */
-    int stringGetHeight(string str, FontStyle fontStyle = NORMAL);
 
     /* Converts a value into a string. */
     template<typename T> inline string toString(T val)

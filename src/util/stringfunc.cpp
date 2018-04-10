@@ -1,5 +1,4 @@
 #include "util/stringfunc.hpp"
-#include "apphandler.hpp"
 
 
 string Base::stringEscapeQuotes(string str)
@@ -23,10 +22,10 @@ wstring Base::stringToWstring(string str)
     return result;
 }
 
-string_list Base::stringSplit(string str, string sep)
+std::vector<string> Base::stringSplit(string str, string sep)
 {
     str += sep;
-    string_list result;
+    std::vector<string> result;
     string::size_type pos = str.find(sep);
     string::size_type lastPos = 0;
 
@@ -35,22 +34,6 @@ string_list Base::stringSplit(string str, string sep)
         result.push_back(str.substr(lastPos, pos - lastPos));
         lastPos = pos + sep.size();
         pos = str.find(sep, lastPos);
-    }
-    
-    return result;
-}
-
-wstring_list Base::stringSplit(wstring wstr, wstring sep)
-{
-    wstring_list result;
-    string::size_type lastPos = wstr.find_first_not_of(sep, 0);
-    string::size_type pos     = wstr.find_first_of(sep, lastPos);
-
-    while (wstring::npos != pos || wstring::npos != lastPos)
-    {
-        result.push_back(wstr.substr(lastPos, pos - lastPos));
-        lastPos = wstr.find_first_not_of(sep, pos);
-        pos = wstr.find_first_of(sep, lastPos);
     }
     
     return result;
@@ -69,21 +52,6 @@ string Base::stringReplace(string str, string from, string to)
     }
     
     return str;
-}
-
-wstring Base::stringReplace(wstring wstr, wstring from, wstring to)
-{
-    if (from.empty())
-        return wstr;
-    
-    size_t start_pos = 0;
-    while((start_pos = wstr.find(from, start_pos)) != wstring::npos)
-    {
-        wstr.replace(start_pos, from.length(), to);
-        start_pos += to.length();
-    }
-    
-    return wstr;
 }
 
 string Base::stringSubstring(string str, int from, int length)
@@ -121,32 +89,4 @@ int Base::stringGetCount(string str, string sub, int index)
     }
     
     return count;
-}
-
-int Base::stringGetCount(wstring wstr, wstring sub, int index)
-{
-    int count = 0;
-    size_t pos = wstr.find(sub, index);
-    
-    while(pos != string::npos)
-    {
-        count++;
-        pos = wstr.find(sub, pos + 1);
-    }
-    
-    return count;
-}
-
-int Base::stringGetWidth(string str, FontStyle fontStyle)
-{
-    return (fontStyle == NORMAL) ?
-            appHandler->drawingFont->stringGetWidth(str) :
-            appHandler->drawingFontBold->stringGetWidth(str);
-}
-
-int Base::stringGetHeight(string str, FontStyle fontStyle)
-{
-    return (fontStyle == NORMAL) ?
-            appHandler->drawingFont->stringGetHeight(str) :
-            appHandler->drawingFontBold->stringGetHeight(str);
 }

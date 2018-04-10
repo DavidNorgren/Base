@@ -2,6 +2,8 @@
 
 #include "apphandler.hpp"
 
+#define DRAWING_FONT    "fonts/opensans.ttf"
+#define DRAWING_SHADER  "shaders/texture.glsl"
 
 Base::AppHandler* appHandler;
 
@@ -38,7 +40,6 @@ Base::AppHandler::AppHandler()
     // Resources
     resourceHandler = new ResourceHandler();
     drawingFont = (Font*)resourceHandler->find(DRAWING_FONT)->loaded;
-    drawingFontBold = (Font*)resourceHandler->find(DRAWING_FONT_BOLD)->loaded;
     drawingShader = (Shader*)resourceHandler->find(DRAWING_SHADER)->loaded;
     solidColor = new Image(COLOR_WHITE, 1, 1);
 }

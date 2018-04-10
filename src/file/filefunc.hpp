@@ -1,12 +1,14 @@
 #pragma once
 
 #ifdef _WIN32
-    #define SLASH L"\\"
+    #define SLASH "\\"
 #else
-    #define SLASH L"/"
+    #define SLASH "/"
 #endif
 
-#define DOT L"."
+#define DOT "."
+
+#include <boost/filesystem.hpp>
 
 #include <fstream>
 #include <sys/stat.h>
@@ -26,29 +28,29 @@ namespace Base
     };
 
     /* Returns whether the given file exists. */
-    bool fileExists(wstring filename);
+    bool fileExists(string filename);
 
     /* Returns the size of the given file, in bytes. */
-    int fileGetSize(wstring filename);
+    int fileGetSize(string filename);
 
     /* Returns the name of the file, without the path. */
-    wstring fileGetName(wstring filename);
+    string fileGetName(string filename);
 
     /* Returns the path to the given file, including the final slash. */
-    wstring fileGetPath(wstring filename);
+    string fileGetPath(string filename);
 
     /* Returns the directory of the given file, not including the final slash. */
-    wstring fileGetDirectory(wstring filename);
+    string fileGetDirectory(string filename);
 
     /* Returns the extension of the file, including the leading dot. */
-    wstring fileGetExtension(wstring filename);
+    string fileGetExtension(string filename);
 
     /* Returns the filename with the new extension (extension must include the leading dot). */
-    wstring fileSetExtension(wstring filename, wstring ext);
+    string fileSetExtension(string filename, string ext);
 
     /* Returns the contents of the given text file. */
-    wstring fileGetContents(wstring filename);
+    string fileGetContents(string filename);
 
     /* Returns whether the given directory exists. */
-    bool directoryExists(wstring directory);
+    bool directoryExists(string directory);
 }

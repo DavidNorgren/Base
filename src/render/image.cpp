@@ -4,9 +4,9 @@
 #include "render/image.hpp"
 
 
-Base::Image::Image(wstring filename)
+Base::Image::Image(string filename)
 {
-    void *data = SOIL_load_image(&filename[0], &width, &height, 0, SOIL_LOAD_RGBA);
+    void *data = SOIL_load_image(&stringToWstring(filename)[0], &width, &height, 0, SOIL_LOAD_RGBA);
     load(data);
     SOIL_free_image_data((uchar*)data);
 }
