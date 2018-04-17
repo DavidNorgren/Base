@@ -1,4 +1,17 @@
+#include <boost/filesystem.hpp>
+#include <sys/stat.h>
+
+#include "common.hpp"
 #include "file/filefunc.hpp"
+#include "util/stringfunc.hpp"
+
+#ifdef _WIN32
+    #define SLASH "\\"
+#else
+    #define SLASH "/"
+#endif
+
+#define DOT "."
 
 
 EXPORT bool Base::fileExists(string filename)

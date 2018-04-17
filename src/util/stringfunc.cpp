@@ -1,3 +1,8 @@
+#include <sstream>
+#include <wchar.h>
+#include <iomanip>
+
+#include "common.hpp"
 #include "util/stringfunc.hpp"
 
 
@@ -22,10 +27,10 @@ EXPORT wstring Base::stringToWstring(string str)
     return result;
 }
 
-EXPORT std::vector<string> Base::stringSplit(string str, string sep)
+EXPORT list<string> Base::stringSplit(string str, string sep)
 {
     str += sep;
-    std::vector<string> result;
+    list<string> result;
     string::size_type pos = str.find(sep);
     string::size_type lastPos = 0;
 
@@ -89,4 +94,18 @@ EXPORT int Base::stringGetCount(string str, string sub, int index)
     }
     
     return count;
+}
+
+template<typename T> inline string toString(T val)
+{
+    std::stringstream ss;
+    ss << val;
+    return ss.str();
+}
+
+template<typename T> inline string toStringPrec(T val, int prec)
+{
+    std::stringstream ss;
+    ss << std::setprecision(prec) << val;
+    return ss.str();
 }

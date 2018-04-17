@@ -2,6 +2,7 @@
 
 #include "util/math/mathfunc.hpp"
 
+
 namespace Base
 {
     /* Used to represent a position on the screen. */

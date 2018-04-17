@@ -1,10 +1,10 @@
-#include <iostream>
-
+#include "common.hpp"
 #include "apphandler.hpp"
+
 
 Base::AppHandler* appHandler;
 
-EXPORT Base::AppHandler::AppHandler(void* resStart, size_t resSize)
+EXPORT Base::AppHandler::AppHandler(void* resData, uint resSize)
 {
     appHandler = this;
     
@@ -35,7 +35,7 @@ EXPORT Base::AppHandler::AppHandler(void* resStart, size_t resSize)
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     
     // Resources
-    resourceHandler = new ResourceHandler(resStart, resSize);
+    resourceHandler = new ResourceHandler(resData, resSize);
     drawingFont = (Font*)resourceHandler->find("fonts/opensans.ttf")->loaded;
     drawingShader = (Shader*)resourceHandler->find("shaders/texture.glsl")->loaded;
     solidColor = new Image(COLOR_WHITE, 1, 1);

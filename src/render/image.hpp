@@ -3,8 +3,7 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
-#include "util/stringfunc.hpp"
-#include "file/filefunc.hpp"
+#include "file/file.hpp"
 #include "render/color.hpp"
 
 

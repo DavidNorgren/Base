@@ -2,7 +2,6 @@
 
 #include "window/screenpos.hpp"
 
-#include <iostream>
 
 namespace Base
 {

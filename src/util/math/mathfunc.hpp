@@ -3,9 +3,6 @@
 #include <algorithm>
 #include <math.h>
 
-typedef unsigned int uint;
-typedef unsigned char uchar;
-
 
 namespace Base
 {

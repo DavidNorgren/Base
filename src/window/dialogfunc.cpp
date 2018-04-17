@@ -1,4 +1,13 @@
+#ifdef _WIN32
+    #include <Windows.h>
+#endif
+
+#include "common.hpp"
 #include "window/dialogfunc.hpp"
+#include "util/math/mathfunc.hpp"
+#include "util/stringfunc.hpp"
+#include "file/filefunc.hpp"
+
 
 #ifndef _WIN32
 
@@ -29,9 +38,9 @@ int getEnvironment()
 
 #endif
 
-EXPORT std::vector<string> Base::dialogOpenFile(string title, string location, std::vector<string> filters, bool multiSelect)
+EXPORT list<string> Base::dialogOpenFile(string title, string location, list<string> filters, bool multiSelect)
 {
-    std::vector<string> selFiles;
+    list<string> selFiles;
 /*
 #ifdef _WIN32 // Windows
 	
@@ -152,7 +161,7 @@ EXPORT std::vector<string> Base::dialogOpenFile(string title, string location, s
 
                 for (int i = 1; i < filters.size(); i += 2)
                 {
-                    std::vector<string> filterList = stringSplit(filters[i], ";");
+                    list<string> filterList = stringSplit(filters[i], ";");
                     for (int j = 0; j < filterList.size(); j++)
                     {
                         if (filterN++ > 0)
@@ -212,7 +221,7 @@ EXPORT std::vector<string> Base::dialogOpenFile(string title, string location, s
     return selFiles;
 }
 
-EXPORT string Base::dialogSaveFile(string title, string location, std::vector<string> filters)
+EXPORT string Base::dialogSaveFile(string title, string location, list<string> filters)
 {
     
     string selFile;

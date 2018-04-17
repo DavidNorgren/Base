@@ -12,6 +12,7 @@
 #include "window/window.hpp"
 #include "window/screenarea.hpp"
 
+
 namespace Base
 {
     /* Handles an OpenGL application. Used as a parent for the project class. */
@@ -19,7 +20,7 @@ namespace Base
     {
     protected:
         /* Setup OpenGL and load resources. */
-        EXPORT AppHandler(void* resStart = nullptr, size_t resSize = 0);
+        EXPORT AppHandler(void* resData = nullptr, uint resSize = 0);
 
         /* Called by the main window. Implemented by the child. */
         EXPORT virtual void loopEvent() = 0;

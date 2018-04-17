@@ -1,3 +1,4 @@
+#include "common.hpp"
 #include "input/keyboardfunc.hpp"
 #include "apphandler.hpp"
 

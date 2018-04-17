@@ -1,3 +1,4 @@
+#include "common.hpp"
 #include "file/json.hpp"
 
 
@@ -19,19 +20,30 @@ void Base::JsonFile::readRoot()
     column = 0;
     line = 1;
 
-    if (readCharacter() != Character::CURLY_BEGIN)
-        return;
-    
-    root = readObject();
+    try
+    {
+        if (readCharacter() != Character::CURLY_BEGIN)
+            throw JsonException("No root object found");
+        
+        root = readObject();
+    }
+    catch (JsonException& ex)
+    {
+        std::cout << "JSON Error: " << ex.what() << " at line " << line << ", column " << column << std::endl;
+    }
 }
 
 char Base::JsonFile::readCharacter()
 {
     // Check EOF
+    if (position > size)
+        throw JsonException("Unexpected end of file");
 
     do
     {
         lastChar = data[position++];
+
+        // Column and line counter
         if (lastChar == Character::TAB)
             column += 4;
         else if (lastChar == Character::NEW_LINE)
@@ -42,6 +54,7 @@ char Base::JsonFile::readCharacter()
         else
             column++;
     }
+    // Skip blank characters
     while (lastChar == Character::TAB ||
            lastChar == Character::SPACE ||
            lastChar == Character::NEW_LINE ||
@@ -53,23 +66,37 @@ char Base::JsonFile::readCharacter()
 
 string Base::JsonFile::readString()
 {
-    size_t stringStart = position;
+    uint stringStart = position;
 
     while (true)
     {
         // Check EOF
+        if (position > size)
+            throw JsonException("Unexpected end of file");
+            
         lastChar = data[position++];
         column++;
         
-        // End of string
+        // Check end of string
         if (lastChar == Character::QUOTE)
             break;
 
-        // Invalid linebreak
-        // Special character
+        // Check invalid linebreak
+        if (lastChar == Character::RETURN || lastChar == Character::NEW_LINE)
+            throw JsonException("Unexpected linebreak in string");
+
+        // Read special character
+        if (lastChar == Character::BACKSLASH)
+        {
+            // TODO
+        }
     }
 
-    return string(&data[stringStart], (position - stringStart) - 1);
+    uint stringEnd = position - 1;
+
+    readCharacter();
+
+    return string(&data[stringStart], stringEnd - stringStart);
 }
 
 Base::JsonObject* Base::JsonFile::readObject()
@@ -83,11 +110,20 @@ Base::JsonObject* Base::JsonFile::readObject()
 
         // Check Colon
         if (lastChar != Character::COLON)
-            break; // ERROR
+            throw JsonException("Expected :");
         
         readCharacter();
 
+        // Read value
         obj->values[name] = readAny();
+
+        // End of values
+        if (lastChar == Character::CURLY_END)
+            break;
+
+        // Look for value separator
+        if (lastChar != Character::COMMA)
+            throw JsonException("Expected ,");
     }
 
     return obj;
@@ -95,5 +131,15 @@ Base::JsonObject* Base::JsonFile::readObject()
 
 Base::JsonAny* Base::JsonFile::readAny()
 {
-    return 0;
+   /* if (lastChar == Character::CURLY_BEGIN)
+
+    else if (lastChar == Character::SQUARE_BEGIN)
+
+    else if (lastChar == Character::QUOTE)
+        return readString();
+    else if ((lastChar >= Character::NUM_0 && lastChar <= Character::NUM_9) || lastChar == Character::MINUS)
+    
+    else
+*/
+return 0;
 }

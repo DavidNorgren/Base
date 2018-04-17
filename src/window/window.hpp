@@ -1,7 +1,5 @@
 #pragma once
 
-#include <functional>
-
 #include "GLFW/glfw3.h"
 
 #include "util/math/vec2.hpp"
@@ -10,6 +8,7 @@
 #include "util/stringfunc.hpp"
 #include "window/screenpos.hpp"
 #include "render/color.hpp"
+
 
 namespace Base
 {
@@ -21,10 +20,10 @@ namespace Base
             EXPORT Window();
 
             /* Opens the window. */
-            EXPORT void open(std::function<void()> loopEventFunc,
-                      std::function<void()> mouseEventFunc = nullptr,
-                      std::function<void()> keyEventFunc = nullptr,
-                      std::function<void()> resizeEventFunc = nullptr);
+            EXPORT void open(function<void()> loopEventFunc,
+                             function<void()> mouseEventFunc = nullptr,
+                             function<void()> keyEventFunc = nullptr,
+                             function<void()> resizeEventFunc = nullptr);
 
             /* Sets the title of the window caption. */
             EXPORT void setTitle(string title);
@@ -64,9 +63,9 @@ namespace Base
             GLFWcursor* currentCursor;
 
             GLFWwindow* handle;
-            std::function<void()> loopEventFunc, resizeEventFunc;
-            std::function<void()> mouseEventFunc;
-            std::function<void()> keyEventFunc;
+            function<void()> loopEventFunc, resizeEventFunc;
+            function<void()> mouseEventFunc;
+            function<void()> keyEventFunc;
             Mat4x4 ortho;
     };
 }

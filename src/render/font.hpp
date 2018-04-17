@@ -1,14 +1,9 @@
 #pragma once
 
-#include "GL/glew.h"
-#include "GLFW/glfw3.h"
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
-#include "render/color.hpp"
-#include "util/math/mathfunc.hpp"
-#include "util/stringfunc.hpp"
-#include "file/resourcehandler.hpp"
+#include "file/file.hpp"
 
 #define LINE_SPACE  1.25f
 
@@ -33,7 +28,7 @@ namespace Base
 
             uint start, end, size;
             int width, height;
-            GLuint texture;
+            uint texture;
             CharInfo* chars;
 
         private:

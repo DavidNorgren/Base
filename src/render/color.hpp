@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-
 #include "util/math/mathfunc.hpp"
 
 #define COLOR_BLACK     Base::Color(0.f)

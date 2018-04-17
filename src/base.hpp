@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include "common.hpp"
 #include "file/filefunc.hpp"
 #include "file/json.hpp"
 #include "file/resourcehandler.hpp"

@@ -3,7 +3,6 @@
 #include "render/color.hpp"
 #include "render/image.hpp"
 #include "render/font.hpp"
-#include "util/stringfunc.hpp"
 #include "window/screenpos.hpp"
 #include "window/screenarea.hpp"
 

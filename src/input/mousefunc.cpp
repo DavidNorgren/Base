@@ -1,3 +1,4 @@
+#include "common.hpp"
 #include "input/mousefunc.hpp"
 #include "apphandler.hpp"
 

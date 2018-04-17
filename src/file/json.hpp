@@ -1,10 +1,15 @@
 #pragma once
-#include <map>
 
-#include "file/filefunc.hpp"
+#include "file/file.hpp"
+
 
 namespace Base
 {
+    struct JsonException : public std::logic_error
+    {
+        using std::logic_error::logic_error;
+    };
+
     struct JsonAny
     {
 
@@ -20,6 +25,13 @@ namespace Base
         float value;
     };
 
+    struct JsonString : public JsonAny
+    {
+        public:
+            JsonString(string value);
+            string value;
+    };
+
     struct JsonNull : public JsonAny
     {
 
@@ -27,14 +39,16 @@ namespace Base
 
     struct JsonArray : public JsonAny
     {
-        std::vector<JsonAny> values;
+        list<JsonAny> values;
         JsonAny get(int index);
     };
 
     struct JsonObject : public JsonAny
     {
-        std::map<string, JsonAny*> values;
-        JsonAny get(string name);
+        map<string, JsonAny*> values;
+        JsonObject* get(string name);
+       // JsonArray* get(string name);
+        
     };
 
     class JsonFile
@@ -50,7 +64,7 @@ namespace Base
             JsonObject* root;
             char* data;
             char lastChar;
-            size_t size, position, column, line;
+            uint size, position, column, line;
 
             void readRoot();
             char readCharacter();

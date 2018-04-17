@@ -1,9 +1,14 @@
-#include <iostream>
+#define ZIP_STATIC
+#include "zip.h"
 
+#include "common.hpp"
 #include "file/resourcehandler.hpp"
+#include "file/zipfunc.hpp"
+#include "file/filefunc.hpp"
 #include "render/font.hpp"
 #include "render/image.hpp"
 #include "render/shader.hpp"
+
 
 EXPORT Base::ResourceHandler::ResourceHandler(void* data, size_t size)
 {

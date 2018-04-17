@@ -1,31 +1,8 @@
 #pragma once
 
-#ifdef _WIN32
-    #define SLASH "\\"
-#else
-    #define SLASH "/"
-#endif
-
-#define DOT "."
-
-#include <boost/filesystem.hpp>
-
-#include <fstream>
-#include <sys/stat.h>
-
-#include "util/stringfunc.hpp"
 
 namespace Base
 {
-    /* Represents a file stored in memory. */
-    struct File
-    {
-        string name;
-        void* loaded;
-        char* rawData;
-        size_t size;
-    };
-
     /* Returns whether the given file exists. */
     EXPORT bool fileExists(string filename);
 

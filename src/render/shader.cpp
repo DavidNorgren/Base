@@ -1,16 +1,20 @@
-#include <fstream>
 
+//#include "GLFW/glfw3.h"
+
+#include "common.hpp"
 #include "render/shader.hpp"
+#include "file/filefunc.hpp"
+#include "util/stringfunc.hpp"
 
 
-Base::Shader::Shader(string filename, std::function<void(GLuint)> setup)
+Base::Shader::Shader(string filename, function<void(GLuint)> setup)
 {
     name = filename;
     this->setup = setup;
     load(fileGetContents(filename));
 }
 
-Base::Shader::Shader(File* file, std::function<void(GLuint)> setup)
+Base::Shader::Shader(File* file, function<void(GLuint)> setup)
 {
     name = file->name;
     this->setup = setup;
@@ -25,7 +29,7 @@ void Base::Shader::load(string source)
     glGenBuffers(1, &vbo);
     
     // Split the source code by the comments into a Vertex and Fragment shader
-    std::vector<string> sourceSplit = stringSplit(stringReplace(source, "\r\n", "\n"), "// Fragment\n");
+    list<string> sourceSplit = stringSplit(stringReplace(source, "\r\n", "\n"), "// Fragment\n");
     string vertexSource = sourceSplit[0];
     string fragmentSource = sourceSplit[1];
     

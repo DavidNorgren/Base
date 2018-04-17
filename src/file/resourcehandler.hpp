@@ -1,9 +1,6 @@
 #pragma once
 
-#include <map>
-
-#include "file/filefunc.hpp"
-#include "file/zipfunc.hpp"
+#include "file/file.hpp"
 
 #define FONTS_EXT       ".ttf"
 #define FONTS_SIZE      15 // TODO: Make filename.ttf.ini with settings (and load after processing resources)
@@ -17,11 +14,11 @@ namespace Base
 {
     class ResourceHandler
     {
-    public:
-        EXPORT ResourceHandler(void* data, size_t size);
-        EXPORT File* find(string name);
+        public:
+            EXPORT ResourceHandler(void* data, size_t size);
+            EXPORT File* find(string name);
 
-    private:
-        std::map<string, File*> resMap;
+        private:
+            map<string, File*> resMap;
     };
 }

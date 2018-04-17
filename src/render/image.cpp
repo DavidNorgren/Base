@@ -1,7 +1,10 @@
 #include "SOIL.h"
+#define GLEW_STATIC
+#include "GL/glew.h"
 
-#include "util/math/mathfunc.hpp"
+#include "common.hpp"
 #include "render/image.hpp"
+#include "util/stringfunc.hpp"
 
 
 Base::Image::Image(string filename)

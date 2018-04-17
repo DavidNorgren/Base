@@ -1,10 +1,5 @@
 #pragma once
 
-#include <time.h>
-#include <stdio.h>
-
-#include "util/stringfunc.hpp"
-
 
 namespace Base
 {

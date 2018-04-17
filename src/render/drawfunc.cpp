@@ -1,5 +1,7 @@
+#include "common.hpp"
 #include "apphandler.hpp"
 #include "render/drawfunc.hpp"
+#include "util/stringfunc.hpp"
 
 
 EXPORT void Base::drawBegin()

@@ -1,4 +1,11 @@
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
+
+#include "common.hpp"
 #include "render/font.hpp"
+#include "render/color.hpp"
+#include "file/resourcehandler.hpp"
+#include "util/stringfunc.hpp"
 
 
 Base::Font::Font(string filename, uint start, uint end, uint size)

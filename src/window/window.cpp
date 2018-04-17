@@ -1,6 +1,6 @@
+#include "common.hpp"
 #include "window/window.hpp"
 
-#include <iostream>
 
 Base::Window* w;
 
@@ -81,7 +81,7 @@ void windowKeyCallback(GLFWwindow* handle, int key, int scancode, int action, in
         w->keyEventFunc();
 }
 
-void windowCharModsCallback(GLFWwindow* handle, unsigned int codepoint, int mods)
+void windowCharModsCallback(GLFWwindow* handle, uint codepoint, int mods)
 {
     w->charPressed = (char)codepoint;
     if (w->keyEventFunc)
@@ -144,10 +144,10 @@ EXPORT Base::Window::Window()
     currentCursor = cursorArrow;
 }
 
-EXPORT void Base::Window::open(std::function<void()> loopEventFunc,
-                        std::function<void()> mouseEventFunc,
-                        std::function<void()> keyEventFunc,
-                        std::function<void()> resizeEventFunc)
+EXPORT void Base::Window::open(function<void()> loopEventFunc,
+                               function<void()> mouseEventFunc,
+                               function<void()> keyEventFunc,
+                               function<void()> resizeEventFunc)
 {
     this->loopEventFunc = loopEventFunc;
     this->mouseEventFunc = mouseEventFunc;
