@@ -17,11 +17,11 @@ namespace Base
 {
     class ResourceHandler
     {
-        public:
-            ResourceHandler();
-            File* find(string name);
+    public:
+        EXPORT ResourceHandler(void* data, size_t size);
+        EXPORT File* find(string name);
 
-        private:
-            std::map<string, File*> resMap;
+    private:
+        std::map<string, File*> resMap;
     };
 }

@@ -1,12 +1,12 @@
 #include "file/json.hpp"
 
 
-Base::JsonFile::JsonFile(string filename)
+EXPORT Base::JsonFile::JsonFile(string filename)
 {
 
 }
 
-Base::JsonFile::JsonFile(File* file)
+EXPORT Base::JsonFile::JsonFile(File* file)
 {
     data = file->rawData;
     size = file->size;
@@ -74,11 +74,26 @@ string Base::JsonFile::readString()
 
 Base::JsonObject* Base::JsonFile::readObject()
 {
+    JsonObject* obj = new JsonObject();
+
     while (readCharacter() != Character::CURLY_END)
     {
         string name = readString();
         std::cout << name << std::endl;
+
+        // Check Colon
+        if (lastChar != Character::COLON)
+            break; // ERROR
+        
+        readCharacter();
+
+        obj->values[name] = readAny();
     }
 
+    return obj;
+}
+
+Base::JsonAny* Base::JsonFile::readAny()
+{
     return 0;
 }

@@ -1,17 +1,17 @@
 #include "file/filefunc.hpp"
 
 
-bool Base::fileExists(string filename)
+EXPORT bool Base::fileExists(string filename)
 {
 	return boost::filesystem::exists(filename);
 }
 
-int Base::fileGetSize(string filename)
+EXPORT int Base::fileGetSize(string filename)
 {
     return boost::filesystem::file_size(filename);
 }
 
-string Base::fileGetName(string filename)
+EXPORT string Base::fileGetName(string filename)
 {
     size_t pos = filename.find_last_of(SLASH);
 
@@ -21,7 +21,7 @@ string Base::fileGetName(string filename)
     return filename.substr(pos + 1, filename.size() - pos - 1);
 }
 
-string Base::fileGetPath(string filename)
+EXPORT string Base::fileGetPath(string filename)
 {
     size_t pos = filename.find_last_of(SLASH);
 
@@ -31,7 +31,7 @@ string Base::fileGetPath(string filename)
     return filename.substr(0, pos + 1);
 }
 
-string Base::fileGetDirectory(string filename)
+EXPORT string Base::fileGetDirectory(string filename)
 {
     size_t pos = filename.find_last_of(SLASH);
 
@@ -41,7 +41,7 @@ string Base::fileGetDirectory(string filename)
     return filename.substr(0, pos);
 }
 
-string Base::fileGetExtension(string filename)
+EXPORT string Base::fileGetExtension(string filename)
 {
     string fn = fileGetName(filename);
     size_t pos = fn.find_last_of(DOT);
@@ -52,7 +52,7 @@ string Base::fileGetExtension(string filename)
     return fn.substr(pos, fn.size() - pos);
 }
 
-string Base::fileSetExtension(string filename, string ext)
+EXPORT string Base::fileSetExtension(string filename, string ext)
 {
     string fn = fileGetName(filename);
     string fp = fileGetPath(filename);
@@ -64,7 +64,7 @@ string Base::fileSetExtension(string filename, string ext)
     return fp + fn + ext;
 }
 
-string Base::fileGetContents(string filename)
+EXPORT string Base::fileGetContents(string filename)
 {
     std::ifstream file(filename);
     string line, contents = "";
@@ -77,7 +77,7 @@ string Base::fileGetContents(string filename)
     return contents;
 }
 
-bool Base::directoryExists(string directory)
+EXPORT bool Base::directoryExists(string directory)
 {
     struct stat info;
     

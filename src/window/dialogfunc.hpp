@@ -21,9 +21,9 @@ namespace Base
 {
     /* Shows a file dialog for opening a file, starting at the given location ("" for last visited).
        Returns a list of the files selected. Use filters to select specific formats only. */
-    std::vector<string> dialogOpenFile(string title, string location, std::vector<string> filters, bool multiSelect = false);
+    EXPORT std::vector<string> dialogOpenFile(string title, string location, std::vector<string> filters, bool multiSelect = false);
 
     /* Shows a file dialog for saving a file, starting at the given location ("" for last visited).
        Use filters to select specific formats only. */
-    string dialogSaveFile(string title, string location, std::vector<string> filters);
+    EXPORT string dialogSaveFile(string title, string location, std::vector<string> filters);
 }

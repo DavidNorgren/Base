@@ -9,5 +9,5 @@
 namespace Base
 {
     /* Returns the current time as a string, formatted as YYYY-MM-DD HH:MM:SS */
-    string getDateTimeNow();
+    EXPORT string getDateTimeNow();
 }

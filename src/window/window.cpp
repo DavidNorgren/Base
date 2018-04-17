@@ -105,7 +105,7 @@ void windowSizeCallback(GLFWwindow* handle, int width, int height)
         w->resizeEventFunc();
 }
 
-Base::Window::Window()
+EXPORT Base::Window::Window()
 {
     // Initialize window
     handle = glfwCreateWindow(640, 480, "", NULL, NULL);
@@ -144,7 +144,7 @@ Base::Window::Window()
     currentCursor = cursorArrow;
 }
 
-void Base::Window::open(std::function<void()> loopEventFunc,
+EXPORT void Base::Window::open(std::function<void()> loopEventFunc,
                         std::function<void()> mouseEventFunc,
                         std::function<void()> keyEventFunc,
                         std::function<void()> resizeEventFunc)
@@ -201,7 +201,7 @@ void Base::Window::open(std::function<void()> loopEventFunc,
     glfwTerminate();
 }
 
-void Base::Window::maximize()
+EXPORT void Base::Window::maximize()
 {
 //#ifdef _WIN32
     glfwMaximizeWindow(handle);
@@ -212,12 +212,12 @@ void Base::Window::maximize()
 #endif*/
 }
 
-void Base::Window::setTitle(string title)
+EXPORT void Base::Window::setTitle(string title)
 {
     glfwSetWindowTitle(handle, &title[0]);
 }
 
-void Base::Window::setCursor(GLFWcursor* cursor)
+EXPORT void Base::Window::setCursor(GLFWcursor* cursor)
 {
     glfwSetCursor(handle, cursor);
 }

@@ -1,12 +1,12 @@
 #include "util/stringfunc.hpp"
 
 
-string Base::stringEscapeQuotes(string str)
+EXPORT string Base::stringEscapeQuotes(string str)
 {
     return stringReplace(str, "\"", "\\\"");
 }
 
-string Base::wstringToString(wstring wstr)
+EXPORT string Base::wstringToString(wstring wstr)
 {
     string result;
     result.resize(wstr.length());
@@ -14,7 +14,7 @@ string Base::wstringToString(wstring wstr)
     return result;
 }
 
-wstring Base::stringToWstring(string str)
+EXPORT wstring Base::stringToWstring(string str)
 {
     wstring result;
     result.resize(str.length());
@@ -22,7 +22,7 @@ wstring Base::stringToWstring(string str)
     return result;
 }
 
-std::vector<string> Base::stringSplit(string str, string sep)
+EXPORT std::vector<string> Base::stringSplit(string str, string sep)
 {
     str += sep;
     std::vector<string> result;
@@ -39,7 +39,7 @@ std::vector<string> Base::stringSplit(string str, string sep)
     return result;
 }
 
-string Base::stringReplace(string str, string from, string to)
+EXPORT string Base::stringReplace(string str, string from, string to)
 {
     if (from.empty())
         return str;
@@ -54,22 +54,22 @@ string Base::stringReplace(string str, string from, string to)
     return str;
 }
 
-string Base::stringSubstring(string str, int from, int length)
+EXPORT string Base::stringSubstring(string str, int from, int length)
 {
     return str.substr(from, length);
 }
 
-string Base::stringErase(string str, int from, int length)
+EXPORT string Base::stringErase(string str, int from, int length)
 {
     return str.erase(from, length);
 }
 
-string Base::stringInsert(string str, string substr, int index)
+EXPORT string Base::stringInsert(string str, string substr, int index)
 {
     return str.insert(index, substr);
 }
 
-string Base::stringRepeat(string str, int count)
+EXPORT string Base::stringRepeat(string str, int count)
 {
     string repeatStr = "";
     for (int i = 0; i < count; i++)
@@ -77,7 +77,7 @@ string Base::stringRepeat(string str, int count)
     return repeatStr;
 }
 
-int Base::stringGetCount(string str, string sub, int index)
+EXPORT int Base::stringGetCount(string str, string sub, int index)
 {
     int count = 0;
     size_t pos = str.find(sub, index);

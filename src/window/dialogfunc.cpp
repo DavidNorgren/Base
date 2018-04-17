@@ -29,7 +29,7 @@ int getEnvironment()
 
 #endif
 
-std::vector<string> Base::dialogOpenFile(string title, string location, std::vector<string> filters, bool multiSelect)
+EXPORT std::vector<string> Base::dialogOpenFile(string title, string location, std::vector<string> filters, bool multiSelect)
 {
     std::vector<string> selFiles;
 /*
@@ -212,7 +212,7 @@ std::vector<string> Base::dialogOpenFile(string title, string location, std::vec
     return selFiles;
 }
 
-string Base::dialogSaveFile(string title, string location, std::vector<string> filters)
+EXPORT string Base::dialogSaveFile(string title, string location, std::vector<string> filters)
 {
     
     string selFile;

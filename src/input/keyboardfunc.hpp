@@ -3,9 +3,9 @@
 
 namespace Base
 {
-    bool keyDown(int key);
-    bool keyPressed(int key);
-    bool keyReleased(int key);
+    EXPORT bool keyDown(int key);
+    EXPORT bool keyPressed(int key);
+    EXPORT bool keyReleased(int key);
     
-    char charPressed();
+    EXPORT char charPressed();
 }

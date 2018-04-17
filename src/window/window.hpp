@@ -18,22 +18,22 @@ namespace Base
     {
         public:
             /* Creates the window and OpenGL context. */
-            Window();
+            EXPORT Window();
 
             /* Opens the window. */
-            void open(std::function<void()> loopEventFunc,
+            EXPORT void open(std::function<void()> loopEventFunc,
                       std::function<void()> mouseEventFunc = nullptr,
                       std::function<void()> keyEventFunc = nullptr,
                       std::function<void()> resizeEventFunc = nullptr);
 
             /* Sets the title of the window caption. */
-            void setTitle(string title);
+            EXPORT void setTitle(string title);
             
             /* Sets the mouse cursor. */
-            void setCursor(GLFWcursor* cursor);
+            EXPORT void setCursor(GLFWcursor* cursor);
 
             /* Maximizes the window. */
-            void maximize();
+            EXPORT void maximize();
 
             /* Window size. */
             int width, height;

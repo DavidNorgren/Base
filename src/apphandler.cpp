@@ -2,12 +2,9 @@
 
 #include "apphandler.hpp"
 
-#define DRAWING_FONT    "fonts/opensans.ttf"
-#define DRAWING_SHADER  "shaders/texture.glsl"
-
 Base::AppHandler* appHandler;
 
-Base::AppHandler::AppHandler()
+EXPORT Base::AppHandler::AppHandler(void* resStart, size_t resSize)
 {
     appHandler = this;
     
@@ -38,13 +35,13 @@ Base::AppHandler::AppHandler()
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     
     // Resources
-    resourceHandler = new ResourceHandler();
-    drawingFont = (Font*)resourceHandler->find(DRAWING_FONT)->loaded;
-    drawingShader = (Shader*)resourceHandler->find(DRAWING_SHADER)->loaded;
+    resourceHandler = new ResourceHandler(resStart, resSize);
+    drawingFont = (Font*)resourceHandler->find("fonts/opensans.ttf")->loaded;
+    drawingShader = (Shader*)resourceHandler->find("shaders/texture.glsl")->loaded;
     solidColor = new Image(COLOR_WHITE, 1, 1);
 }
 
-void Base::AppHandler::launch()
+EXPORT void Base::AppHandler::launch()
 {
     mainWindow->open(std::bind(&AppHandler::loopEvent, this),
                      std::bind(&AppHandler::mouseEvent, this),

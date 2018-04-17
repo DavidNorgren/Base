@@ -10,6 +10,21 @@ namespace Base
 
     };
 
+    struct JsonBool : public JsonAny
+    {
+        bool value;
+    };
+
+    struct JsonNumber : public JsonAny
+    {
+        float value;
+    };
+
+    struct JsonNull : public JsonAny
+    {
+
+    };
+
     struct JsonArray : public JsonAny
     {
         std::vector<JsonAny> values;
@@ -18,18 +33,18 @@ namespace Base
 
     struct JsonObject : public JsonAny
     {
-        std::map<string, JsonAny> values;
+        std::map<string, JsonAny*> values;
         JsonAny get(string name);
     };
 
     class JsonFile
     {
         public:
-            JsonFile(string filename);
-            JsonFile(File* filename);
-            ~JsonFile();
-            JsonAny get(string name);
-            string getLastError();
+            EXPORT JsonFile(string filename);
+            EXPORT JsonFile(File* filename);
+            EXPORT ~JsonFile();
+            EXPORT JsonAny get(string name);
+            EXPORT string getLastError();
 
         private:
             JsonObject* root;
@@ -41,6 +56,7 @@ namespace Base
             char readCharacter();
             string readString();
             JsonObject* readObject();
+            JsonAny* readAny();
             
             enum Character
             {

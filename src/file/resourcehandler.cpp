@@ -5,18 +5,16 @@
 #include "render/image.hpp"
 #include "render/shader.hpp"
 
-extern char res_zip_start[] asm("_binary_res_zip_start");
-extern char res_zip_end[] asm("_binary_res_zip_end");
-extern char res_zip_size[] asm("_binary_res_zip_size");
-
-
-Base::ResourceHandler::ResourceHandler()
+EXPORT Base::ResourceHandler::ResourceHandler(void* data, size_t size)
 {
+    if (size == 0)
+        return;
+    
     zip_source_t *src;
     zip_t *za;
     zip_error_t error;
     
-    src = zip_source_buffer_create(res_zip_start, (size_t)res_zip_size, 0, &error);
+    src = zip_source_buffer_create(data, size, 0, &error);
     if (!src)
     {
         std::cout << "zip_source_buffer_create error: " << zip_error_strerror(&error) << std::endl;
@@ -79,7 +77,7 @@ Base::ResourceHandler::ResourceHandler()
     zip_close(za);
 }
 
-Base::File* Base::ResourceHandler::find(string name)
+EXPORT Base::File* Base::ResourceHandler::find(string name)
 {
     std::map<string, File*>::iterator i = resMap.find(name);
     if (i == resMap.end())

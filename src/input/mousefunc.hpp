@@ -16,28 +16,28 @@ namespace Base
     };
 
     /* Returns the mouse position. */
-    ScreenPos mousePos();
-    ScreenPos mousePosPrevious();
-    ScreenPos mousePosClick();
-    Vec2 mouseMove();
+    EXPORT ScreenPos mousePos();
+    EXPORT ScreenPos mousePosPrevious();
+    EXPORT ScreenPos mousePosClick();
+    EXPORT Vec2 mouseMove();
     
     /* Returns whether the mouse is in a box. */
-    bool mouseInBox(ScreenArea box);
+    EXPORT bool mouseInBox(ScreenArea box);
     
     /* Returns the state of the left mouse button. */
-    bool mouseLeftDown();
-    bool mouseLeftPressed();
-    bool mouseLeftReleased();
-    double mouseLastClickDuration();
+    EXPORT bool mouseLeftDown();
+    EXPORT bool mouseLeftPressed();
+    EXPORT bool mouseLeftReleased();
+    EXPORT double mouseLastClickDuration();
 
     /* Returns the state of the right mouse button. */
-    bool mouseRightDown();
-    bool mouseRightPressed();
-    bool mouseRightReleased();
+    EXPORT bool mouseRightDown();
+    EXPORT bool mouseRightPressed();
+    EXPORT bool mouseRightReleased();
 
     /* Clears the mouse state. */
-    void mouseClear();
+    EXPORT void mouseClear();
     
     /* Sets the mouse cursor. */
-    void mouseSetCursor(Cursor cursor);
+    EXPORT void mouseSetCursor(Cursor cursor);
 }

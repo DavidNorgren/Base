@@ -2,46 +2,46 @@
 #include "render/drawfunc.hpp"
 
 
-void Base::drawBegin()
+EXPORT void Base::drawBegin()
 {
     appHandler->drawingShader->select();
     resetDrawingArea();
 }
 
-void Base::setDrawingArea(ScreenArea area)
+EXPORT void Base::setDrawingArea(ScreenArea area)
 {
     glEnable(GL_SCISSOR_TEST);
     appHandler->drawingArea = area;
     glScissor(area.pos.x, appHandler->mainWindow->height - (area.pos.y + area.height), area.width, area.height);
 }
 
-Base::ScreenArea Base::getDrawingArea()
+EXPORT Base::ScreenArea Base::getDrawingArea()
 {
     return appHandler->drawingArea;
 }
 
-void Base::resetDrawingArea()
+EXPORT void Base::resetDrawingArea()
 {
     appHandler->drawingArea = { 0, 0, appHandler->mainWindow->width, appHandler->mainWindow->height };
     glDisable(GL_SCISSOR_TEST);
 }
 
-void Base::setDrawingAlpha(float alpha)
+EXPORT void Base::setDrawingAlpha(float alpha)
 {
     appHandler->drawingAlpha = alpha;
 }
 
-float Base::getDrawingAlpha()
+EXPORT float Base::getDrawingAlpha()
 {
     return appHandler->drawingAlpha;
 }
 
-void Base::drawText(string text, ScreenPos pos, Color color)
+EXPORT void Base::drawText(string text, ScreenPos pos, Color color)
 {
     drawText(text, pos, appHandler->drawingFont, color);
 }
 
-void Base::drawText(string text, ScreenPos pos, Font* font, Color color)
+EXPORT void Base::drawText(string text, ScreenPos pos, Font* font, Color color)
 {
     // Init position and texture coordinate buffers
     Vec3 posData[text.length() * 6];
@@ -101,12 +101,12 @@ void Base::drawText(string text, ScreenPos pos, Font* font, Color color)
                                         font->texture, Color(color, appHandler->drawingAlpha));
 }
 
-void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX, TextAlignY alignY, Color color)
+EXPORT void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX, TextAlignY alignY, Color color)
 {
     drawTextAligned(text, pos, appHandler->drawingFont, alignX, alignY, color);
 }
 
-void Base::drawTextAligned(string text, ScreenPos pos, Font* font, TextAlignX alignX, TextAlignY alignY, Color color)
+EXPORT void Base::drawTextAligned(string text, ScreenPos pos, Font* font, TextAlignX alignX, TextAlignY alignY, Color color)
 {
     // Vertical alignment
     if (alignY != TOP)
@@ -140,12 +140,12 @@ void Base::drawTextAligned(string text, ScreenPos pos, Font* font, TextAlignX al
     }
 }
 
-void Base::drawImage(string name, ScreenPos pos, Color color, float rotation, Vec2 scale)
+EXPORT void Base::drawImage(string name, ScreenPos pos, Color color, float rotation, Vec2 scale)
 {
     drawImage((Image*)appHandler->resourceHandler->find(name)->loaded, pos, color, rotation, scale);
 }
 
-void Base::drawImage(Image* image, ScreenPos pos, Color color, float rotation, Vec2 scale)
+EXPORT void Base::drawImage(Image* image, ScreenPos pos, Color color, float rotation, Vec2 scale)
 {
     Vec3 posData[4] = {
         { 0.f },
@@ -170,12 +170,12 @@ void Base::drawImage(Image* image, ScreenPos pos, Color color, float rotation, V
                                         GL_TRIANGLE_STRIP);
 }
 
-void Base::drawSubImage(string name, int subImage, ScreenPos pos, Color color, float rotation, Vec2 scale)
+EXPORT void Base::drawSubImage(string name, int subImage, ScreenPos pos, Color color, float rotation, Vec2 scale)
 {
     drawSubImage((Image*)appHandler->resourceHandler->find(name)->loaded, subImage, pos, color, rotation, scale);
 }
 
-void Base::drawSubImage(Image* image, int subImage, ScreenPos pos, Color color, float rotation, Vec2 scale)
+EXPORT void Base::drawSubImage(Image* image, int subImage, ScreenPos pos, Color color, float rotation, Vec2 scale)
 {
     int subImages = image->width / image->height;
     Vec2 texStart = { (float)subImage / (float)subImages, 0.f };
@@ -204,7 +204,7 @@ void Base::drawSubImage(Image* image, int subImage, ScreenPos pos, Color color, 
                                         GL_TRIANGLE_STRIP);
 }
 
-void Base::drawBox(ScreenArea box, Color color, bool outline, int outlineThickness)
+EXPORT void Base::drawBox(ScreenArea box, Color color, bool outline, int outlineThickness)
 {
     ScreenPos& pos = box.pos;
     Vec3 posData[5] = {
@@ -226,7 +226,7 @@ void Base::drawBox(ScreenArea box, Color color, bool outline, int outlineThickne
                                         outline ? GL_LINE_STRIP : GL_TRIANGLE_FAN);
 }
 
-void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edgeTopLeft, bool edgeTopRight, bool edgeBottomRight, bool edgeBottomLeft)
+EXPORT void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edgeTopLeft, bool edgeTopRight, bool edgeBottomRight, bool edgeBottomLeft)
 {
     Image* edge = (Image*)appHandler->resourceHandler->find(edgeImage)->loaded;
     int edgeWidth = edge->width;
@@ -304,7 +304,7 @@ void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edge
                                         GL_TRIANGLE_FAN);
 }
 
-void Base::drawLine(ScreenPos start, ScreenPos end, Color color, int thickness)
+EXPORT void Base::drawLine(ScreenPos start, ScreenPos end, Color color, int thickness)
 {
     Vec3 posData[2] = {
         { start.x, start.y, 0 },

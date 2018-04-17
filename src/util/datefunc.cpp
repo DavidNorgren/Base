@@ -1,7 +1,7 @@
 #include "util/datefunc.hpp"
 
 
-string Base::getDateTimeNow()
+EXPORT string Base::getDateTimeNow()
 {
     time_t now = time(0);
     struct tm *tstruct = localtime(&now);

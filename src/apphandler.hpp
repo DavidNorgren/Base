@@ -12,36 +12,35 @@
 #include "window/window.hpp"
 #include "window/screenarea.hpp"
 
-
 namespace Base
 {
     /* Handles an OpenGL application. Used as a parent for the project class. */
     class AppHandler
     {
-        protected:
-            /* Setup OpenGL and load resources. */
-            AppHandler();
+    protected:
+        /* Setup OpenGL and load resources. */
+        EXPORT AppHandler(void* resStart = nullptr, size_t resSize = 0);
 
-            /* Called by the main window. Implemented by the child. */
-            virtual void loopEvent() = 0;
-            virtual void mouseEvent() = 0;
-            virtual void keyEvent() = 0;
-            virtual void resizeEvent() = 0;
+        /* Called by the main window. Implemented by the child. */
+        EXPORT virtual void loopEvent() = 0;
+        EXPORT virtual void mouseEvent() = 0;
+        EXPORT virtual void keyEvent() = 0;
+        EXPORT virtual void resizeEvent() = 0;
 
-            /* Opens the window and starts the window loop. */
-            void launch();
+        /* Opens the window and starts the window loop. */
+        EXPORT void launch();
 
-        public:
-            // Window
-            Window* mainWindow;
+    public:
+        // Window
+        Window* mainWindow;
 
-            // Resources
-            ResourceHandler* resourceHandler;
-            Font* drawingFont;
-            Shader* drawingShader;
-            float drawingAlpha = 1.f;
-            ScreenArea drawingArea;
-            Image* solidColor;
+        // Resources
+        ResourceHandler* resourceHandler;
+        Font* drawingFont;
+        Shader* drawingShader;
+        float drawingAlpha = 1.f;
+        ScreenArea drawingArea;
+        Image* solidColor;
     };
 }
 
