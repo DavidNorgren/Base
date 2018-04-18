@@ -1,6 +1,4 @@
-#include <sstream>
 #include <wchar.h>
-#include <iomanip>
 
 #include "common.hpp"
 #include "util/stringfunc.hpp"
@@ -94,18 +92,4 @@ EXPORT int Base::stringGetCount(string str, string sub, int index)
     }
     
     return count;
-}
-
-template<typename T> inline string toString(T val)
-{
-    std::stringstream ss;
-    ss << val;
-    return ss.str();
-}
-
-template<typename T> inline string toStringPrec(T val, int prec)
-{
-    std::stringstream ss;
-    ss << std::setprecision(prec) << val;
-    return ss.str();
 }

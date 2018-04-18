@@ -17,21 +17,21 @@ namespace Base
 
     class Font
     {
-        public:
-            /* Load a new font from a file. */
-            Font(string filename, uint size, uint start, uint end);
-            Font(File* file,      uint size, uint start, uint end);
+      public:
+        /* Load a new font from a file. */
+        Font(string filename, uint size, uint start, uint end);
+        Font(File* file,      uint size, uint start, uint end);
 
-            /* Get text dimensions. */
-            int stringGetWidth(string text);
-            int stringGetHeight(string text);
+        /* Get text dimensions. */
+        int stringGetWidth(string text);
+        int stringGetHeight(string text);
 
-            uint start, end, size;
-            int width, height;
-            uint texture;
-            CharInfo* chars;
+        uint start, end, size;
+        int width, height;
+        uint texture;
+        CharInfo* chars;
 
-        private:
-            void load(FT_Face& face);
+      private:
+        void load(FT_Face& face);
     };
 }

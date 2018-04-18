@@ -18,7 +18,7 @@ namespace Base
     /* Handles an OpenGL application. Used as a parent for the project class. */
     class AppHandler
     {
-    protected:
+      protected:
         /* Setup OpenGL and load resources. */
         EXPORT AppHandler(void* resData = nullptr, uint resSize = 0);
 
@@ -31,7 +31,7 @@ namespace Base
         /* Opens the window and starts the window loop. */
         EXPORT void launch();
 
-    public:
+      public:
         // Window
         Window* mainWindow;
 

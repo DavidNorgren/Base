@@ -14,41 +14,41 @@ namespace Base
 {
     class Shader
     {
-        public:
-            /*!
-                * Loads shader code from a file and compiles it.
-                * The different shader types are separated in the file
-                * with comments.
-                */
-            Shader(string filename, function<void(GLuint)> setup = nullptr);
-            Shader(File* file, function<void(GLuint)> setup = nullptr);
+      public:
+        /*!
+            * Loads shader code from a file and compiles it.
+            * The different shader types are separated in the file
+            * with comments.
+            */
+        Shader(string filename, function<void(GLuint)> setup = nullptr);
+        Shader(File* file, function<void(GLuint)> setup = nullptr);
 
-            /* Selects the shader for usage */
+        /* Selects the shader for usage */
 
-            /// <summary>Sorts the list to by the given column</summary>
-            /// <returns>Documentation of return type</returns>
-            void select();
+        /// <summary>Sorts the list to by the given column</summary>
+        /// <returns>Documentation of return type</returns>
+        void select();
 
-            /*!
-                *  @brief Renders a 2D graphic using the shader
-                * 
-                *  Renders a 2D graphic using a projection matrix and
-                *  buffers for position and texture coordinate data.
-                * 
-                *  @param[in] matrix The transformation matrix to be applied.
-                *  @param[in] posData Pointer to the buffer where position data is stored.
-                *  @param[in] texCoordData Pointer to the buffer where texture coordinate data is stored.
-                *  @param[in] vertices The amount of vertices in the buffer.
-                *  @param[in] texture The OpenGL texture to use.
-                *  @param[in] mode The OpenGL mode to use when rendering.
-                */
-            void render2D(Mat4x4 matrix, Vec3* posData, Vec2* texCoordData, int vertices, GLuint texture, Color color = { 1.f }, GLenum mode = GL_TRIANGLES);
+        /*!
+            *  @brief Renders a 2D graphic using the shader
+            * 
+            *  Renders a 2D graphic using a projection matrix and
+            *  buffers for position and texture coordinate data.
+            * 
+            *  @param[in] matrix The transformation matrix to be applied.
+            *  @param[in] posData Pointer to the buffer where position data is stored.
+            *  @param[in] texCoordData Pointer to the buffer where texture coordinate data is stored.
+            *  @param[in] vertices The amount of vertices in the buffer.
+            *  @param[in] texture The OpenGL texture to use.
+            *  @param[in] mode The OpenGL mode to use when rendering.
+            */
+        void render2D(Mat4x4 matrix, Vec3* posData, Vec2* texCoordData, int vertices, GLuint texture, Color color = { 1.f }, GLenum mode = GL_TRIANGLES);
 
-        private:
-            void load(string source);
+      private:
+        void load(string source);
 
-            string name;
-            uint program, vbo;
-            function<void(uint)> setup;
+        string name;
+        uint program, vbo;
+        function<void(uint)> setup;
     };
 }

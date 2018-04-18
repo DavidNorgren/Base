@@ -11,18 +11,18 @@ namespace Base
 {
     class Image
     {
-        public:
-            /* Loads an image from a file. */
-            Image(string filename);
-            Image(File* file);
+      public:
+        /* Loads an image from a file. */
+        Image(string filename);
+        Image(File* file);
 
-            /* Generates an image from a solid color. */
-            Image(Color color, int width, int height);
+        /* Generates an image from a solid color. */
+        Image(Color color, int width, int height);
 
-            GLuint texture;
-            int width, height;
+        GLuint texture;
+        int width, height;
 
-        private:
-            void load(void* data);
+      private:
+        void load(void* data);
     };
 }

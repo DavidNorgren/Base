@@ -14,11 +14,11 @@ namespace Base
 {
     class ResourceHandler
     {
-        public:
-            EXPORT ResourceHandler(void* data, size_t size);
-            EXPORT File* find(string name);
+      public:
+        EXPORT ResourceHandler(void* data, size_t size);
+        EXPORT File* find(string name);
 
-        private:
-            map<string, File*> resMap;
+      private:
+        map<string, File*> resMap;
     };
 }
