@@ -8,10 +8,62 @@ set(CMAKE_CXX_FLAGS "-g")
 add_definitions("-DEXPORT=__declspec(dllexport)")
 set(LIBS_DIR "C:/Dev/Libs")
 
+# Base can be built in any of the following three modes:
+# "exec" to produce an executable file, used for testing
+# "shared" to produce a DLL file, used by other applications during development
+# "static" to include the code in the final application executable
+if (NOT ADD_STATIC_BASE)
+    set(BASE_BUILD_MODE "static" CACHE STRING "Base build mode")
+    set_property(CACHE BASE_BUILD_MODE PROPERTY STRINGS "static;shared;exec")
+else()
+    set(BASE_BUILD_MODE "static")
+endif()
+
 # Add Base sources
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
-file(GLOB_RECURSE SRCS "src/*.cpp")
-add_library(base SHARED ${SRCS})
+
+if (BASE_BUILD_MODE STREQUAL "exec")
+    
+    # Generate object file containing resources on build
+    add_custom_command(
+        OUTPUT "res.o"
+        COMMAND zip -r "${CMAKE_CURRENT_BINARY_DIR}/res.zip" *
+        COMMAND cd "${CMAKE_CURRENT_BINARY_DIR}" && ld -r -b binary -o "res.o" "res.zip"
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/res"
+    )
+    set_source_files_properties(
+        "res.o"
+        PROPERTIES
+        EXTERNAL_OBJECT true
+        GENERATED true
+    )
+
+    # Command for cleaning old resources, run as "make clean_res"
+    add_custom_target(clean_res)
+    add_custom_command(
+        TARGET clean_res
+        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/res.zip"
+        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/res.o"
+        COMMAND echo "Cleaned old resources!"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+
+    # Create executable
+    file(GLOB_RECURSE SRCS "*.cpp")
+    add_executable(base ${SRCS} "res.o")
+
+else()
+
+    file(GLOB_RECURSE SRCS "src/*.cpp")
+
+    # Create library
+    if (BASE_BUILD_MODE STREQUAL "shared")
+        add_library(base SHARED ${SRCS})
+    else()
+        add_library(base STATIC ${SRCS})
+    endif()
+
+endif()
 
 # Add Boost filesystem & system
 # Latest FindBoost.cmake https://raw.githubusercontent.com/Kitware/CMake/master/Modules/FindBoost.cmake
@@ -46,7 +98,7 @@ set(GLFW_ROOT "${LIBS_DIR}/glfw-3.2.1")
 SET(GLFW_INSTALL ON CACHE BOOL "" FORCE)
 include_directories("${GLFW_ROOT}/include")
 target_include_directories(base PUBLIC "${GLFW_ROOT}/include")
-add_subdirectory("${GLFW_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/glfw")
+add_subdirectory(${GLFW_ROOT} "${CMAKE_CURRENT_BINARY_DIR}/glfw")
 
 # Add Libzip
 # Version 1.5.0 gives error about not finding "zipconf.h".
@@ -82,27 +134,29 @@ set(LIBS_INSTALL soil      libzip          glew          zlib)
 set(LIBS_EXPORT  soil glfw libzip freetype glew          zlib)
 target_link_libraries(base PUBLIC ${LIBS_LINK})
 
-# https://rix0r.nl/blog/2015/08/13/cmake-guide/
-# Define headers for this library. PUBLIC headers are used for
-# compiling the library, and will be added to consumers' build
-# paths.
-target_include_directories(base PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-    $<INSTALL_INTERFACE:include>
-    PRIVATE src)
+if (BASE_BUILD_MODE STREQUAL "shared")
+    # https://rix0r.nl/blog/2015/08/13/cmake-guide/
+    # Define headers for this library. PUBLIC headers are used for
+    # compiling the library, and will be added to consumers' build
+    # paths.
+    target_include_directories(base PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE src)
 
-# 'make install' to the correct locations (provided by GNUInstallDirs).
-include(GNUInstallDirs)
-install(TARGETS base ${LIBS_INSTALL} EXPORT baseConfig
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_CURRENT_BINARY_DIR})  # This is for Windows
-install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    # 'make install' to the correct locations (provided by GNUInstallDirs).
+    include(GNUInstallDirs)
+    install(TARGETS base ${LIBS_INSTALL} EXPORT baseConfig
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_CURRENT_BINARY_DIR})  # This is for Windows
+    install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-# This makes the project importable from the install directory
-# Put config file in per-project dir (name MUST match), can also
-# just go into 'cmake'.
-install(EXPORT baseConfig DESTINATION share/base/cmake)
+    # This makes the project importable from the install directory
+    # Put config file in per-project dir (name MUST match), can also
+    # just go into 'cmake'.
+    install(EXPORT baseConfig DESTINATION share/base/cmake)
 
-# This makes the project importable from the build directory
-export(TARGETS base ${LIBS_EXPORT} FILE baseConfig.cmake)
+    # This makes the project importable from the build directory
+    export(TARGETS base ${LIBS_EXPORT} FILE baseConfig.cmake)
+endif()

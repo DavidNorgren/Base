@@ -18,6 +18,7 @@ using std::wstring;
 using std::runtime_error;
 using std::function;
 using std::cout;
+using std::cin;
 using std::endl;
 using std::map;
 template<typename T> using list = std::vector<T>;
