@@ -45,6 +45,7 @@
 #include "util/datefunc.hpp"
 #include "util/stringfunc.hpp"
 #include "util/utilfunc.hpp"
+#include "util/timer.hpp"
 #include "window/dialogfunc.hpp"
 #include "window/window.hpp"
 #include "apphandler.hpp"

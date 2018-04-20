@@ -3,6 +3,9 @@
 #include "file/filefunc.hpp"
 #include "util/stringfunc.hpp"
 
+
+const int singleLineMaxSize = 10;
+
 enum Character
 {
     CURLY_BEGIN     = '{',
@@ -410,14 +413,17 @@ void Base::JsonObject::write()
 void Base::JsonArray::write()
 {
     // Whether to print on a single line (No objects/arrays in the set)
-    bool singleLine = true;
-    for (uint n = 0; n < values.size(); n++)
+    bool singleLine = (values.size() < singleLineMaxSize);
+    if (singleLine)
     {
-        JsonType type = values[n]->getType();
-        if (type == JsonType::OBJECT ||type == JsonType::ARRAY)
+        for (uint n = 0; n < values.size(); n++)
         {
-            singleLine = false;
-            break;
+            JsonType type = values[n]->getType();
+            if (type == JsonType::OBJECT ||type == JsonType::ARRAY)
+            {
+                singleLine = false;
+                break;
+            }
         }
     }
 
