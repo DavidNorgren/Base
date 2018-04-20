@@ -1,12 +1,12 @@
 {
     "foo": "BARZ",
     "Bar": 100,
-    "Array": [ 10, 20, "helloWorld" ],
+    "Array": [ 10, 20, "\"helloWorld\"" ],
     "Objects": [
         {
             "int": 100,
-            "float": 100.5,
-            "str": "ABCÅÄÖ",
+            "float": 100.5e23,
+            "str": "ABC\\ÅÄÖ",
             "multilinestr": "Line 1\nLine 2\nLine 3",
             "null": null,
             "bool": true

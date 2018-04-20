@@ -12,7 +12,8 @@ set(LIBS_DIR "C:/Dev/Libs")
 # "exec" to produce an executable file, used for testing
 # "shared" to produce a DLL file, used by other applications during development
 # "static" to include the code in the final application executable
-if (NOT ADD_STATIC_BASE)
+# BASE_BUILD_STATIC will overwrite this to "static"
+if (NOT BASE_BUILD_STATIC)
     set(BASE_BUILD_MODE "static" CACHE STRING "Base build mode")
     set_property(CACHE BASE_BUILD_MODE PROPERTY STRINGS "static;shared;exec")
 else()

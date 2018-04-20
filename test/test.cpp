@@ -14,6 +14,5 @@ int main()
     // JSON testing
     testJSON(resHandler);
 
-    cin.get();
     return 0;
 }

@@ -3,6 +3,35 @@
 #include "file/filefunc.hpp"
 #include "util/stringfunc.hpp"
 
+enum Character
+{
+    CURLY_BEGIN     = '{',
+    CURLY_END       = '}',
+    SQUARE_BEGIN    = '[',
+    SQUARE_END      = ']',
+    COMMA           = ',',
+    COLON           = ':',
+    QUOTE           = '"',
+    SPACE           = ' ',
+    TAB             = '\t',
+    NEW_LINE        = '\n',
+    RETURN          = '\r',
+    POINT           = '.',
+    MINUS           = '-',
+    PLUS            = '+',
+    BACKSLASH       = '\\',
+    E               = 'e',
+    CAPITAL_E       = 'E',
+    F               = 'f',
+    N               = 'n',
+    T               = 't',
+    U               = 'u',
+    NUM_0           = '0',
+    NUM_9           = '9'
+};
+
+// Read methods
+
 EXPORT Base::JsonFile::JsonFile(string filename)
 {
     string json = fileGetContents(filename);
@@ -26,7 +55,7 @@ void Base::JsonFile::readRoot()
 
     try
     {
-        if (readCharacter() != Character::CURLY_BEGIN)
+        if (readCharacter() != CURLY_BEGIN)
             throw JsonException("No root object found");
         
         readJsonObject(true);
@@ -39,7 +68,7 @@ void Base::JsonFile::readRoot()
 
 string Base::JsonFile::readString()
 {
-    uint stringStart = position;
+    string str = "";
 
     while (true)
     {
@@ -52,25 +81,62 @@ string Base::JsonFile::readString()
         column++;
         
         // Check end of string
-        if (lastChar == Character::QUOTE)
+        if (lastChar == QUOTE)
             break;
 
         // Check invalid linebreak
-        if (lastChar == Character::RETURN || lastChar == Character::NEW_LINE)
+        if (lastChar == RETURN || lastChar == NEW_LINE)
             throw JsonException("Unexpected linebreak in string");
 
         // Read special character
-        if (lastChar == Character::BACKSLASH)
+        if (lastChar == BACKSLASH)
         {
-            // TODO
+            // Check EOF
+            if (position >= size)
+                throw JsonException("Unexpected end of file");
+
+            // Advance
+            lastChar = data[position++];
+            column++;
+
+            switch (lastChar)
+            {
+                case QUOTE:      str += "\""; break;
+                case BACKSLASH:  str += "\\"; break;
+                case N:          str += "\n"; break;
+                case T:          str += "\t"; break;
+                case U:
+                {
+                    // Parse Hex ASCII code
+                    string hex = "";
+                    repeat (4)
+                    {
+                        // Check EOF
+                        if (position >= size)
+                            throw JsonException("Unexpected end of file");
+
+                        // Advance and add to Hex ASCII code
+                        lastChar = data[position++];
+                        column++;
+                        hex += lastChar;
+                    }
+                    // str += hex_to_char(hex) // TODO
+                    break;
+                }
+                default:
+                    str += lastChar;
+                    break;
+            }
         }
+        else
+            str += lastChar;
     }
 
     uint stringEnd = position - 1;
 
     readCharacter();
 
-    return string(&data[stringStart], stringEnd - stringStart);
+    return str;
 }
 
 float Base::JsonFile::readNumber()
@@ -90,16 +156,16 @@ float Base::JsonFile::readNumber()
         lastChar = data[position++];
         column++;
     }
-    while ((lastChar >= Character::NUM_0 && lastChar <= Character::NUM_9) ||
-           lastChar == Character::MINUS || lastChar == Character::PLUS ||
-           lastChar == Character::E || lastChar == Character::CAPITAL_E ||
-           lastChar == Character::POINT);
+    while ((lastChar >= NUM_0 && lastChar <= NUM_9) ||
+           lastChar == MINUS || lastChar == PLUS ||
+           lastChar == E || lastChar == CAPITAL_E ||
+           lastChar == POINT);
 
     // Skip whitespace
-    if (lastChar == Character::TAB ||
-        lastChar == Character::SPACE ||
-        lastChar == Character::NEW_LINE ||
-        lastChar == Character::RETURN)
+    if (lastChar == TAB ||
+        lastChar == SPACE ||
+        lastChar == NEW_LINE ||
+        lastChar == RETURN)
         readCharacter();
 
     // Convert from string
@@ -125,9 +191,9 @@ char Base::JsonFile::readCharacter()
         lastChar = data[position++];
 
         // Column and line counter
-        if (lastChar == Character::TAB)
+        if (lastChar == TAB)
             column += 4;
-        else if (lastChar == Character::NEW_LINE)
+        else if (lastChar == NEW_LINE)
         {
             line++;
             column = 0;
@@ -136,10 +202,10 @@ char Base::JsonFile::readCharacter()
             column++;
     }
     // Skip blank characters
-    while (lastChar == Character::TAB ||
-           lastChar == Character::SPACE ||
-           lastChar == Character::NEW_LINE ||
-           lastChar == Character::RETURN ||
+    while (lastChar == TAB ||
+           lastChar == SPACE ||
+           lastChar == NEW_LINE ||
+           lastChar == RETURN ||
            lastChar > 127);
 
     return lastChar;
@@ -147,13 +213,13 @@ char Base::JsonFile::readCharacter()
 
 Base::JsonAny* Base::JsonFile::readJsonAny()
 {
-    if (lastChar == Character::CURLY_BEGIN)
+    if (lastChar == CURLY_BEGIN)
         return readJsonObject();
-    else if (lastChar == Character::SQUARE_BEGIN)
+    else if (lastChar == SQUARE_BEGIN)
         return readJsonArray();
-    else if (lastChar == Character::QUOTE)
+    else if (lastChar == QUOTE)
         return readJsonString();
-    else if ((lastChar >= Character::NUM_0 && lastChar <= Character::NUM_9) || lastChar == Character::MINUS)
+    else if ((lastChar >= NUM_0 && lastChar <= NUM_9) || lastChar == MINUS)
         return readJsonNumber();
     else
         return readJsonWord();
@@ -163,25 +229,26 @@ Base::JsonObject* Base::JsonFile::readJsonObject(bool isRoot)
 {
     JsonObject* obj = isRoot ? this : new JsonObject();
 
-    while (readCharacter() != Character::CURLY_END)
+    while (readCharacter() != CURLY_END)
     {
         string name = readString();
 
         // Check Colon
-        if (lastChar != Character::COLON)
+        if (lastChar != COLON)
             throw JsonException("Expected :");
         
         readCharacter();
 
         // Read value
         obj->values[name] = readJsonAny();
+        obj->keys.push_back(name);
 
         // End of values
-        if (lastChar == Character::CURLY_END)
+        if (lastChar == CURLY_END)
             break;
 
         // Look for value separator
-        if (lastChar != Character::COMMA)
+        if (lastChar != COMMA)
             throw JsonException("Expected ,");
     }
 
@@ -195,16 +262,16 @@ Base::JsonArray* Base::JsonFile::readJsonArray()
 {
     JsonArray* arr = new JsonArray();
 
-    while (readCharacter() != Character::SQUARE_END)
+    while (readCharacter() != SQUARE_END)
     {
         arr->values.push_back(readJsonAny());
         
         // End of values
-        if (lastChar == Character::SQUARE_END)
+        if (lastChar == SQUARE_END)
             break;
 
         // Look for value separator
-        if (lastChar != Character::COMMA)
+        if (lastChar != COMMA)
             throw JsonException("Expected ,");
     }
 
@@ -228,7 +295,7 @@ Base::JsonAny* Base::JsonFile::readJsonWord()
     switch (lastChar)
     {
         // "true"
-        case Character::T:
+        case T:
         {
             repeat (4)
                 readCharacter();
@@ -237,7 +304,7 @@ Base::JsonAny* Base::JsonFile::readJsonWord()
         }
         
         // "false"
-        case Character::F:
+        case F:
         {
             repeat (5)
                 readCharacter();
@@ -246,7 +313,7 @@ Base::JsonAny* Base::JsonFile::readJsonWord()
         }
 
         // "null"
-        case Character::N:
+        case N:
         {
             repeat (4)
                 readCharacter();
@@ -258,6 +325,172 @@ Base::JsonAny* Base::JsonFile::readJsonWord()
     throw JsonException("Unrecognized word");
 }
 
+// Writing methods
+
+string saveStr;
+uint tabs;
+bool addComma;
+
+EXPORT void Base::JsonFile::save(string filename)
+{
+    saveStr = "";
+    tabs = 0;
+    addComma = false;
+    write();
+
+    std::ofstream outStream;
+    outStream.open(filename);
+    outStream << saveStr;
+    outStream.close();
+}
+
+void writeTabs()
+{
+    repeat (tabs)
+        saveStr += '\t';
+}
+
+void writeChar(Character ch)
+{
+    saveStr += ch;
+}
+
+void writeString(string str)
+{
+    saveStr += str;
+}
+
+void writeEndLast()
+{
+    // End previous object
+    if (addComma)
+        writeChar(COMMA);
+
+    if (saveStr.length() > 0)
+        writeChar(NEW_LINE);
+
+    writeTabs();
+}
+
+void writeStartSet(Character ch)
+{
+    writeChar(ch);
+    tabs++;
+    addComma = false;
+}
+
+void writeEndSet(Character ch)
+{
+    writeChar(NEW_LINE);
+    tabs--;
+    writeTabs();
+    writeChar(ch);
+    addComma = true;
+}
+
+void Base::JsonObject::write()
+{
+    writeStartSet(CURLY_BEGIN);
+
+    // Go through (named) keys in the same order as added
+    for (uint n = 0; n < keys.size(); n++)
+    {
+        writeEndLast();
+        writeChar(QUOTE);
+        writeString(keys[n]);
+        writeChar(QUOTE);
+        writeChar(COLON);
+        writeChar(SPACE);
+        values[keys[n]]->write();
+        addComma = true;
+    }
+    writeEndSet(CURLY_END);
+}
+
+void Base::JsonArray::write()
+{
+    // Whether to print on a single line (No objects/arrays in the set)
+    bool singleLine = true;
+    for (uint n = 0; n < values.size(); n++)
+    {
+        JsonType type = values[n]->getType();
+        if (type == JsonType::OBJECT ||type == JsonType::ARRAY)
+        {
+            singleLine = false;
+            break;
+        }
+    }
+
+    // Go through (unnamed) elements
+    if (singleLine)
+    {
+        // Single-line style, eg. [ 10, 20, 30 ]
+        writeChar(SQUARE_BEGIN);
+        writeChar(SPACE);
+        for (uint n = 0; n < values.size(); n++)
+        {
+            if (n > 0)
+            {
+                writeChar(COMMA);
+                writeChar(SPACE);
+            }
+            values[n]->write();
+        }
+        writeChar(SPACE);
+        writeChar(SQUARE_END);
+    }
+    else
+    {
+        // Multi-line style
+        writeStartSet(SQUARE_BEGIN);
+        for (uint n = 0; n < values.size(); n++)
+        {
+            writeEndLast();
+            values[n]->write();
+            addComma = true;
+        }
+        writeEndSet(SQUARE_END);
+    }
+}
+
+void Base::JsonString::write()
+{
+    writeChar(QUOTE);
+    for (uint i = 0; i < value.length(); i++)
+    {
+        char ch = value[i];
+        if (ch == NEW_LINE)
+            writeString("\\n");
+        else if (ch == TAB)
+            writeString("\\t");
+        else if (ch == QUOTE)
+            writeString("\\\"");
+        else if (ch == BACKSLASH)
+            writeString("\\\\");
+        // TODO unicode
+        else
+            writeChar((Character)ch);
+    }
+    writeChar(QUOTE);
+}
+
+void Base::JsonNumber::write()
+{
+    writeString(toString(value));
+}
+
+void Base::JsonBool::write()
+{
+    writeString(value ? "true": "false");
+}
+
+void Base::JsonNull::write()
+{
+    writeString("null");
+}
+
+// Get methods
+
 EXPORT Base::JsonType Base::JsonArray::getType(uint index)
 {
     if (index < 0 || index >= values.size())
@@ -266,19 +499,24 @@ EXPORT Base::JsonType Base::JsonArray::getType(uint index)
     return values[index]->getType();
 }
 
+EXPORT bool Base::JsonArray::isNull(uint index)
+{
+    return (getType(index) == JsonType::NULLVALUE);
+}
+
 Base::JsonAny* Base::JsonArray::get(uint index, JsonType type)
 {
     try
     {
         JsonType vType = getType(index);
         if (vType != type)
-            throw JsonException("Unexpected type " + JsonTypeName[vType] + ", expected " + JsonTypeName[type]);
+            throw JsonException("Unexpected type " + JsonTypeName[(int)vType] + ", expected " + JsonTypeName[(int)type]);
 
         return values[index];
     }
     catch (JsonException& ex)
     {
-        throw JsonException("JSON read error: " + toString(ex.what()));
+        throw JsonException("JSON get error: " + toString(ex.what()));
     }
 }
 
@@ -307,8 +545,6 @@ EXPORT bool Base::JsonArray::getBool(uint index)
     return ((JsonBool*)get(index, JsonType::BOOL))->value;
 }
 
-// TODO NULLABLE
-
 EXPORT Base::JsonType Base::JsonObject::getType(string name)
 {
     if (values.find(name) == values.end())
@@ -317,19 +553,24 @@ EXPORT Base::JsonType Base::JsonObject::getType(string name)
     return values[name]->getType();
 }
 
+EXPORT bool Base::JsonObject::isNull(string name)
+{
+    return (getType(name) == JsonType::NULLVALUE);
+}
+
 Base::JsonAny* Base::JsonObject::get(string name, JsonType type)
 {
     try
     {
         JsonType vType = getType(name);
         if (vType != type)
-            throw JsonException("Unexpected type " + JsonTypeName[vType] + ", expected " + JsonTypeName[type]);
+            throw JsonException("Unexpected type " + JsonTypeName[(int)vType] + ", expected " + JsonTypeName[(int)type]);
 
         return values[name];
     }
     catch (JsonException& ex)
     {
-        throw JsonException("JSON read error: " + toString(ex.what()));
+        throw JsonException("JSON get error: " + toString(ex.what()));
     }
 }
 
@@ -356,4 +597,72 @@ EXPORT float Base::JsonObject::getNumber(string name)
 EXPORT bool Base::JsonObject::getBool(string name)
 {
     return ((JsonBool*)get(name, JsonType::BOOL))->value;
+}
+
+// Adding methods
+
+EXPORT void Base::JsonArray::addObject(JsonObject* obj)
+{
+    values.push_back(obj);
+}
+
+EXPORT void Base::JsonArray::addArray(JsonArray* arr)
+{
+    values.push_back(arr);
+}
+
+EXPORT void Base::JsonArray::addString(string value)
+{
+    values.push_back(new JsonString(value));
+}
+
+EXPORT void Base::JsonArray::addNumber(float value)
+{
+    values.push_back(new JsonNumber(value));
+}
+
+EXPORT void Base::JsonArray::addBool(bool value)
+{
+    values.push_back(new JsonBool(value));
+}
+
+EXPORT void Base::JsonArray::addNull()
+{
+    values.push_back(new JsonNull());
+}
+
+EXPORT void Base::JsonObject::addObject(string name, JsonObject* obj)
+{
+    values[name] = obj;
+    keys.push_back(name);
+}
+
+EXPORT void Base::JsonObject::addArray(string name, JsonArray* arr)
+{
+    values[name] = arr;
+    keys.push_back(name);
+}
+
+EXPORT void Base::JsonObject::addString(string name, string value)
+{
+    values[name] = new JsonString(value);
+    keys.push_back(name);
+}
+
+EXPORT void Base::JsonObject::addNumber(string name, float value)
+{
+    values[name] = new JsonNumber(value);
+    keys.push_back(name);
+}
+
+EXPORT void Base::JsonObject::addBool(string name, bool value)
+{
+    values[name] = new JsonBool(value);
+    keys.push_back(name);
+}
+
+EXPORT void Base::JsonObject::addNull(string name)
+{
+    values[name] = new JsonNull();
+    keys.push_back(name);
 }

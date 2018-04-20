@@ -75,7 +75,7 @@ EXPORT string Base::stringInsert(string str, string substr, int index)
 EXPORT string Base::stringRepeat(string str, int count)
 {
     string repeatStr = "";
-    for (int i = 0; i < count; i++)
+    repeat (count)
         repeatStr += str;
     return repeatStr;
 }

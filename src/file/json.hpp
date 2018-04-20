@@ -4,14 +4,15 @@
 
 namespace Base
 {
-    enum JsonType
+    /* A JSON type that holds a value or named/unnamed set of other JSON types. */
+    enum class JsonType
     {
-        BOOL,
-        NULLVALUE,
-        NUMBER,
-        STRING,
+        OBJECT,
         ARRAY,
-        OBJECT
+        STRING,
+        NUMBER,
+        BOOL,
+        NULLVALUE
     };
 
     static const string JsonTypeName[] = {
@@ -34,6 +35,7 @@ namespace Base
     struct JsonAny
     {
         virtual JsonType getType() = 0;
+        virtual void write() = 0;
     };
 
     /* A true/false boolean value in a JSON file. */
@@ -41,6 +43,7 @@ namespace Base
     {
         JsonBool(bool value) : value(value) {};
         JsonType getType() { return JsonType::BOOL; }
+        void write();
         bool value;
     };
 
@@ -49,6 +52,7 @@ namespace Base
     {
         JsonNumber(float value) : value(value) {};
         JsonType getType() { return JsonType::NUMBER; }
+        void write();
         float value;
     };
 
@@ -57,6 +61,7 @@ namespace Base
     {
         JsonString(string value) : value(value) {};
         JsonType getType() { return JsonType::STRING; }
+        void write();
         string value;
     };
 
@@ -64,6 +69,7 @@ namespace Base
     struct JsonNull : public JsonAny
     {
         JsonType getType() { return JsonType::NULLVALUE; }
+        void write();
     };
 
     /* An array in a JSON file with a list of values. */
@@ -71,14 +77,25 @@ namespace Base
     class JsonArray : public JsonAny
     {
       public:
-        EXPORT JsonType getType(uint index);
+        // Add
+        EXPORT void addObject(JsonObject* obj);
+        EXPORT void addArray(JsonArray* arr);
+        EXPORT void addString(string value);
+        EXPORT void addNumber(float value);
+        EXPORT void addBool(bool value);
+        EXPORT void addNull();
+        
+        // Getters
         EXPORT JsonObject* getObject(uint index);
         EXPORT JsonArray* getArray(uint index);
         EXPORT string getString(uint index);
         EXPORT float getNumber(uint index);
         EXPORT bool getBool(uint index);
+        EXPORT JsonType getType(uint index);
+        EXPORT bool isNull(uint index);
 
         JsonType getType() { return JsonType::ARRAY; }
+        void write();
         list<JsonAny*> values;
 
       private:
@@ -89,14 +106,26 @@ namespace Base
     class JsonObject : public JsonAny
     {
       public:
+        // Add
+        EXPORT void addObject(string name, JsonObject* obj);
+        EXPORT void addArray(string name, JsonArray* arr);
+        EXPORT void addString(string name, string value);
+        EXPORT void addNumber(string name, float value);
+        EXPORT void addBool(string name, bool value);
+        EXPORT void addNull(string name);
+
+        // Getters
         EXPORT JsonType getType(string name);
         EXPORT JsonObject* getObject(string name);
         EXPORT JsonArray* getArray(string name);
         EXPORT string getString(string name);
         EXPORT float getNumber(string name);
         EXPORT bool getBool(string name);
-    
+        EXPORT bool isNull(string name);
+
         JsonType getType() { return JsonType::OBJECT; }
+        void write();
+        list<string> keys;
         map<string, JsonAny*> values;
     
       private:
@@ -109,35 +138,11 @@ namespace Base
       public:
         EXPORT JsonFile(string filename);
         EXPORT JsonFile(File* filename);
+        EXPORT JsonFile() {};
         EXPORT ~JsonFile() {};
-    
+        EXPORT void save(string filename);
+
       private:
-        enum Character
-        {
-            CURLY_BEGIN     = '{',
-            CURLY_END       = '}',
-            SQUARE_BEGIN    = '[',
-            SQUARE_END      = ']',
-            COMMA           = ',',
-            COLON           = ':',
-            QUOTE           = '"',
-            SPACE           = ' ',
-            TAB             = '\t',
-            NEW_LINE        = '\n',
-            RETURN          = '\r',
-            POINT           = '.',
-            MINUS           = '-',
-            PLUS            = '+',
-            BACKSLASH       = '\\',
-            E               = 'e',
-            CAPITAL_E       = 'E',
-            F               = 'f',
-            N               = 'n',
-            T               = 't',
-            U               = 'u',
-            NUM_0           = '0',
-            NUM_9           = '9'
-        };
 
         char* data;
         char lastChar;
