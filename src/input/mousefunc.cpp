@@ -18,7 +18,7 @@ Base::ScreenPos Base::mousePosClick()
     return appHandler->mainWindow->mousePosClick;
 }
 
-Base::Vec2 Base::mouseMove()
+Base::Vec2i Base::mouseMove()
 {
     return appHandler->mainWindow->mouseMove;
 }
@@ -26,8 +26,8 @@ Base::Vec2 Base::mouseMove()
 bool Base::mouseInBox(ScreenArea box)
 {
     ScreenPos mouse = appHandler->mainWindow->mousePos;
-    return (mouse.x >= box.pos.x && mouse.x < box.pos.x + box.width
-         && mouse.y >= box.pos.y && mouse.y < box.pos.y + box.height);
+    return (mouse.x >= box.pos.x && mouse.x < box.pos.x + box.width &&
+            mouse.y >= box.pos.y && mouse.y < box.pos.y + box.height);
 }
 
 bool Base::mouseLeftDown()
@@ -74,7 +74,7 @@ void Base::mouseClear()
         window->mousePressed[m] = false;
         window->mouseReleased[m] = false;
     }
-    mouseSetCursor(ARROW);
+    mouseSetCursor(Cursor::ARROW);
 }
 
 void Base::mouseSetCursor(Cursor cursor)
@@ -82,25 +82,11 @@ void Base::mouseSetCursor(Cursor cursor)
     GLFWcursor* glfwcursor;
     switch (cursor)
     {
-        case ARROW:
-            glfwcursor = appHandler->mainWindow->cursorArrow;
-            break;
-        
-        case HANDPOINT:
-            glfwcursor = appHandler->mainWindow->cursorHandpoint;
-            break;
-        
-        case BEAM:
-            glfwcursor = appHandler->mainWindow->cursorBeam;
-            break;
-        
-        case WERESIZE:
-            glfwcursor = appHandler->mainWindow->cursorHResize;
-            break;
-        
-        case NSRESIZE:
-            glfwcursor = appHandler->mainWindow->cursorVResize;
-            break;
+        case Cursor::ARROW:     glfwcursor = appHandler->mainWindow->cursorArrow;     break;
+        case Cursor::HANDPOINT: glfwcursor = appHandler->mainWindow->cursorHandpoint; break;
+        case Cursor::BEAM:      glfwcursor = appHandler->mainWindow->cursorBeam;      break;
+        case Cursor::WERESIZE:  glfwcursor = appHandler->mainWindow->cursorHResize;   break;
+        case Cursor::NSRESIZE:  glfwcursor = appHandler->mainWindow->cursorVResize;   break;
     }
     appHandler->mainWindow->currentCursor = glfwcursor;
 }

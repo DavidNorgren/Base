@@ -1,6 +1,7 @@
 #pragma once
 
 #include "file/file.hpp"
+#include "util/data/list.hpp"
 
 namespace Base
 {
@@ -122,7 +123,7 @@ namespace Base
         JsonType getType() { return JsonType::ARRAY; }
 
       private:
-        list<JsonAny*> values;
+        List<JsonAny*> values;
         JsonAny* add(JsonAny* any);
         JsonAny* get(uint index, JsonType type);
     };
@@ -154,8 +155,8 @@ namespace Base
         JsonType getType() { return JsonType::OBJECT; }
     
       protected:
-        list<string> keys;
-        map<string, JsonAny*> values;
+        List<string> keys;
+        Map<string, JsonAny*> values;
     
       private:
         JsonAny* add(string name, JsonAny* any);

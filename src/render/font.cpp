@@ -6,6 +6,7 @@
 #include "render/color.hpp"
 #include "file/resourcehandler.hpp"
 #include "util/stringfunc.hpp"
+#include "util/mathfunc.hpp"
 
 
 Base::Font::Font(string filename, uint start, uint end, uint size)
@@ -64,8 +65,7 @@ void Base::Font::load(FT_Face& face)
     chars = new CharInfo[end];
 
     // Get map dimensions
-    width = 0;
-    height = 0;
+    glTextureSize = { 0, 0 };
     for (uint i = start; i < end; i++)
     {
         if (FT_Load_Char(face, i, FT_LOAD_RENDER))
@@ -78,17 +78,17 @@ void Base::Font::load(FT_Face& face)
             (float)glyph->bitmap_top,
             (float)glyph->advance.x / 64,
             (float)glyph->advance.y / 64,
-            (float)width,
+            (float)glTextureSize.width,
         };
 
-        width += glyph->bitmap.width;
-        height = max(height, (int)glyph->bitmap.rows);
+        glTextureSize.width += glyph->bitmap.width;
+        glTextureSize.height = max(glTextureSize.height, (int)glyph->bitmap.rows);
     }
 
     // Create map texture
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, 0);
+    glGenTextures(1, &glTexture);
+    glBindTexture(GL_TEXTURE_2D, glTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, glTextureSize.width, glTextureSize.height, 0, GL_RGBA, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -141,5 +141,5 @@ int Base::Font::stringGetWidth(string text)
 
 int Base::Font::stringGetHeight(string text)
 {
-    return (stringGetCount(text, "\n") + stringGetCount(text, "\r") + 1) * height * LINE_SPACE;
+    return (stringGetCount(text, "\n") + stringGetCount(text, "\r") + 1) * glTextureSize.height * LINE_SPACE;
 }

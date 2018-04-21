@@ -25,16 +25,16 @@ EXPORT wstring Base::stringToWstring(string str)
     return result;
 }
 
-EXPORT list<string> Base::stringSplit(string str, string sep)
+EXPORT Base::List<string> Base::stringSplit(string str, string sep)
 {
     str += sep;
-    list<string> result;
+    List<string> result;
     string::size_type pos = str.find(sep);
     string::size_type lastPos = 0;
 
     while (pos != string::npos)
     {
-        result.push_back(str.substr(lastPos, pos - lastPos));
+        result.add(str.substr(lastPos, pos - lastPos));
         lastPos = pos + sep.size();
         pos = str.find(sep, lastPos);
     }

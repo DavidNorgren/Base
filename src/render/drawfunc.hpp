@@ -1,12 +1,11 @@
 #pragma once
 
+#include "util/data/vec2.hpp"
+#include "util/data/region2d.hpp"
 #include "render/color.hpp"
 #include "render/colors.hpp"
 #include "render/image.hpp"
 #include "render/font.hpp"
-#include "window/screenpos.hpp"
-#include "window/screenarea.hpp"
-#include "util/math/vec2.hpp"
 
 
 /* drawfunc - 2D drawing functionality */
@@ -38,10 +37,10 @@ namespace Base
     EXPORT void drawTextAligned(string text, ScreenPos pos, Font* font, TextAlignX alignX = TextAlignX::LEFT, TextAlignY alignY = TextAlignY::TOP, Color color = Colors::BLACK);
 
     /* Draws an image. */
-    EXPORT void drawImage(string name,  ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2 scale = { 1.f, 1.f });
-    EXPORT void drawImage(Image* image, ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2 scale = { 1.f, 1.f });
-    EXPORT void drawSubImage(string image, int subImage, ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2 scale = { 1.f, 1.f });
-    EXPORT void drawSubImage(Image* image, int subImage, ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2 scale = { 1.f, 1.f });
+    EXPORT void drawImage(string name,  ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2f scale = { 1.f, 1.f });
+    EXPORT void drawImage(Image* image, ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2f scale = { 1.f, 1.f });
+    EXPORT void drawSubImage(string image, int subImage, ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2f scale = { 1.f, 1.f });
+    EXPORT void drawSubImage(Image* image, int subImage, ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2f scale = { 1.f, 1.f });
 
     /* Draws a colored box. */
     EXPORT void drawBox(ScreenArea box, Color color, bool outline = false, int outlineThickness = 1);

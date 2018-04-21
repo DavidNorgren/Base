@@ -92,10 +92,5 @@ EXPORT string Base::fileGetContents(string filename)
 
 EXPORT bool Base::directoryExists(string directory)
 {
-    struct stat info;
-    
-    if (stat(&directory[0], &info) != 0)
-        return false;
-
-    return (info.st_mode & S_IFDIR);
+	return boost::filesystem::exists(directory);
 }

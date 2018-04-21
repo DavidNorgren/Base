@@ -5,6 +5,7 @@
 
 #include "file/file.hpp"
 #include "render/color.hpp"
+#include "util/data/size2d.hpp"
 
 
 namespace Base
@@ -19,8 +20,8 @@ namespace Base
         /* Generates an image from a solid color. */
         Image(Color color, int width, int height);
 
-        GLuint texture;
-        int width, height;
+        GLuint glTexture;
+        Size2Di glTextureSize;
 
       private:
         void load(void* data);

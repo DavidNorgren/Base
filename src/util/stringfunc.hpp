@@ -1,14 +1,9 @@
 #pragma once
 
+#include "util/data/list.hpp"
 
 namespace Base
 {
-    enum FontStyle
-    {
-        NORMAL,
-        BOLD
-    };
-    
     /* Escapes quotations in the given string. */
     EXPORT string stringEscapeQuotes(string str);
 
@@ -17,7 +12,7 @@ namespace Base
     EXPORT wstring stringToWstring(string wstr);
 
     /* Creates a list of all the substrings in str separated by sep. */
-    EXPORT list<string> stringSplit(string str, string sep);
+    EXPORT List<string> stringSplit(string str, string sep);
     
     EXPORT string stringSubstring(string str, int from, int length);
     EXPORT string stringErase(string str, int from, int length);

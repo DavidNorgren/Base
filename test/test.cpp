@@ -1,5 +1,4 @@
-#include "common.hpp"
-#include "apphandler.hpp"
+#include <base.hpp>
 
 #include "testjson.hpp"
 #include "testwindow.hpp"
@@ -25,6 +24,11 @@ namespace Base
     
     TestApp::TestApp() : AppHandler::AppHandler(resData, (uint)resSize)
     {
+        Mat4x4f a, b;
+        a * b;
+        a *= b;
+        Vec3f z;
+        cout << a;
         // JSON testing
         testJSON(resHandler);
         cout << std::flush;

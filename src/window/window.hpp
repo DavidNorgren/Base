@@ -2,14 +2,9 @@
 
 #include "GLFW/glfw3.h"
 
-#include "util/math/vec2.hpp"
-#include "util/math/mat4x4.hpp"
-#include "util/math/mathfunc.hpp"
-#include "util/stringfunc.hpp"
-#include "window/screenpos.hpp"
-#include "render/color.hpp"
+#include "util/data/mat4x4.hpp"
+#include "util/data/region2d.hpp"
 #include "render/colors.hpp"
-
 
 namespace Base
 {
@@ -26,17 +21,12 @@ namespace Base
                             function<void()> keyEventFunc = nullptr,
                             function<void()> resizeEventFunc = nullptr);
 
-        /* Sets the title of the window caption. */
         EXPORT void setTitle(string title);
-        
-        /* Sets the mouse cursor. */
         EXPORT void setCursor(GLFWcursor* cursor);
-
-        /* Maximizes the window. */
         EXPORT void maximize();
 
         /* Window size. */
-        int width, height;
+        Size2Di size;
         float ratio;
 
         /* Background. */
@@ -47,7 +37,7 @@ namespace Base
 
         /* Mouse position and button status. */
         ScreenPos mousePos, mousePosPrevious, mousePosClick;
-        Vec2 mouseMove;
+        Vec2i mouseMove;
         bool mouseDown[GLFW_MOUSE_BUTTON_LAST], mousePressed[GLFW_MOUSE_BUTTON_LAST], mouseReleased[GLFW_MOUSE_BUTTON_LAST];
         double mouselastClickTime = 0, mouseLastClickDuration = 0;
 
@@ -67,6 +57,6 @@ namespace Base
         function<void()> loopEventFunc, resizeEventFunc;
         function<void()> mouseEventFunc;
         function<void()> keyEventFunc;
-        Mat4x4 ortho;
+        Mat4x4f ortho;
     };
 }

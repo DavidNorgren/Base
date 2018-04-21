@@ -10,7 +10,12 @@
 #include "render/shader.hpp"
 
 
-EXPORT Base::ResourceHandler::ResourceHandler(void* data, size_t size)
+ // TODO: Make filename.ttf.ini with settings (and load after processing resources)
+constexpr int FONTS_SIZE = 15;
+constexpr int FONTS_START = 32;
+constexpr int FONTS_END = 128;
+
+EXPORT Base::ResourceHandler::ResourceHandler(void* data, uint size)
 {
     if (size == 0)
         return;
@@ -84,7 +89,7 @@ EXPORT Base::ResourceHandler::ResourceHandler(void* data, size_t size)
 
 EXPORT Base::File* Base::ResourceHandler::find(string name)
 {
-    std::map<string, File*>::iterator i = resMap.find(name);
+    Map<string, File*>::iterator i = resMap.find(name);
     if (i == resMap.end())
     {
         cout << "ResourceHandler: Could not find " << name << endl;

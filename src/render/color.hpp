@@ -1,16 +1,14 @@
 #pragma once
 
-#include "util/math/mathfunc.hpp"
+#include "util/mathfunc.hpp"
 
 
 namespace Base
 {
-    /* RGBA color */
+    /* A color with a Red, Green, Blue and (optional) Alpha value. */
     struct Color
     {
         float r, g, b, a;
-
-        //// Constructors ////
 
         Color()
         {
@@ -76,14 +74,14 @@ namespace Base
         }
     };
 
-    //// Unary operators ////
+    // Unary operators
 
     inline std::ostream& operator << (std::ostream& cout, const Color& a)
     {
         return cout << "(" << a.r << "," << a.g << "," << a.b << "," << a.a << ")" << endl;
     }
 
-    //// Binary operators ////
+    // Binary operators
 
     inline Color operator + (const Color& a, const Color& b)
     {
@@ -125,7 +123,7 @@ namespace Base
         a = a * b;
     }
 
-    //// Comparison operators ////
+    // Comparison operators
 
     inline bool operator == (const Color& a, const Color& b)
     {

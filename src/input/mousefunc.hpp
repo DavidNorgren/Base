@@ -1,12 +1,11 @@
 #pragma once
 
-#include "window/screenarea.hpp"
-#include "util/math/vec2.hpp"
+#include "util/data/region2d.hpp"
 
 
 namespace Base
 {
-    enum Cursor
+    enum class Cursor
     {
         ARROW,
         HANDPOINT,
@@ -19,7 +18,7 @@ namespace Base
     EXPORT ScreenPos mousePos();
     EXPORT ScreenPos mousePosPrevious();
     EXPORT ScreenPos mousePosClick();
-    EXPORT Vec2 mouseMove();
+    EXPORT Vec2i mouseMove();
     
     /* Returns whether the mouse is in a box. */
     EXPORT bool mouseInBox(ScreenArea box);

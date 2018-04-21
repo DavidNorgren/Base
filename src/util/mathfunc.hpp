@@ -6,6 +6,8 @@
 
 namespace Base
 {
+    constexpr float PI = 3.14159265;
+
     template<typename T> inline T min(T x, T y)
     {
         return x < y ? x : y;
@@ -21,33 +23,23 @@ namespace Base
         return (a % b + b) % b;
     }
 
-    template<typename T> inline T clamp(T x, T mi, T ma)
+    template<typename T> inline T clamp(T x, T lower, T upper)
     {
-        return max(mi, min(ma, x));
-    }
-
-    inline float frand()
-    {
-        return (float)rand() / RAND_MAX;
-    }
-
-    inline float frand(float a, float b)
-    {
-        return a + frand() * (b - a);
+        return max(lower, min(upper, x));
     }
     
     inline float dsin(float a)
     {
-        return sin(a * (M_PI / 180.f));
+        return sin(a * (PI / 180.f));
     }
     
     inline float dcos(float a)
     {
-        return cos(a * (M_PI / 180.f));
+        return cos(a * (PI / 180.f));
     }
     
     inline float dtan(float a)
     {
-        return tan(a * (M_PI / 180.f));
+        return tan(a * (PI / 180.f));
     }
 }

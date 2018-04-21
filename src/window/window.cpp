@@ -1,8 +1,10 @@
 #include "common.hpp"
+#include "util/mathfunc.hpp"
 #include "render/drawfunc.hpp"
 #include "window/window.hpp"
 
-Base::Window* w;
+
+Base::Window* window;
 
 void windowMouseButtonCallback(GLFWwindow* handle, int button, int action, int mods)
 {
@@ -14,45 +16,45 @@ void windowMouseButtonCallback(GLFWwindow* handle, int button, int action, int m
     {
         if (button == GLFW_MOUSE_BUTTON_LEFT)
         {
-            w->mouseLastClickDuration = glfwGetTime() - w->mouselastClickTime;
-            w->mouselastClickTime = glfwGetTime();
-            w->mousePosClick = w->mousePos;
+            window->mouseLastClickDuration = glfwGetTime() - window->mouselastClickTime;
+            window->mouselastClickTime = glfwGetTime();
+            window->mousePosClick = window->mousePos;
         }
 
-        if (!w->mouseDown[button])
-            w->mousePressed[button] = true;
-        w->mouseDown[button] = true;
+        if (!window->mouseDown[button])
+            window->mousePressed[button] = true;
+        window->mouseDown[button] = true;
     }
     else if (action == GLFW_RELEASE)
     {
-        if (w->mouseDown[button])
-            w->mouseReleased[button] = true;
-        w->mouseDown[button] = false;
+        if (window->mouseDown[button])
+            window->mouseReleased[button] = true;
+        window->mouseDown[button] = false;
     }
     
     // Call event and set cursor
-    if (w->mouseEventFunc)
+    if (window->mouseEventFunc)
     {
-        w->currentCursor = w->cursorArrow;
-        w->mouseEventFunc();
-        w->setCursor(w->currentCursor);
+        window->currentCursor = window->cursorArrow;
+        window->mouseEventFunc();
+        window->setCursor(window->currentCursor);
     }
 }
 
 void windowCursorPosCallback(GLFWwindow* handle, double x, double y)
 {
     // Mouse was moved!
-    w->mousePosPrevious = w->mousePos;
-    w->mousePos = { (int)x, (int)y };
-    w->mouseMove = Base::Vec2(w->mousePos.x - w->mousePosPrevious.x,
-                              w->mousePos.y - w->mousePosPrevious.y);
+    window->mousePosPrevious = window->mousePos;
+    window->mousePos = { (int)x, (int)y };
+    window->mouseMove = Base::Vec2i(window->mousePos.x - window->mousePosPrevious.x,
+                               window->mousePos.y - window->mousePosPrevious.y);
     
     // Call event and set cursor
-    if (w->mouseEventFunc)
+    if (window->mouseEventFunc)
     {
-        w->currentCursor = w->cursorArrow;
-        w->mouseEventFunc();
-        w->setCursor(w->currentCursor);
+        window->currentCursor = window->cursorArrow;
+        window->mouseEventFunc();
+        window->setCursor(window->currentCursor);
     }
 }
 
@@ -64,29 +66,29 @@ void windowKeyCallback(GLFWwindow* handle, int key, int scancode, int action, in
     // A keyboard key was pressed!
     if (action == GLFW_PRESS)
     {
-        if (!w->keyDown[key])
-            w->keyPressed[key] = true;
-        w->keyDown[key] = true;
+        if (!window->keyDown[key])
+            window->keyPressed[key] = true;
+        window->keyDown[key] = true;
     }
     else if (action == GLFW_RELEASE)
     {
-        if (w->keyDown[key])
-            w->keyReleased[key] = true;
-        w->keyDown[key] = false;
+        if (window->keyDown[key])
+            window->keyReleased[key] = true;
+        window->keyDown[key] = false;
     }
     else if (action == GLFW_REPEAT)
-        w->keyPressed[key] = true;
+        window->keyPressed[key] = true;
     
-    if (w->keyEventFunc)
-        w->keyEventFunc();
+    if (window->keyEventFunc)
+        window->keyEventFunc();
 }
 
 void windowCharModsCallback(GLFWwindow* handle, uint codepoint, int mods)
 {
-    w->charPressed = (char)codepoint;
-    if (w->keyEventFunc)
-        w->keyEventFunc();
-    w->charPressed = 0;
+    window->charPressed = (char)codepoint;
+    if (window->keyEventFunc)
+        window->keyEventFunc();
+    window->charPressed = 0;
 }
 
 void windowSizeCallback(GLFWwindow* handle, int width, int height)
@@ -96,13 +98,13 @@ void windowSizeCallback(GLFWwindow* handle, int width, int height)
     height = Base::max(1, height);
 
     glViewport(0, 0, width, height);
-    w->ortho = Base::Mat4x4::ortho(0.f, width, height, 0.f, 0.f, 1.f);
-    w->width = width;
-    w->height = height;
-    w->ratio = (float)width / height;
+    window->ortho = Base::Mat4x4f::ortho(0.f, width, height, 0.f, 0.f, 1.f);
+    window->size.width = width;
+    window->size.height = height;
+    window->ratio = (float)width / height;
     
-    if (w->resizeEventFunc)
-        w->resizeEventFunc();
+    if (window->resizeEventFunc)
+        window->resizeEventFunc();
 }
 
 EXPORT Base::Window::Window()
@@ -110,7 +112,7 @@ EXPORT Base::Window::Window()
     // Initialize window
     handle = glfwCreateWindow(640, 480, "", NULL, NULL);
     glfwMakeContextCurrent(handle);
-    w = this;
+    window = this;
 
     // Set callbacks
     glfwSetMouseButtonCallback(handle, windowMouseButtonCallback);
@@ -181,7 +183,7 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
             mouseReleased[m] = false;
         }
 
-        w->mouseMove = { 0, 0 };
+        window->mouseMove = { 0, 0 };
 
         // Update FPS
         frame++;

@@ -4,9 +4,9 @@
 
 #include "common.hpp"
 #include "window/dialogfunc.hpp"
-#include "util/math/mathfunc.hpp"
-#include "util/stringfunc.hpp"
 #include "file/filefunc.hpp"
+#include "util/mathfunc.hpp"
+#include "util/stringfunc.hpp"
 
 
 #ifndef _WIN32
@@ -38,9 +38,9 @@ int getEnvironment()
 
 #endif
 
-EXPORT list<string> Base::dialogOpenFile(string title, string location, list<string> filters, bool multiSelect)
+EXPORT Base::List<string> Base::dialogOpenFile(string title, string location, List<string> filters, bool multiSelect)
 {
-    list<string> selFiles;
+    List<string> selFiles;
 /*
 #ifdef _WIN32 // Windows
 	
@@ -161,7 +161,7 @@ EXPORT list<string> Base::dialogOpenFile(string title, string location, list<str
 
                 for (int i = 1; i < filters.size(); i += 2)
                 {
-                    list<string> filterList = stringSplit(filters[i], ";");
+                    List<string> filterList = stringSplit(filters[i], ";");
                     for (int j = 0; j < filterList.size(); j++)
                     {
                         if (filterN++ > 0)
@@ -221,7 +221,7 @@ EXPORT list<string> Base::dialogOpenFile(string title, string location, list<str
     return selFiles;
 }
 
-EXPORT string Base::dialogSaveFile(string title, string location, list<string> filters)
+EXPORT string Base::dialogSaveFile(string title, string location, List<string> filters)
 {
     
     string selFile;

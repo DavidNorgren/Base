@@ -244,7 +244,7 @@ Base::JsonObject* Base::JsonFile::readJsonObject(bool isRoot)
 
         // Read value
         obj->values[name] = readJsonAny();
-        obj->keys.push_back(name);
+        obj->keys.add(name);
 
         // End of values
         if (lastChar == CURLY_END)
@@ -267,7 +267,7 @@ Base::JsonArray* Base::JsonFile::readJsonArray()
 
     while (readCharacter() != SQUARE_END)
     {
-        arr->values.push_back(readJsonAny());
+        arr->values.add(readJsonAny());
         
         // End of values
         if (lastChar == SQUARE_END)
@@ -299,30 +299,24 @@ Base::JsonAny* Base::JsonFile::readJsonWord()
     {
         // "true"
         case T:
-        {
             repeat (4)
                 readCharacter();
             
             return new JsonBool(true);
-        }
         
         // "false"
         case F:
-        {
             repeat (5)
                 readCharacter();
             
             return new JsonBool(false);
-        }
 
         // "null"
         case N:
-        {
             repeat (4)
                 readCharacter();
 
             return new JsonNull();
-        }
     }
 
     throw JsonException("Unrecognized word");
@@ -622,7 +616,7 @@ EXPORT bool Base::JsonObject::getBool(string name)
 
 Base::JsonAny* Base::JsonArray::add(JsonAny* any)
 {
-    values.push_back(any);
+    values.add(any);
     return any;
 }
 
@@ -662,7 +656,7 @@ Base::JsonAny* Base::JsonObject::add(string name, JsonAny* any)
         throw JsonException("JSON get error: A value of name \"" + name + "\" has already been added.");
 
     values[name] = any;
-    keys.push_back(name);
+    keys.add(name);
     return any;
 }
 

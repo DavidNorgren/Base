@@ -27,7 +27,7 @@ void Base::Shader::load(string source)
     glGenBuffers(1, &vbo);
     
     // Split the source code by the comments into a Vertex and Fragment shader
-    list<string> sourceSplit = stringSplit(stringReplace(source, "\r\n", "\n"), "// Fragment\n");
+    List<string> sourceSplit = stringSplit(stringReplace(source, "\r\n", "\n"), "// Fragment\n");
     string vertexSource = sourceSplit[0];
     string fragmentSource = sourceSplit[1];
     
@@ -81,7 +81,7 @@ void Base::Shader::select()
     glUseProgram(program);
 }
 
-void Base::Shader::render2D(Mat4x4 matrix, Vec3* posData, Vec2* texCoordData, int vertices, GLuint texture, Color color, GLenum mode)
+void Base::Shader::render2D(Mat4x4f matrix, Vec3f* posData, Vec2f* texCoordData, int vertices, GLuint glTexture, Color color, GLenum mode)
 {
     // Select shader program, get uniforms
     GLint aPos = glGetAttribLocation(program, "aPos");
@@ -94,8 +94,8 @@ void Base::Shader::render2D(Mat4x4 matrix, Vec3* posData, Vec2* texCoordData, in
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     // Bind buffers with data
-    uint sizePositions = vertices * sizeof(Vec3);
-    uint sizeTexCoords = vertices * sizeof(Vec2);
+    uint sizePositions = vertices * sizeof(Vec3f);
+    uint sizeTexCoords = vertices * sizeof(Vec2f);
     glBufferData(GL_ARRAY_BUFFER, sizePositions + sizeTexCoords, NULL, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizePositions, posData);
     glBufferSubData(GL_ARRAY_BUFFER, sizePositions, sizeTexCoords, texCoordData);
@@ -107,14 +107,14 @@ void Base::Shader::render2D(Mat4x4 matrix, Vec3* posData, Vec2* texCoordData, in
     glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (void*)sizePositions);
 
     // Send in matrix
-    glUniformMatrix4fv(uMat, 1, GL_FALSE, matrix.e);
+    glUniformMatrix4fv(uMat, 1, GL_FALSE, matrix.elem);
 
     // Send in color
     glUniform4fv(uColor, 1, (float*)&color);
 
     // Send in texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, glTexture);
     glUniform1i(uSampler, 0);
 
     // Draw all triangles

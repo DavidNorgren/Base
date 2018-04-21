@@ -4,12 +4,18 @@
 #include FT_FREETYPE_H
 
 #include "file/file.hpp"
-
-#define LINE_SPACE  1.25f
-
+#include "util/data/size2d.hpp"
 
 namespace Base
 {
+    constexpr float LINE_SPACE = 1.25f;
+
+    enum class FontStyle
+    {
+        NORMAL,
+        BOLD
+    };
+    
     struct CharInfo
     {
         float width, height, left, top, advanceX, advanceY, mapX;
@@ -27,9 +33,10 @@ namespace Base
         int stringGetHeight(string text);
 
         uint start, end, size;
-        int width, height;
-        uint texture;
         CharInfo* chars;
+
+        uint glTexture;
+        Size2Di glTextureSize;
 
       private:
         void load(FT_Face& face);

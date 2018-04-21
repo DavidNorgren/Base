@@ -9,7 +9,6 @@
 #include <iomanip>
 #include <string>
 #include <map>
-#include <vector>
 
 #define repeat(X) for (uint __repeat_index = 0; __repeat_index < X; ++__repeat_index)
 
@@ -20,8 +19,7 @@ using std::function;
 using std::cout;
 using std::cin;
 using std::endl;
-using std::map;
-template<typename T> using list = std::vector<T>;
+template<typename T, typename R> using Map = std::map<T, R>;
 
 using uint = unsigned int;
 using uchar = unsigned char;
