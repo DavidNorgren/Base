@@ -1,18 +1,46 @@
 #include "common.hpp"
-#include "file/resourcehandler.hpp"
+#include "apphandler.hpp"
+
 #include "testjson.hpp"
+#include "testwindow.hpp"
+
 
 extern char resData[] asm("_binary_res_zip_start");
 extern char resSize[] asm("_binary_res_zip_size");
 
 
-int main() 
+namespace Base
 {
-    using namespace Base;
-    ResourceHandler* resHandler = new ResourceHandler(resData, (uint)resSize);
+    class TestApp : public AppHandler
+    {
+      public:
+        TestApp();
+    
+      private:
+        void loopEvent() override;
+        void mouseEvent() override {};
+        void keyEvent() override {};
+        void resizeEvent() override {};
+    };
+    
+    TestApp::TestApp() : AppHandler::AppHandler(resData, (uint)resSize)
+    {
+        // JSON testing
+        testJSON(resHandler);
+        cout << std::flush;
+        launch();
+    }
 
-    // JSON testing
-    testJSON(resHandler);
+    void TestApp::loopEvent()
+    {
+        // Window testing
+        testWindow(resHandler);
+    }
+}
 
+
+int main()
+{
+    new Base::TestApp();
     return 0;
 }

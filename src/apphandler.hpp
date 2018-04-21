@@ -11,7 +11,7 @@
 #include "render/shader.hpp"
 #include "window/window.hpp"
 #include "window/screenarea.hpp"
-
+#include "scene/scene.hpp"
 
 namespace Base
 {
@@ -36,12 +36,15 @@ namespace Base
         Window* mainWindow;
 
         // Resources
-        ResourceHandler* resourceHandler;
+        ResourceHandler* resHandler;
         Font* drawingFont;
         Shader* drawingShader;
         float drawingAlpha = 1.f;
         ScreenArea drawingArea;
         Image* solidColor;
+
+        // Scene
+        Scene* currentScene;
     };
 }
 

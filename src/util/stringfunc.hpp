@@ -42,7 +42,7 @@ namespace Base
     template<typename T> EXPORT extern string toStringPrec(T val, int prec)
     {
         std::stringstream ss;
-        ss << std::setprecision(prec) << val;
+        ss << std::fixed << std::setprecision(prec) << val;
         return ss.str();
     }
 }

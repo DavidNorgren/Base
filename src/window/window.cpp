@@ -1,6 +1,6 @@
 #include "common.hpp"
+#include "render/drawfunc.hpp"
 #include "window/window.hpp"
-
 
 Base::Window* w;
 
@@ -163,8 +163,7 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
     while (!glfwWindowShouldClose(handle))
     {
         // Clear screen
-        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        drawClear(backgroundColor);
                 
         // Call loop function
         loopEventFunc();

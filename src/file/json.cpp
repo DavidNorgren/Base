@@ -4,7 +4,7 @@
 #include "util/stringfunc.hpp"
 
 
-const int singleLineMaxSize = 10;
+constexpr int singleLineMaxSize = 10;
 
 enum Character
 {
@@ -330,16 +330,12 @@ Base::JsonAny* Base::JsonFile::readJsonWord()
 
 // Writing methods
 
-string saveStr;
-uint tabs;
-bool addComma;
-
 EXPORT void Base::JsonFile::save(string filename)
 {
     saveStr = "";
     tabs = 0;
     addComma = false;
-    write();
+    writeJsonObject(this);
 
     std::ofstream outStream;
     outStream.open(filename);
@@ -347,23 +343,23 @@ EXPORT void Base::JsonFile::save(string filename)
     outStream.close();
 }
 
-void writeTabs()
+void Base::JsonFile::writeTabs()
 {
     repeat (tabs)
         saveStr += '\t';
 }
 
-void writeChar(Character ch)
+void Base::JsonFile::writeChar(char ch)
 {
     saveStr += ch;
 }
 
-void writeString(string str)
+void Base::JsonFile::writeString(string str)
 {
     saveStr += str;
 }
 
-void writeEndLast()
+void Base::JsonFile::writeEndPrevious()
 {
     // End previous object
     if (addComma)
@@ -375,14 +371,15 @@ void writeEndLast()
     writeTabs();
 }
 
-void writeStartSet(Character ch)
+void Base::JsonFile::writeStartSet(char ch)
 {
+    // Start a new object
     writeChar(ch);
     tabs++;
     addComma = false;
 }
 
-void writeEndSet(Character ch)
+void Base::JsonFile::writeEndSet(char ch)
 {
     writeChar(NEW_LINE);
     tabs--;
@@ -391,35 +388,51 @@ void writeEndSet(Character ch)
     addComma = true;
 }
 
-void Base::JsonObject::write()
+void Base::JsonFile::writeJsonAny(Base::JsonAny* any)
+{
+    if (!any)
+        throw "JSON write error: Null pointer was passed into an add() method!";
+    
+    switch (any->getType())
+    {
+        case Base::JsonType::OBJECT:    writeJsonObject((Base::JsonObject*)any); break;
+        case Base::JsonType::ARRAY:     writeJsonArray((Base::JsonArray*)any);   break;
+        case Base::JsonType::STRING:    writeJsonString((Base::JsonString*)any); break;
+        case Base::JsonType::NUMBER:    writeJsonNumber((Base::JsonNumber*)any); break;
+        case Base::JsonType::BOOL:      writeJsonBool((Base::JsonBool*)any);     break;
+        case Base::JsonType::NULLVALUE: writeString("null");                     break;
+    }
+}
+
+void Base::JsonFile::writeJsonObject(Base::JsonObject* obj)
 {
     writeStartSet(CURLY_BEGIN);
 
     // Go through (named) keys in the same order as added
-    for (uint n = 0; n < keys.size(); n++)
+    for (uint n = 0; n < obj->keys.size(); n++)
     {
-        writeEndLast();
+        writeEndPrevious();
         writeChar(QUOTE);
-        writeString(keys[n]);
+        writeString(obj->keys[n]);
         writeChar(QUOTE);
         writeChar(COLON);
         writeChar(SPACE);
-        values[keys[n]]->write();
+        writeJsonAny(obj->values[obj->keys[n]]);
         addComma = true;
     }
     writeEndSet(CURLY_END);
 }
 
-void Base::JsonArray::write()
+void Base::JsonFile::writeJsonArray(Base::JsonArray* arr)
 {
     // Whether to print on a single line (No objects/arrays in the set)
-    bool singleLine = (values.size() < singleLineMaxSize);
+    bool singleLine = (arr->values.size() < singleLineMaxSize);
     if (singleLine)
     {
-        for (uint n = 0; n < values.size(); n++)
+        for (uint n = 0; n < arr->values.size(); n++)
         {
-            JsonType type = values[n]->getType();
-            if (type == JsonType::OBJECT ||type == JsonType::ARRAY)
+            Base::JsonType type = arr->values[n]->getType();
+            if (type == Base::JsonType::OBJECT ||type == Base::JsonType::ARRAY)
             {
                 singleLine = false;
                 break;
@@ -433,14 +446,14 @@ void Base::JsonArray::write()
         // Single-line style, eg. [ 10, 20, 30 ]
         writeChar(SQUARE_BEGIN);
         writeChar(SPACE);
-        for (uint n = 0; n < values.size(); n++)
+        for (uint n = 0; n < arr->values.size(); n++)
         {
             if (n > 0)
             {
                 writeChar(COMMA);
                 writeChar(SPACE);
             }
-            values[n]->write();
+            writeJsonAny(arr->values[n]);
         }
         writeChar(SPACE);
         writeChar(SQUARE_END);
@@ -449,22 +462,22 @@ void Base::JsonArray::write()
     {
         // Multi-line style
         writeStartSet(SQUARE_BEGIN);
-        for (uint n = 0; n < values.size(); n++)
+        for (uint n = 0; n < arr->values.size(); n++)
         {
-            writeEndLast();
-            values[n]->write();
+            writeEndPrevious();
+            writeJsonAny(arr->values[n]);
             addComma = true;
         }
         writeEndSet(SQUARE_END);
     }
 }
 
-void Base::JsonString::write()
+void Base::JsonFile::writeJsonString(Base::JsonString* str)
 {
     writeChar(QUOTE);
-    for (uint i = 0; i < value.length(); i++)
+    for (uint i = 0; i < str->value.length(); i++)
     {
-        char ch = value[i];
+        char ch = str->value[i];
         if (ch == NEW_LINE)
             writeString("\\n");
         else if (ch == TAB)
@@ -480,17 +493,17 @@ void Base::JsonString::write()
     writeChar(QUOTE);
 }
 
-void Base::JsonNumber::write()
+void Base::JsonFile::writeJsonNumber(Base::JsonNumber* num)
 {
-    writeString(toString(value));
+    writeString(Base::toString(num->value));
 }
 
-void Base::JsonBool::write()
+void Base::JsonFile::writeJsonBool(Base::JsonBool* b)
 {
-    writeString(value ? "true": "false");
+    writeString(b->value ? "true": "false");
 }
 
-void Base::JsonNull::write()
+void Base::JsonFile::writeJsonNull()
 {
     writeString("null");
 }
@@ -554,7 +567,7 @@ EXPORT bool Base::JsonArray::getBool(uint index)
 EXPORT Base::JsonType Base::JsonObject::getType(string name)
 {
     if (values.find(name) == values.end())
-        throw JsonException("Value with name " + name + " was not found");
+        throw JsonException("Value with name \"" + name + "\" was not found");
     
     return values[name]->getType();
 }
@@ -607,68 +620,78 @@ EXPORT bool Base::JsonObject::getBool(string name)
 
 // Adding methods
 
-EXPORT void Base::JsonArray::addObject(JsonObject* obj)
+Base::JsonAny* Base::JsonArray::add(JsonAny* any)
 {
-    values.push_back(obj);
+    values.push_back(any);
+    return any;
 }
 
-EXPORT void Base::JsonArray::addArray(JsonArray* arr)
+EXPORT Base::JsonObject* Base::JsonArray::addObject()
 {
-    values.push_back(arr);
+    return (JsonObject*)add(new JsonObject());
 }
 
-EXPORT void Base::JsonArray::addString(string value)
+EXPORT Base::JsonArray* Base::JsonArray::addArray()
 {
-    values.push_back(new JsonString(value));
+    return (JsonArray*)add(new JsonArray());
 }
 
-EXPORT void Base::JsonArray::addNumber(float value)
+EXPORT Base::JsonString* Base::JsonArray::addString(string value)
 {
-    values.push_back(new JsonNumber(value));
+    return (JsonString*)add(new JsonString(value));
 }
 
-EXPORT void Base::JsonArray::addBool(bool value)
+EXPORT Base::JsonNumber* Base::JsonArray::addNumber(float value)
 {
-    values.push_back(new JsonBool(value));
+    return (JsonNumber*)add(new JsonNumber(value));
 }
 
-EXPORT void Base::JsonArray::addNull()
+EXPORT Base::JsonBool* Base::JsonArray::addBool(bool value)
 {
-    values.push_back(new JsonNull());
+    return (JsonBool*)add(new JsonNumber(value));
 }
 
-EXPORT void Base::JsonObject::addObject(string name, JsonObject* obj)
+EXPORT Base::JsonNull* Base::JsonArray::addNull()
 {
-    values[name] = obj;
+    return (JsonNull*)add(new JsonNull());
+}
+
+Base::JsonAny* Base::JsonObject::add(string name, JsonAny* any)
+{
+    if (values.find(name) != values.end())
+        throw JsonException("JSON get error: A value of name \"" + name + "\" has already been added.");
+
+    values[name] = any;
     keys.push_back(name);
+    return any;
 }
 
-EXPORT void Base::JsonObject::addArray(string name, JsonArray* arr)
+EXPORT Base::JsonObject* Base::JsonObject::addObject(string name)
 {
-    values[name] = arr;
-    keys.push_back(name);
+    return (JsonObject*)add(name, new JsonObject());
 }
 
-EXPORT void Base::JsonObject::addString(string name, string value)
+EXPORT Base::JsonArray* Base::JsonObject::addArray(string name)
 {
-    values[name] = new JsonString(value);
-    keys.push_back(name);
+    return (JsonArray*)add(name, new JsonArray());
 }
 
-EXPORT void Base::JsonObject::addNumber(string name, float value)
+EXPORT Base::JsonString* Base::JsonObject::addString(string name, string value)
 {
-    values[name] = new JsonNumber(value);
-    keys.push_back(name);
+    return (JsonString*)add(name, new JsonString(value));
 }
 
-EXPORT void Base::JsonObject::addBool(string name, bool value)
+EXPORT Base::JsonNumber* Base::JsonObject::addNumber(string name, float value)
 {
-    values[name] = new JsonBool(value);
-    keys.push_back(name);
+    return (JsonNumber*)add(name, new JsonNumber(value));
 }
 
-EXPORT void Base::JsonObject::addNull(string name)
+EXPORT Base::JsonBool* Base::JsonObject::addBool(string name, bool value)
 {
-    values[name] = new JsonNull();
-    keys.push_back(name);
+    return (JsonBool*)add(name, new JsonBool(value));
+}
+
+EXPORT Base::JsonNull* Base::JsonObject::addNull(string name)
+{
+    return (JsonNull*)add(name, new JsonNull());
 }

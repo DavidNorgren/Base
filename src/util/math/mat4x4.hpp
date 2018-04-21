@@ -134,7 +134,7 @@ namespace Base
         {
             for (int j = 0; j < 4; j++)
                 cout << a.e[j * 4 + i] << (j < 3 ? "," : "");
-            cout << std::endl;
+            cout << endl;
         }
         return cout;
     }

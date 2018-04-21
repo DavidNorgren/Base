@@ -19,12 +19,12 @@ Base::Font::Font(string filename, uint start, uint end, uint size)
     this->end = end;
     this->size = size;
 
-    std::cout << "Loading " << filename << "..." << std::endl;
+    cout << "Loading " << filename << "..." << endl;
 
     // Create the font map from a file on the disk
     if (FT_New_Face(lib, &filename[0], 0, &face))
     {
-        std::cout << "Could not open font!" << std::endl;
+        cout << "Could not open font!" << endl;
         return;
     }
     
@@ -42,12 +42,12 @@ Base::Font::Font(File* file, uint size, uint start, uint end)
     this->start = start;
     this->end = end;
 
-    std::cout << "Loading " << file->name << "..." << std::endl;
+    cout << "Loading " << file->name << "..." << endl;
 
     // Create the font map from a file in memory
     if (FT_New_Memory_Face(lib, (uchar*)file->rawData, file->size, 0, &face))
     {
-        std::cout << "Could not open font!" << std::endl;
+        cout << "Could not open font!" << endl;
         return;
     }
     

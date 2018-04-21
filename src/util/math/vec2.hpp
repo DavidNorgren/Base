@@ -88,7 +88,7 @@ namespace Base
 
     inline std::ostream& operator << (std::ostream& cout, const Vec2& a)
     {
-        return cout << "(" << a.x << "," << a.y << ")" << std::endl;
+        return cout << "(" << a.x << "," << a.y << ")" << endl;
     }
 
     //// Binary operators ////

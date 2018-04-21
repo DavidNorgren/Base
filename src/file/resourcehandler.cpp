@@ -22,20 +22,20 @@ EXPORT Base::ResourceHandler::ResourceHandler(void* data, size_t size)
     src = zip_source_buffer_create(data, size, 0, &error);
     if (!src)
     {
-        std::cout << "zip_source_buffer_create error: " << zip_error_strerror(&error) << std::endl;
+        cout << "zip_source_buffer_create error: " << zip_error_strerror(&error) << endl;
         return;
     }
     
     za = zip_open_from_source(src, 0, &error);
     if (!za)
     {
-        std::cout << "zip_open_from_source error: " << zip_error_strerror(&error) << std::endl;
+        cout << "zip_open_from_source error: " << zip_error_strerror(&error) << endl;
         return;
     }
     
     int files_total = zip_get_num_files(za);
     
-    std::cout << "Found resources: " << files_total << std::endl;
+    cout << "Found resources: " << files_total << endl;
     
     for (int i = 0; i < files_total; i++)
     {
@@ -45,7 +45,7 @@ EXPORT Base::ResourceHandler::ResourceHandler(void* data, size_t size)
         zip_file *zf = zip_fopen_index(za, i, 0);
         if (!zf)
         {
-            std::cout << "Could not open" << std::endl;
+            cout << "Could not open" << endl;
             continue;
         }
         
@@ -66,17 +66,17 @@ EXPORT Base::ResourceHandler::ResourceHandler(void* data, size_t size)
         
         // Process into a manageable format
         string ext = fileGetExtension(filename);
-        if (ext == FONTS_EXT)
+        if (ext == ".ttf")
             f->loaded = (void*)new Font(f, FONTS_SIZE, FONTS_START, FONTS_END);
-        else if (ext == SHADERS_EXT)
+        else if (ext == ".glsl")
             f->loaded = (void*)new Shader(f);
-        else if (ext == IMAGES_EXT)
+        else if (ext == ".png" || ext == ".jpg")
             f->loaded = (void*)new Image(f);
         
         // Add to map
         resMap[filename] = f;
         
-        std::cout << "\t" << filename << " (" << f->size << " bytes)" << std::endl;
+        cout << "\t" << filename << " (" << f->size << " bytes)" << endl;
     }
     
     zip_close(za);
@@ -87,7 +87,7 @@ EXPORT Base::File* Base::ResourceHandler::find(string name)
     std::map<string, File*>::iterator i = resMap.find(name);
     if (i == resMap.end())
     {
-        std::cout << "ResourceHandler: Could not find " << name << std::endl;
+        cout << "ResourceHandler: Could not find " << name << endl;
         exit(EXIT_FAILURE);
     }
     return i->second;

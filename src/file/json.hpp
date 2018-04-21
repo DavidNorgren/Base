@@ -4,6 +4,13 @@
 
 namespace Base
 {
+    /* Thrown whenever a some input JSON is badly formatted or
+       an inappropriate get() method is called. */
+    struct JsonException : public runtime_error
+    {
+        JsonException(string message) : runtime_error(message) {};
+    };
+
     /* A JSON type that holds a value or named/unnamed set of other JSON types. */
     enum class JsonType
     {
@@ -23,67 +30,84 @@ namespace Base
         "ARRAY",
         "OBJECT"
     };
-
-    /* Thrown whenever a some input JSON is badly formatted or
-       an inappropriate get() method is called. */
-    struct JsonException : public runtime_error
-    {
-        JsonException(string message) : runtime_error(message) {};
-    };
+    
+    class JsonFile;
+    class JsonObject;
+    class JsonArray;
 
     /* A value in a JSON file. */
-    struct JsonAny
+    class JsonAny
     {
+      public:
         virtual JsonType getType() = 0;
-        virtual void write() = 0;
-    };
-
-    /* A true/false boolean value in a JSON file. */
-    struct JsonBool : public JsonAny
-    {
-        JsonBool(bool value) : value(value) {};
-        JsonType getType() { return JsonType::BOOL; }
-        void write();
-        bool value;
-    };
-
-    /* A number (with or without decimals) in a JSON file. */
-    struct JsonNumber : public JsonAny
-    {
-        JsonNumber(float value) : value(value) {};
-        JsonType getType() { return JsonType::NUMBER; }
-        void write();
-        float value;
     };
 
     /* A string of text in a JSON file. */
-    struct JsonString : public JsonAny
+    class JsonString : public JsonAny
     {
-        JsonString(string value) : value(value) {};
+      friend JsonFile;
+      friend JsonObject;
+      friend JsonArray;
+      
+      public:
         JsonType getType() { return JsonType::STRING; }
-        void write();
+
+      protected:
+        JsonString(string value) : value(value) {};
         string value;
     };
 
-    /* A null value in a JSON file. */
-    struct JsonNull : public JsonAny
+    /* A number (with or without decimals) in a JSON file. */
+    class JsonNumber : public JsonAny
     {
+      friend JsonFile;
+      friend JsonObject;
+      friend JsonArray;
+
+      public:
+        JsonType getType() { return JsonType::NUMBER; }
+
+      protected:
+        JsonNumber(float value) : value(value) {};
+        float value;
+    };
+
+    /* A true/false boolean value in a JSON file. */
+    class JsonBool : public JsonAny
+    {
+      friend JsonFile;
+      friend JsonObject;
+      friend JsonArray;
+
+      public:
+        JsonType getType() { return JsonType::BOOL; }
+    
+      protected:
+        JsonBool(bool value) : value(value) {};
+        bool value;
+    };
+
+    /* A null value in a JSON file. */
+    class JsonNull : public JsonAny
+    {
+      public:
         JsonType getType() { return JsonType::NULLVALUE; }
-        void write();
     };
 
     /* An array in a JSON file with a list of values. */
     class JsonObject;
     class JsonArray : public JsonAny
     {
+      friend JsonFile;
+
       public:
         // Add
-        EXPORT void addObject(JsonObject* obj);
-        EXPORT void addArray(JsonArray* arr);
-        EXPORT void addString(string value);
-        EXPORT void addNumber(float value);
-        EXPORT void addBool(bool value);
-        EXPORT void addNull();
+        EXPORT JsonObject* addObject();
+        EXPORT JsonArray* addArray();
+        EXPORT JsonString* addString(string value);
+        EXPORT JsonNumber* addNumber(float value);
+        EXPORT JsonBool* addBool(bool value);
+        EXPORT JsonNull* addNull();
         
         // Getters
         EXPORT JsonObject* getObject(uint index);
@@ -93,26 +117,29 @@ namespace Base
         EXPORT bool getBool(uint index);
         EXPORT JsonType getType(uint index);
         EXPORT bool isNull(uint index);
+        EXPORT uint getCount() { return values.size(); }
 
         JsonType getType() { return JsonType::ARRAY; }
-        void write();
-        list<JsonAny*> values;
 
       private:
+        list<JsonAny*> values;
+        JsonAny* add(JsonAny* any);
         JsonAny* get(uint index, JsonType type);
     };
 
     /* An object in a JSON file with a name->value mapping. */
     class JsonObject : public JsonAny
     {
+      friend JsonFile;
+
       public:
         // Add
-        EXPORT void addObject(string name, JsonObject* obj);
-        EXPORT void addArray(string name, JsonArray* arr);
-        EXPORT void addString(string name, string value);
-        EXPORT void addNumber(string name, float value);
-        EXPORT void addBool(string name, bool value);
-        EXPORT void addNull(string name);
+        EXPORT JsonObject* addObject(string name);
+        EXPORT JsonArray* addArray(string name);
+        EXPORT JsonString* addString(string name, string value);
+        EXPORT JsonNumber* addNumber(string name, float value);
+        EXPORT JsonBool* addBool(string name, bool value);
+        EXPORT JsonNull* addNull(string name);
 
         // Getters
         EXPORT JsonType getType(string name);
@@ -122,13 +149,16 @@ namespace Base
         EXPORT float getNumber(string name);
         EXPORT bool getBool(string name);
         EXPORT bool isNull(string name);
+        EXPORT uint getCount() { return values.size(); }
 
         JsonType getType() { return JsonType::OBJECT; }
-        void write();
+    
+      protected:
         list<string> keys;
         map<string, JsonAny*> values;
     
       private:
+        JsonAny* add(string name, JsonAny* any);
         JsonAny* get(string name, JsonType type);
     };
 
@@ -139,13 +169,11 @@ namespace Base
         EXPORT JsonFile(string filename);
         EXPORT JsonFile(File* filename);
         EXPORT JsonFile() {};
-        EXPORT ~JsonFile() {};
         EXPORT void save(string filename);
 
       private:
-
-        char* data;
-        char lastChar;
+        // Reading
+        char *data, lastChar;
         uint size, position, column, line;
 
         void readRoot();
@@ -156,8 +184,28 @@ namespace Base
         JsonAny* readJsonAny();
         JsonObject* readJsonObject(bool isRoot = false);
         JsonArray* readJsonArray();
-        JsonNumber* readJsonNumber();
         JsonString* readJsonString();
+        JsonNumber* readJsonNumber();
         JsonAny* readJsonWord();
+
+        // Writing
+        string saveStr;
+        uint tabs;
+        bool addComma;
+
+        void writeTabs();
+        void writeChar(char ch);
+        void writeString(string str);
+        void writeEndPrevious();
+        void writeStartSet(char ch);
+        void writeEndSet(char ch);
+
+        void writeJsonAny(JsonAny* any);
+        void writeJsonObject(Base::JsonObject* obj);
+        void writeJsonArray(Base::JsonArray* arr);
+        void writeJsonString(Base::JsonString* str);
+        void writeJsonNumber(Base::JsonNumber* num);
+        void writeJsonBool(Base::JsonBool* b);
+        void writeJsonNull();
     };
 };

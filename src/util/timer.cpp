@@ -13,14 +13,19 @@ Base::Timer::Timer(string name)
 void Base::Timer::stop()
 {
     endTime = high_resolution_clock::now();
+    duration<double> timeSpan = duration_cast<duration<double>>(endTime - startTime);
+    time = timeSpan.count() * 1000.0;
+}
+
+void Base::Timer::print()
+{
+    cout << name << " timer: " << toStringPrec(time, 3) << "ms" << endl;
 }
 
 void Base::Timer::stopAndPrint()
 {
     stop();
-    duration<double> timeSpan = duration_cast<duration<double>>(endTime - startTime);
-    time = timeSpan.count();
-    cout << name << " timer: " << std::fixed << toStringPrec(time, 3) << "ms" << endl;
+    print();
 }
 
 double Base::Timer::getDuration()

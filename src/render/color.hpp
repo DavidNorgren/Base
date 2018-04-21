@@ -2,14 +2,6 @@
 
 #include "util/math/mathfunc.hpp"
 
-#define COLOR_BLACK     Base::Color(0.f)
-#define COLOR_WHITE     Base::Color(1.f)
-#define COLOR_RED       Base::Color(1.f, 0.f, 0.f)
-#define COLOR_LIME      Base::Color(0.f, 1.f, 0.f)
-#define COLOR_BLUE      Base::Color(0.f, 0.f, 1.f)
-#define COLOR_YELLOW    Base::Color(1.f, 1.f, 0.f)
-#define COLOR_GREEN     Base::Color(0.f, 0.8f, 0.f)
-
 
 namespace Base
 {
@@ -77,13 +69,18 @@ namespace Base
             b = arr[2];
             a = 1.f;
         }
+
+        Color(string hex)
+        {
+            // TODO
+        }
     };
 
     //// Unary operators ////
 
     inline std::ostream& operator << (std::ostream& cout, const Color& a)
     {
-        return cout << "(" << a.r << "," << a.g << "," << a.b << "," << a.a << ")" << std::endl;
+        return cout << "(" << a.r << "," << a.g << "," << a.b << "," << a.a << ")" << endl;
     }
 
     //// Binary operators ////

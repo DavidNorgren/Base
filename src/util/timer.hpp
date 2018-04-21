@@ -9,6 +9,7 @@ namespace Base
       public:
         Timer(string name);
         void stop();
+        void print();
         void stopAndPrint();
         double getDuration();
 

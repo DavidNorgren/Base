@@ -19,6 +19,7 @@ Base::Image::Image(File* file)
     void *data = SOIL_load_image_from_memory((uchar*)file->rawData, file->size, &width, &height, 0, SOIL_LOAD_RGBA);
     load(data);
     SOIL_free_image_data((uchar*)data);
+    cout << "Width: " << width << endl << "Height: " << height << endl;
 }
 
 Base::Image::Image(Color color, int width, int height)

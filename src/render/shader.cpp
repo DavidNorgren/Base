@@ -1,6 +1,4 @@
 
-//#include "GLFW/glfw3.h"
-
 #include "common.hpp"
 #include "render/shader.hpp"
 #include "file/filefunc.hpp"
@@ -23,7 +21,7 @@ Base::Shader::Shader(File* file, function<void(GLuint)> setup)
 
 void Base::Shader::load(string source)
 {
-    std::cout << "Loading " << name << "..." << std::endl;
+    cout << "Loading " << name << "..." << endl;
     
     program = glCreateProgram();
     glGenBuffers(1, &vbo);
@@ -50,7 +48,7 @@ void Base::Shader::load(string source)
         glGetShaderiv(vs, GL_INFO_LOG_LENGTH, &errorLength);
         error.resize(errorLength);
         glGetShaderInfoLog(vs, errorLength, 0, &error[0]);
-        std::cout << "VERTEX SHADER COMPILATION ERROR!" << std::endl << error << " in " << name << std::endl << std::endl;
+        cout << "VERTEX SHADER COMPILATION ERROR!" << endl << error << " in " << name << endl << endl;
     }
     
     // Fragment shader setup
@@ -69,13 +67,13 @@ void Base::Shader::load(string source)
         glGetShaderiv(fs, GL_INFO_LOG_LENGTH, &errorLength);
         error.resize(errorLength);
         glGetShaderInfoLog(fs, errorLength, 0, &error[0]);
-        std::cout << "FRAGMENT SHADER COMPILATION ERROR!" << std::endl << error << " in " << name << std::endl << std::endl;
+        cout << "FRAGMENT SHADER COMPILATION ERROR!" << endl << error << " in " << name << endl << endl;
     }
 
     // Link shader program
     glLinkProgram(program);
     
-    std::cout << "Shader compiled" << std::endl;
+    cout << "Shader compiled" << endl;
 }
 
 void Base::Shader::select()

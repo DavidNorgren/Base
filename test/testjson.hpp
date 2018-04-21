@@ -8,17 +8,16 @@ namespace Base
     void testJSON(ResourceHandler* resHandler)
     {
         cout << "testJSON" << endl;
-        
+
         // Loading and saving
         try
         {
             Timer t1("JSON load");
             //JsonFile jf(resHandler->find("hello.json"));
-            JsonFile jf("D:/Dropbox/Projects/Minecraft/Mine-imator/Models/Custom/Snowball.json");
+            JsonFile jf("C:/users/david/downloads/canada.json");
             t1.stopAndPrint();
 
-            cout << jf.getString("credit") << endl;
-            cout << jf.getArray("elements")->values.size() << endl;
+            //cout << jf.getArray("features")->getObject(0)->getObject("geometry")->getArray("coordinates")->getCount() << endl;
 
             Timer t2("JSON save");
             jf.save("C:/Dev/Builds/base/out.json");
@@ -28,7 +27,7 @@ namespace Base
             cout << "Bar: " << jf.getNumber("Bar") << endl;
 
             JsonArray* arr =  jf.getArray("Array");
-            cout << "Array length: " << arr->values.size() << endl;
+            cout << "Array length: " << arr->getCount() << endl;
             cout << " 0: " << arr->getNumber(0) << endl;
             cout << " 1: " << arr->getNumber(1) << endl;
             cout << " 2: " << arr->getString(2) << endl;
@@ -44,7 +43,32 @@ namespace Base
             cout << "Object bool: " << (obj->getBool("bool") ? "true": "false") << endl;
             //JsonObject* nonExistant =  jf.getArray("Objects")->getObject(1);
 
-            jf.save("C:/Dev/Builds/base/out.json");
+            jf.save("C:/Dev/Builds/base/out1.json");
+        }
+        catch (JsonException& ex)
+        {
+            cout << ex.what() << endl;
+        }
+
+        // Generating
+        try
+        {
+            Timer t1("JSON generate");
+            JsonFile jf;
+            JsonArray* arr = jf.addArray("elements");
+            repeat (5)
+            {
+                JsonObject* obj = arr->addObject();
+                obj->addString("name", "HelloWorld");
+                obj->addNumber("value", 14052);
+                obj->addObject("sub")->addNumber("cost", 100);
+                obj->addNull("null example");
+            }
+            t1.stopAndPrint();
+
+            Timer t2("JSON save");
+            jf.save("C:/Dev/Builds/base/out2.json");
+            t2.stopAndPrint();
         }
         catch (JsonException& ex)
         {

@@ -27,6 +27,6 @@ namespace Base
 
     inline std::ostream& operator << (std::ostream& cout, const ScreenArea& a)
     {
-        return std::cout << "({ " << a.pos.x << "," << a.pos.y << " }," << a.width << "," << a.height << ")" << std::endl;
+        return cout << "({ " << a.pos.x << "," << a.pos.y << " }," << a.width << "," << a.height << ")" << endl;
     }
 }

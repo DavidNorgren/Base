@@ -10,6 +10,12 @@ EXPORT void Base::drawBegin()
     resetDrawingArea();
 }
 
+EXPORT void Base::drawClear(Color color)
+{
+    glClearColor(color.r, color.g, color.b, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
 EXPORT void Base::setDrawingArea(ScreenArea area)
 {
     glEnable(GL_SCISSOR_TEST);
@@ -111,19 +117,19 @@ EXPORT void Base::drawTextAligned(string text, ScreenPos pos, TextAlignX alignX,
 EXPORT void Base::drawTextAligned(string text, ScreenPos pos, Font* font, TextAlignX alignX, TextAlignY alignY, Color color)
 {
     // Vertical alignment
-    if (alignY != TOP)
+    if (alignY != TextAlignY::TOP)
     {
         int height = font->stringGetHeight(text);
         
-        if (alignY == MIDDLE)
+        if (alignY == TextAlignY::MIDDLE)
             pos.y -= height / 2;
 
-        else if (alignY == BOTTOM)
+        else if (alignY == TextAlignY::BOTTOM)
             pos.y -= height;
     }
         
     // Horizontal alignment
-    if (alignX == LEFT)
+    if (alignX == TextAlignX::LEFT)
         drawText(text, pos, font, color);
     else
     {
@@ -131,10 +137,10 @@ EXPORT void Base::drawTextAligned(string text, ScreenPos pos, Font* font, TextAl
         {
             int width = font->stringGetWidth(line);
             
-            if (alignX == CENTER)
+            if (alignX == TextAlignX::CENTER)
                 pos.x -= width / 2;
 
-            else if (alignX == RIGHT)
+            else if (alignX == TextAlignX::RIGHT)
                 pos.x -= width;
             
             drawText(line, pos, font, color);
@@ -144,7 +150,7 @@ EXPORT void Base::drawTextAligned(string text, ScreenPos pos, Font* font, TextAl
 
 EXPORT void Base::drawImage(string name, ScreenPos pos, Color color, float rotation, Vec2 scale)
 {
-    drawImage((Image*)appHandler->resourceHandler->find(name)->loaded, pos, color, rotation, scale);
+    drawImage((Image*)appHandler->resHandler->find(name)->loaded, pos, color, rotation, scale);
 }
 
 EXPORT void Base::drawImage(Image* image, ScreenPos pos, Color color, float rotation, Vec2 scale)
@@ -174,7 +180,7 @@ EXPORT void Base::drawImage(Image* image, ScreenPos pos, Color color, float rota
 
 EXPORT void Base::drawSubImage(string name, int subImage, ScreenPos pos, Color color, float rotation, Vec2 scale)
 {
-    drawSubImage((Image*)appHandler->resourceHandler->find(name)->loaded, subImage, pos, color, rotation, scale);
+    drawSubImage((Image*)appHandler->resHandler->find(name)->loaded, subImage, pos, color, rotation, scale);
 }
 
 EXPORT void Base::drawSubImage(Image* image, int subImage, ScreenPos pos, Color color, float rotation, Vec2 scale)
@@ -230,7 +236,7 @@ EXPORT void Base::drawBox(ScreenArea box, Color color, bool outline, int outline
 
 EXPORT void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edgeTopLeft, bool edgeTopRight, bool edgeBottomRight, bool edgeBottomLeft)
 {
-    Image* edge = (Image*)appHandler->resourceHandler->find(edgeImage)->loaded;
+    Image* edge = (Image*)appHandler->resHandler->find(edgeImage)->loaded;
     int edgeWidth = edge->width;
     int edgeHeight = edge->height;
     int i = 0;

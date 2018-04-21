@@ -133,7 +133,7 @@ namespace Base
 
     inline std::ostream& operator << (std::ostream& cout, const Vec3& a)
     {
-        return cout << "(" << a.x << "," << a.y << "," << a.z << ")" << std::endl;
+        return cout << "(" << a.x << "," << a.y << "," << a.z << ")" << endl;
     }
 
     //// Binary operators ////
