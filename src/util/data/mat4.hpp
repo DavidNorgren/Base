@@ -118,6 +118,21 @@ namespace Base
             );
         }
 
+        /* Builds a view matrix for looking at a point. */
+        static inline Mat4 viewLookAt(const Vec3<T>& eye, const Vec3<T>& at, const Vec3<T>& up)
+        {
+            Vec3<T> look = (at - eye).normalize();
+            Vec3<T> side = Vec3<T>::cross(look, up);
+            Vec3<T> newUp = Vec3<T>::cross(side, look);
+
+            return Mat4(
+                side.x, side.y, side.z, 0.f,
+                newUp.x, newUp.y, newUp.z, 0.f,
+                -look.x, -look.y, -look.z, 0.f,
+                0.f, 0.f, 0.f, 1.f
+            );
+        }
+
         // Binary operators
 
         Mat4& operator = (const Mat4& other)
@@ -127,7 +142,7 @@ namespace Base
             return *this;
         }
 
-        Mat4 operator * (const Mat4& other)
+        Mat4 operator * (const Mat4& other) const
         {
             Mat4 product;
             for (int i = 0; i < 4; i++)
@@ -143,7 +158,7 @@ namespace Base
             return product;
         }
 
-        inline Vec3<T> operator * (const Vec3<T>& other)
+        inline Vec3<T> operator * (const Vec3<T>& other) const
         {
             return Vec3<T>(
                 elem[0] * other.x + elem[4] * other.y + elem[8] * other.z + elem[12] * 0.f,

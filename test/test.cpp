@@ -37,7 +37,7 @@ namespace Base
     void TestApp::loopEvent()
     {
         testRender(this);
-        //testDraw(this);
+        testDraw(this);
     }
 }
 

@@ -39,17 +39,17 @@ namespace Base
 
         // Methods
 
-        static inline T length(const Vec2& a)
+        inline T length()
         {
-            return sqrt(a.x * a.x + a.y * a.y);
+            return sqrt(x * x + y * y);
         }
 
-        static inline Vec2 normalize(const Vec2& a)
+        inline Vec2 normalize()
         {
-            T len = length(a);
+            T len = length();
             if (len == (T)0)
                 return Vec2((T)0);
-            return Vec2(a.x / len, a.y / len);
+            return Vec2(x / len, y / len);
         }
 
         static inline T distance(const Vec2& a, const Vec2& b)
@@ -79,7 +79,7 @@ namespace Base
             return *this;
         }
 
-        inline Vec2 operator + (const Vec2& other)
+        inline Vec2 operator + (const Vec2& other) const
         {
             return Vec2(x + other.x, y + other.y);
         }
@@ -90,7 +90,7 @@ namespace Base
             y += other.y;
         }
 
-        inline Vec2 operator - (const Vec2& other)
+        inline Vec2 operator - (const Vec2& other) const
         {
             return Vec2(other.x, other.y); 
         }
@@ -101,7 +101,7 @@ namespace Base
             y -= other.y;
         }
 
-        inline Vec2 operator * (const T& mul)
+        inline Vec2 operator * (const T& mul) const
         {
             return Vec2(mul * x, mul * y);
         }

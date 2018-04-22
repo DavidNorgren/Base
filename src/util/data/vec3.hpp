@@ -42,18 +42,17 @@ namespace Base
 
         // Methods
 
-        static inline T length(const Vec3& a)
+        inline T length()
         {
-            return sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+            return sqrt(x * x + y * y + z * z);
         }
 
-        static inline Vec3 normalize(const Vec3& a)
+        inline Vec3 normalize()
         {
-            T len = length(a);
-            if (len == (T)0) {
+            T len = length();
+            if (len == (T)0)
                 return Vec3((T)0);
-            }
-            return Vec3(a.x / len, a.y / len, a.z / len);
+            return Vec3(x / len, y / len, z / len);
         }
 
         static inline T distance(const Vec3& a, const Vec3& b)
@@ -66,12 +65,16 @@ namespace Base
             return a.x * b.x + a.y * b.y + a.z * b.z;
         }
 
-        /* TODO
         static inline Vec3 cross(const Vec3& a, const Vec3& b)
         {
-            return embree::cross(a.eVec, b.eVec);
+            return Vec3(
+                a.y * b.z - a.z * b.y,
+                a.z * b.x - a.x * b.z,
+                a.x * b.y - a.y * b.x
+            );
         }
 
+        /* TODO
         static inline Vec3 reflect(const Vec3& incidence, const Vec3& normal)
         {
             return embree::reflect(incidence.eVec, normal.eVec);
@@ -123,7 +126,7 @@ namespace Base
             return *this;
         }
 
-        inline Vec3 operator + (const Vec3& other)
+        inline Vec3 operator + (const Vec3& other) const
         {
             return Vec3(x + other.x, y + other.y, z + other.z);
         }
@@ -135,9 +138,10 @@ namespace Base
             z += other.z;
         }
 
-        inline Vec3 operator - (const Vec3& other)
+
+        inline Vec3<T> operator - (const Vec3<T>& other) const
         {
-            return Vec3(other.x, other.y, other.z); 
+            return Vec3<T>(x - other.x, y - other.y, z - other.z); 
         }
 
         inline void operator -= (const Vec3& other)
@@ -147,7 +151,7 @@ namespace Base
             z -= other.z;
         }
 
-        inline Vec3 operator * (const T& mul)
+        inline Vec3 operator * (const T& mul) const
         {
             return Vec3(mul * x, mul * y, mul * z);
         }

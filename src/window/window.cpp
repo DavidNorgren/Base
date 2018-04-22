@@ -162,6 +162,7 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
     
     maximize();
 
+    //glfwSwapInterval(0);
     while (!glfwWindowShouldClose(handle))
     {
         // Clear screen
