@@ -1,7 +1,9 @@
 #include <base.hpp>
 
+#include "common.hpp"
 #include "testjson.hpp"
-#include "testwindow.hpp"
+#include "testrender.hpp"
+#include "testdraw.hpp"
 
 
 extern char resData[] asm("_binary_res_zip_start");
@@ -25,17 +27,17 @@ namespace Base
     TestApp::TestApp() : AppHandler::AppHandler(resData, (uint)resSize)
     {
         mainWindow->backgroundColor = Colors::LIGHT_GRAY;
+        //testJSON(this);
 
-        // JSON testing
-        testJSON(resHandler);
         cout << std::flush;
+        testRenderInit(this);
         launch();
     }
 
     void TestApp::loopEvent()
     {
-        // Window testing
-        testWindow(resHandler);
+        testRender(this);
+        //testDraw(this);
     }
 }
 

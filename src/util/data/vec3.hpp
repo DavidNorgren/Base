@@ -26,13 +26,6 @@ namespace Base
             this->z = z;
         }
 
-        Vec3(int x, int y, int z)
-        {
-            this->x = x;
-            this->y = y;
-            this->z = z;
-        }
-
         Vec3(T x[3])
         {
             this->x = x[0];
@@ -190,7 +183,8 @@ namespace Base
     }
 
     // Define shorthands
-    using Vec3i = Vec3<int>;
-    using Vec3f = Vec3<float>;
-    using Vec3d = Vec3<double>;
+    using Vec3i  = Vec3<int>;
+    using Vec3ui = Vec3<uint>;
+    using Vec3f  = Vec3<float>;
+    using Vec3d  = Vec3<double>;
 }

@@ -51,15 +51,15 @@ EXPORT void Base::drawText(string text, ScreenPos pos, Color color)
 
 EXPORT void Base::drawText(string text, ScreenPos pos, Font* font, Color color)
 {
-    // Init position and texture coordinate buffers
-    Vec3f posData[text.length() * 6];
-    Vec2f texCoordData[text.length() * 6];
-
+    Vertex2Di vertexData[text.length() * 6];
     ScreenPos charPos = { 0, 0 };
+    int vertexNum = 0;
+    
     for (uint c = 0; c < text.length(); c++)
     {
         uchar curChar = text[c];
 
+        // Skip to next line
         if (curChar == '\n' || curChar == '\r')
         {
             charPos.x = 0;
@@ -67,44 +67,37 @@ EXPORT void Base::drawText(string text, ScreenPos pos, Font* font, Color color)
             continue;
         }
 
+        // Ignore characters out of range
         if (curChar < font->start || curChar > font->end)
             continue;
 
         CharInfo curCharInfo = font->chars[curChar];
 
+        // Only render visible characters
         if (curCharInfo.size.width && curCharInfo.size.height)
         {
-            float vx = charPos.x + curCharInfo.pos.x;
-            float vy = charPos.y + font->glTextureSize.height - curCharInfo.pos.y;
-            float vw = curCharInfo.size.width;
-            float vh = curCharInfo.size.height;
+            int vx = charPos.x + curCharInfo.pos.x;
+            int vy = charPos.y + font->glTextureSize.height - curCharInfo.pos.y;
+            int vw = curCharInfo.size.width;
+            int vh = curCharInfo.size.height;
             float tx = curCharInfo.mapX / font->glTextureSize.width;
             float tw = (float)curCharInfo.size.width / font->glTextureSize.width;
             float th = (float)curCharInfo.size.height / font->glTextureSize.height;
 
-            int i = c * 6;
-
-            posData[i + 0] = { vx, vy, 0.f };
-            posData[i + 1] = { vx, vy + vh, 0.f };
-            posData[i + 2] = { vx + vw, vy, 0.f };
-            posData[i + 3] = { vx + vw, vy, 0.f };
-            posData[i + 4] = { vx, vy + vh, 0.f };
-            posData[i + 5] = { vx + vw, vy + vh, 0.f };
-
-            texCoordData[i + 0] = { tx, 0.f };
-            texCoordData[i + 1] = { tx, th };
-            texCoordData[i + 2] = { tx + tw, 0.f };
-            texCoordData[i + 3] = { tx + tw, 0.f };
-            texCoordData[i + 4] = { tx, th };
-            texCoordData[i + 5] = { tx + tw, th };
+            vertexData[vertexNum++] = { { vx, vy },           { tx, 0.f } };
+            vertexData[vertexNum++] = { { vx, vy + vh },      { tx, th } };
+            vertexData[vertexNum++] = { { vx + vw, vy },      { tx + tw, 0.f } };
+            vertexData[vertexNum++] = { { vx + vw, vy },      { tx + tw, 0.f } };
+            vertexData[vertexNum++] = { { vx, vy + vh },      { tx, th } };
+            vertexData[vertexNum++] = { { vx + vw, vy + vh }, { tx + tw, th } };
         }
 
         charPos += curCharInfo.advance;
     }
 
-    Mat4x4f mat = appHandler->mainWindow->ortho * Mat4x4f::translate({ pos.x, pos.y, 0 });
+    Mat4f mat = appHandler->mainWindow->ortho * Mat4f::translate({ (float)pos.x, (float)pos.y, 0 });
                  
-    appHandler->drawingShader->render2D(mat, posData, texCoordData, text.length() * 6,
+    appHandler->drawingShader->render2D(mat, vertexData, vertexNum,
                                         font->glTexture, Color(color, appHandler->drawingAlpha));
 }
 
@@ -154,25 +147,20 @@ EXPORT void Base::drawImage(string name, ScreenPos pos, Color color, float rotat
 
 EXPORT void Base::drawImage(Image* image, ScreenPos pos, Color color, float rotation, Vec2f scale)
 {
-    Vec3f posData[4] = {
-        { 0.f },
-        { (float)image->glTextureSize.width, 0.f, 0.f },
-        { 0.f, (float)image->glTextureSize.height, 0.f },
-        { (float)image->glTextureSize.width, (float)image->glTextureSize.height, 0.f },
-    };
-    Vec2f texCoordData[4] = {
-        { 0, 0 },
-        { 1, 0 },
-        { 0, 1 },
-        { 1, 1 }
+    Size2Di size = image->glTextureSize;
+    Vertex2Di vertexData[4] = {
+        { { 0, 0 },                    { 0, 0 } },
+        { { size.width, 0 },           { 1, 0 } },
+        { { 0, size.height },          { 0, 1 } },
+        { { size.width, size.height }, { 1, 1 } }
     };
     
-    Mat4x4f mat = appHandler->mainWindow->ortho *
-                  Mat4x4f::translate({ pos.x, pos.y, 0 }) *
-                  Mat4x4f::rotate({ 0.f, 0.f, 1.f }, rotation) *
-                  Mat4x4f::scale({ scale.x, scale.y, 1.f });
+    Mat4f mat = appHandler->mainWindow->ortho *
+                    Mat4f::translate({ (float)pos.x, (float)pos.y, 0 }) *
+                    Mat4f::rotate({ 0.f, 0.f, 1.f }, rotation) *
+                    Mat4f::scale({ scale.x, scale.y, 1.f });
 
-    appHandler->drawingShader->render2D(mat, posData, texCoordData, 4,
+    appHandler->drawingShader->render2D(mat, vertexData, 4,
                                         image->glTexture, Color(color, appHandler->drawingAlpha),
                                         GL_TRIANGLE_STRIP);
 }
@@ -184,58 +172,47 @@ EXPORT void Base::drawSubImage(string name, int subImage, ScreenPos pos, Color c
 
 EXPORT void Base::drawSubImage(Image* image, int subImage, ScreenPos pos, Color color, float rotation, Vec2f scale)
 {
-    int subImages = image->glTextureSize.width / image->glTextureSize.height;
+    Size2Di size = image->glTextureSize;
+    int subImages = size.width / size.height;
     Vec2f texStart = { (float)subImage / (float)subImages, 0.f };
-    Vec2f texEnd = { texStart.x + (float)image->glTextureSize.height / (float)image->glTextureSize.width, 1.f };
+    Vec2f texEnd = { texStart.x + (float)size.height / size.width, 1.f };
     
-    Vec3f posData[4] = {
-        { 0.f },
-        { (float)image->glTextureSize.height, 0.f, 0.f },
-        { 0.f, (float)image->glTextureSize.height, 0.f },
-        { (float)image->glTextureSize.height, (float)image->glTextureSize.height, 0.f },
-    };
-    Vec2f texCoordData[4] = {
-        texStart,
-        { texEnd.x, texStart.y },
-        { texStart.x, texEnd.y },
-        texEnd
+    Vertex2Di vertexData[4] = {
+        { { 0, 0 },                     texStart },
+        { { size.height, 0 },           { texEnd.x, texStart.y } },
+        { { 0, size.height },           { texStart.x, texEnd.y } },
+        { { size.height, size.height }, texEnd }
     };
     
-    Mat4x4f mat = appHandler->mainWindow->ortho *
-                Mat4x4f::translate({ pos.x, pos.y, 0 }) *
-                Mat4x4f::rotate({ 0.f, 0.f, 1.f }, rotation) *
-                Mat4x4f::scale({ scale.x, scale.y, 1.f });
+    Mat4f mat = appHandler->mainWindow->ortho *
+                Mat4f::translate({ (float)pos.x, (float)pos.y, 0 }) *
+                Mat4f::rotate({ 0.f, 0.f, 1.f }, rotation) *
+                Mat4f::scale({ scale.x, scale.y, 1.f });
                  
-    appHandler->drawingShader->render2D(mat, posData, texCoordData, 4, 
+    appHandler->drawingShader->render2D(mat, vertexData, 4, 
                                         image->glTexture, Color(color, appHandler->drawingAlpha),
                                         GL_TRIANGLE_STRIP);
 }
 
 EXPORT void Base::drawBox(ScreenArea box, Color color, bool outline, int outlineThickness)
 {
-    ScreenPos& pos = box.pos;
-    Vec3f posData[5] = {
-        { pos.x, pos.y, 0 },
-        { pos.x + box.width, pos.y, 0 },
-        { pos.x + box.width, pos.y + box.height, 0 },
-        { pos.x, pos.y + box.height, 0 },
-        { pos.x, pos.y, 0 }
+    Vertex2Di vertexData[5] = {
+        { { box.x, box.y },                          { 0, 0 } },
+        { { box.x + box.width, box.y },              { 0, 0 } },
+        { { box.x + box.width, box.y + box.height }, { 0, 0 } },
+        { { box.x, box.y + box.height },             { 0, 0 } },
+        { { box.x, box.y },                          { 0, 0 } }
     };
-    
-    // No texture data (solid color texture)
-    Vec2f texCoordData[5];
-    for (int i = 0; i < 5; i++)
-        texCoordData[i] = { 0, 0 };
 
     glLineWidth(outlineThickness);
-    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 5,
+    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, vertexData, 5,
                                         appHandler->solidColor->glTexture, Color(color, appHandler->drawingAlpha),
                                         outline ? GL_LINE_STRIP : GL_TRIANGLE_FAN);
 }
 
 EXPORT void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edgeTopLeft, bool edgeTopRight, bool edgeBottomRight, bool edgeBottomLeft)
 {
-    Image* edge = (Image*)appHandler->resHandler->find(edgeImage)->loaded;
+    /*Image* edge = (Image*)appHandler->resHandler->find(edgeImage)->loaded;
     int edgeWidth = edge->glTextureSize.width;
     int edgeHeight = edge->glTextureSize.height;
     int i = 0;
@@ -308,23 +285,18 @@ EXPORT void Base::drawBoxEdges(ScreenArea box, Color color, string edgeImage, bo
     
     appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, numVertex,
                                         appHandler->solidColor->glTexture, Color(color, appHandler->drawingAlpha),
-                                        GL_TRIANGLE_FAN);
+                                        GL_TRIANGLE_FAN);*/
 }
 
 EXPORT void Base::drawLine(ScreenPos start, ScreenPos end, Color color, int thickness)
 {
-    Vec3f posData[2] = {
-        { start.x, start.y, 0 },
-        { end.x, end.y, 0 }
+    Vertex2Di vertexData[2] = {
+        { { start.x, start.y }, { 0, 0 } },
+        { { end.x, end.y },     { 0, 0 } }
     };
     
-    // No texture data (solid color texture)
-    Vec2f texCoordData[2];
-    texCoordData[0] = { 0, 0 };
-    texCoordData[1] = { 0, 0 };
-    
     glLineWidth(thickness);
-    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, posData, texCoordData, 2,
+    appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, vertexData , 2,
                                         appHandler->solidColor->glTexture, Color(color, appHandler->drawingAlpha),
                                         GL_LINES);
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+#define GLEW_STATIC
+#include "GL/glew.h"
+
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
@@ -38,7 +41,7 @@ namespace Base
         uint start, end, size;
         CharInfo* chars;
 
-        uint glTexture;
+        GLuint glTexture;
         Size2Di glTextureSize;
 
       private:

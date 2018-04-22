@@ -39,7 +39,7 @@
 #include "render/image.hpp"
 #include "render/drawfunc.hpp"
 #include "util/data/list.hpp"
-#include "util/data/mat4x4.hpp"
+#include "util/data/mat4.hpp"
 #include "util/data/region2d.hpp"
 #include "util/data/size2d.hpp"
 #include "util/data/size3d.hpp"

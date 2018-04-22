@@ -3,9 +3,9 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
-#include "util/data/vec2.hpp"
-#include "util/data/vec3.hpp"
-#include "util/data/mat4x4.hpp"
+#include "util/data/vertex2d.hpp"
+#include "util/data/vertex3d.hpp"
+#include "util/data/mat4.hpp"
 #include "file/file.hpp"
 #include "render/color.hpp"
 
@@ -24,9 +24,10 @@ namespace Base
         /* Selects the shader for usage */
         void select();
 
-        /* Renders a 2D graphic using a projection matrix and
-           buffers for position and texture coordinate data. */
-        void render2D(Mat4x4f matrix, Vec3f* posData, Vec2f* texCoordData, int vertices, GLuint glTexture, Color color = { 1.f }, GLenum mode = GL_TRIANGLES);
+        /* Renders a 2D graphic using a projection matrix and buffers for vertex data. */
+        void render2D(Mat4f matrix, Vertex2Di* vertexData, int vertices, GLuint glTexture, Color color = { 1.f }, GLenum mode = GL_TRIANGLES);
+
+        void render3D(Mat4f matrix, GLuint vbo, int vertices, GLuint ibo, int indices, GLuint glTexture);
 
       private:
         void load(string source);

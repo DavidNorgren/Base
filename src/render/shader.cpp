@@ -81,31 +81,25 @@ void Base::Shader::select()
     glUseProgram(glProgram);
 }
 
-void Base::Shader::render2D(Mat4x4f matrix, Vec3f* posData, Vec2f* texCoordData, int vertices, GLuint glTexture, Color color, GLenum mode)
+void Base::Shader::render2D(Mat4f matrix, Vertex2Di* vertexData, int vertices, GLuint glTexture, Color color, GLenum mode)
 {
     // Select shader program, get uniforms
-    GLint aPos = glGetAttribLocation(glProgram, "aPos");
+    GLint aPos      = glGetAttribLocation(glProgram, "aPos");
     GLint aTexCoord = glGetAttribLocation(glProgram, "aTexCoord");
-    GLint uMat = glGetUniformLocation(glProgram, "uMat");
-    GLint uSampler = glGetUniformLocation(glProgram, "uSampler");
-    GLint uColor = glGetUniformLocation(glProgram, "uColor");
+    GLint uMat      = glGetUniformLocation(glProgram, "uMat");
+    GLint uSampler  = glGetUniformLocation(glProgram, "uSampler");
+    GLint uColor    = glGetUniformLocation(glProgram, "uColor");
 
     // Select shader's VBO to send into the shader
     glBindBuffer(GL_ARRAY_BUFFER, glVbo);
-
-    // Bind buffers with data
-    uint sizePositions = vertices * sizeof(Vec3f);
-    uint sizeTexCoords = vertices * sizeof(Vec2f);
-    glBufferData(GL_ARRAY_BUFFER, sizePositions + sizeTexCoords, NULL, GL_DYNAMIC_DRAW);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizePositions, posData);
-    glBufferSubData(GL_ARRAY_BUFFER, sizePositions, sizeTexCoords, texCoordData);
+    glBufferData(GL_ARRAY_BUFFER, vertices * sizeof(Vertex2Di), &vertexData[0], GL_DYNAMIC_DRAW);
 
     // Pass buffers
     glEnableVertexAttribArray(aPos);
     glEnableVertexAttribArray(aTexCoord);
-    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (void*)sizePositions);
-
+    glVertexAttribPointer(aPos,      2, GL_INT,   GL_FALSE, sizeof(Vertex2Di), 0);
+    glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2Di), (void*)sizeof(Vec2f));
+    
     // Send in matrix
     glUniformMatrix4fv(uMat, 1, GL_FALSE, matrix.elem);
 
@@ -122,6 +116,52 @@ void Base::Shader::render2D(Mat4x4f matrix, Vec3f* posData, Vec2f* texCoordData,
 
     // Reset
     glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aTexCoord);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Base::Shader::render3D(Base::Mat4f matrix, GLuint vbo, int vertices, GLuint ibo, int indices, GLuint glTexture)
+{
+    // Select shader program, get uniforms
+    GLint aPos      = glGetAttribLocation(glProgram, "aPos");
+    GLint aNormal   = glGetAttribLocation(glProgram, "aNormal");
+    GLint aTexCoord = glGetAttribLocation(glProgram, "aTexCoord");
+    GLint uMat      = glGetUniformLocation(glProgram, "uMat");
+    GLint uSampler  = glGetUniformLocation(glProgram, "uSampler");
+    GLint uColor    = glGetUniformLocation(glProgram, "uColor");
+
+    // Select shader's VBO to send into the shader
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+    // Pass buffers
+    glEnableVertexAttribArray(aPos);
+    glEnableVertexAttribArray(aNormal);
+    glEnableVertexAttribArray(aTexCoord);
+    glVertexAttribPointer(aPos,      3, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), 0);
+    glVertexAttribPointer(aNormal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), (void*)sizeof(Vec3f));
+    glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), (void*)(sizeof(Vec3f) + sizeof(Vec3f)));
+
+    // Send in matrix
+    glUniformMatrix4fv(uMat, 1, GL_FALSE, matrix.elem);
+
+    // Send in color
+    Color color = { 1.f };
+    glUniform4fv(uColor, 1, (float*)&color);
+
+    // Send in texture
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, glTexture);
+    glUniform1i(uSampler, 0);
+
+    // Draw all triangles
+	glEnable(GL_DEPTH_TEST);
+	glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, 0);
+	glDisable(GL_DEPTH_TEST);
+
+    // Reset
+    glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aNormal);
     glDisableVertexAttribArray(aTexCoord);
     glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -5,7 +5,7 @@
 
 namespace Base
 {
-    void testJSON(ResourceHandler* resHandler)
+    void testJSON(AppHandler* app)
     {
         cout << "testJSON" << endl;
 
@@ -13,7 +13,7 @@ namespace Base
         try
         {
             Timer t1("JSON load");
-            //JsonFile jf(resHandler->find("hello.json"));
+            //JsonFile jf(app->resHandler->find("hello.json"));
             JsonFile jf("C:/users/david/downloads/canada.json");
             t1.stopAndPrint();
 

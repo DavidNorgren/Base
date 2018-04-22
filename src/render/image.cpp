@@ -21,13 +21,12 @@ Base::Image::Image(File* file)
     SOIL_free_image_data((uchar*)data);
 }
 
-Base::Image::Image(Color color, int width, int height)
+Base::Image::Image(Color color, Size2Di size)
 {
-    this->glTextureSize.width = width;
-    this->glTextureSize.height = height;
+    this->glTextureSize = size;
     
-    uchar* data = new uchar[width * height * 4];
-    for (int c = 0; c < width * height; c += 4)
+    uchar* data = new uchar[size.width * size.height * 4];
+    for (int c = 0; c < size.width * size.height; c += 4)
     {
         data[c] = color.r * 255.f;
         data[c + 1] = color.g * 255.f;

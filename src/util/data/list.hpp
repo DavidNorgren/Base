@@ -31,7 +31,7 @@ namespace Base
             return std::distance(vec.begin(), i);
         }
 
-        void remove(int index)
+        void removeAt(int index)
         {
             vec.erase(vec.begin() + index);
         }
@@ -62,6 +62,12 @@ namespace Base
         void sort(bool descending = true)
         {
           // TODO
+        }
+
+        inline List& operator = (const std::vector<T>& other)
+        {
+            vec = other;
+            return *this;
         }
 
         // Get/Set via [] operator

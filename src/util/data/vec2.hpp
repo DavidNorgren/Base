@@ -136,8 +136,9 @@ namespace Base
     }
 
     // Define shorthands
-    using Vec2i = Vec2<int>;
-    using Vec2f = Vec2<float>;
-    using Vec2d = Vec2<double>;
+    using Vec2i     = Vec2<int>;
+    using Vec2ui    = Vec2<uint>;
+    using Vec2f     = Vec2<float>;
+    using Vec2d     = Vec2<double>;
     using ScreenPos = Vec2<int>;
 }

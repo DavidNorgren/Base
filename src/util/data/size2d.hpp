@@ -8,11 +8,6 @@ namespace Base
         T width, height;
 
         Size2D() {}
-        
-        Size2D(T size)
-        {
-            width = height = size;
-        }
 
         Size2D(T width, T height)
         {

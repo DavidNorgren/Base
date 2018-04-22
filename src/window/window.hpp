@@ -2,7 +2,7 @@
 
 #include "GLFW/glfw3.h"
 
-#include "util/data/mat4x4.hpp"
+#include "util/data/mat4.hpp"
 #include "util/data/region2d.hpp"
 #include "render/colors.hpp"
 
@@ -57,6 +57,6 @@ namespace Base
         function<void()> loopEventFunc, resizeEventFunc;
         function<void()> mouseEventFunc;
         function<void()> keyEventFunc;
-        Mat4x4f ortho;
+        Mat4f ortho;
     };
 }

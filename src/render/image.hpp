@@ -18,7 +18,7 @@ namespace Base
         Image(File* file);
 
         /* Generates an image from a solid color. */
-        Image(Color color, int width, int height);
+        Image(Color color, Size2Di size);
 
         GLuint glTexture;
         Size2Di glTextureSize;

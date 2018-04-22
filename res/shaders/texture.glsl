@@ -5,6 +5,7 @@
 #version 420 core
 
 in vec3 aPos;
+in vec3 aNormal;
 in vec2 aTexCoord;
 out vec2 vTexCoord;
 uniform mat4 uMat;

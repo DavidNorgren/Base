@@ -40,7 +40,7 @@ EXPORT Base::AppHandler::AppHandler(void* resData, uint resSize)
     resHandler = new ResourceHandler(resData, resSize);
     drawingFont = (Font*)resHandler->find("fonts/opensans.ttf")->loaded;
     drawingShader = (Shader*)resHandler->find("shaders/texture.glsl")->loaded;
-    solidColor = new Image(Colors::WHITE, 1, 1);
+    solidColor = new Image(Colors::WHITE, { 1, 1 });
 }
 
 EXPORT void Base::AppHandler::launch()

@@ -8,11 +8,6 @@ namespace Base
         T width, length, height;
         
         Size3D() {}
-        
-        Size3D(T size)
-        {
-            width = length = height = size;
-        }
 
         Size3D(T width, T length, T height)
         {
