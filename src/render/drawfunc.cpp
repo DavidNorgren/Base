@@ -72,15 +72,15 @@ EXPORT void Base::drawText(string text, ScreenPos pos, Font* font, Color color)
 
         CharInfo curCharInfo = font->chars[curChar];
 
-        if (curCharInfo.width && curCharInfo.height)
+        if (curCharInfo.size.width && curCharInfo.size.height)
         {
-            float vx = charPos.x + curCharInfo.left;
-            float vy = charPos.y + font->glTextureSize.height - curCharInfo.top;
-            float vw = curCharInfo.width;
-            float vh = curCharInfo.height;
+            float vx = charPos.x + curCharInfo.pos.x;
+            float vy = charPos.y + font->glTextureSize.height - curCharInfo.pos.y;
+            float vw = curCharInfo.size.width;
+            float vh = curCharInfo.size.height;
             float tx = curCharInfo.mapX / font->glTextureSize.width;
-            float tw = curCharInfo.width / font->glTextureSize.width;
-            float th = curCharInfo.height / font->glTextureSize.height;
+            float tw = (float)curCharInfo.size.width / font->glTextureSize.width;
+            float th = (float)curCharInfo.size.height / font->glTextureSize.height;
 
             int i = c * 6;
 
@@ -99,11 +99,10 @@ EXPORT void Base::drawText(string text, ScreenPos pos, Font* font, Color color)
             texCoordData[i + 5] = { tx + tw, th };
         }
 
-        charPos += { (int)curCharInfo.advanceX, (int)curCharInfo.advanceY };
+        charPos += curCharInfo.advance;
     }
 
-    Mat4x4f mat = appHandler->mainWindow->ortho *
-                  Mat4x4f::translate({ pos.x, pos.y, 0 });
+    Mat4x4f mat = appHandler->mainWindow->ortho * Mat4x4f::translate({ pos.x, pos.y, 0 });
                  
     appHandler->drawingShader->render2D(mat, posData, texCoordData, text.length() * 6,
                                         font->glTexture, Color(color, appHandler->drawingAlpha));

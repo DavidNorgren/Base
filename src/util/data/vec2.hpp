@@ -37,13 +37,6 @@ namespace Base
             y = other.y;
         }
 
-        inline Vec2& operator=(const Vec2& other)
-        {
-            x = other.x;
-            y = other.y;
-            return *this;
-        }
-
         // Methods
 
         static inline T length(const Vec2& a)
@@ -78,6 +71,13 @@ namespace Base
         }
         
         // Binary operators
+
+        inline Vec2& operator = (const Vec2& other)
+        {
+            x = other.x;
+            y = other.y;
+            return *this;
+        }
 
         inline Vec2 operator + (const Vec2& other)
         {

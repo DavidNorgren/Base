@@ -41,13 +41,6 @@ namespace Base
             pos = other.pos;
             size = other.size;
         }
-
-        inline Region2D& operator=(const Region2D& other)
-        {
-            pos = other.pos;
-            size = other.size;
-            return *this;
-        }
         
         static inline Region2D intersection(const Region2D& a, const Region2D& b)
         {
@@ -64,6 +57,13 @@ namespace Base
                 start,
                 Size2D<T>(max(0, end.x - start.x), max(0, end.y - start.y))
             };
+        }
+
+        inline Region2D& operator = (const Region2D& other)
+        {
+            pos = other.pos;
+            size = other.size;
+            return *this;
         }
     };
     

@@ -26,7 +26,7 @@ namespace Base
     EXPORT int stringGetCount(string str, string sub, int index = 0);
 
     /* Converts a value into a string. */
-    template<typename T> EXPORT string toString(T val)
+    template<typename T> string toString(T val)
     {
         std::stringstream ss;
         ss << val;
@@ -34,7 +34,7 @@ namespace Base
     }
 
     /* Converts a value into a string with a given amount of decimal places. */
-    template<typename T> EXPORT extern string toStringPrec(T val, int prec)
+    template<typename T> string toStringPrec(T val, int prec)
     {
         std::stringstream ss;
         ss << std::fixed << std::setprecision(prec) << val;

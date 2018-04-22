@@ -5,6 +5,7 @@
 
 #include "file/file.hpp"
 #include "util/data/size2d.hpp"
+#include "util/data/vec2.hpp"
 
 namespace Base
 {
@@ -18,7 +19,9 @@ namespace Base
     
     struct CharInfo
     {
-        float width, height, left, top, advanceX, advanceY, mapX;
+        Size2Di size;
+        Vec2i pos, advance;
+        float mapX;
     };
 
     class Font

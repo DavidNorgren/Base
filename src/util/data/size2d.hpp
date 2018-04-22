@@ -26,7 +26,7 @@ namespace Base
             height = other.height;
         }
 
-        inline Size2D& operator=(const Size2D& other)
+        inline Size2D& operator = (const Size2D& other)
         {
             width = other.width;
             height = other.height;

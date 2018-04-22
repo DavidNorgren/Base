@@ -32,7 +32,7 @@ namespace Base
         void load(string source);
 
         string name;
-        uint program, vbo;
+        uint glProgram, glVbo;
         function<void(uint)> setup;
     };
 }

@@ -28,7 +28,7 @@ namespace Base
             height = other.height;
         }
 
-        inline Size3D& operator=(const Size3D& other)
+        inline Size3D& operator = (const Size3D& other)
         {
             width = other.width;
             length = other.length;

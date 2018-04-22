@@ -39,13 +39,6 @@ namespace Base
                 elem[i] = other.elem[i];
         }
 
-        inline Mat4x4& operator=(const Mat4x4& other)
-        {
-            for (int i = 0; i < 16; i++)
-                elem[i] = other.elem[i];
-            return *this;
-        }
-
         // Methods
 
         /* Builds a translation matrix. */
@@ -126,6 +119,13 @@ namespace Base
         }
 
         // Binary operators
+
+        Mat4x4& operator = (const Mat4x4& other)
+        {
+            for (int i = 0; i < 16; i++)
+                elem[i] = other.elem[i];
+            return *this;
+        }
 
         Mat4x4 operator * (const Mat4x4& other)
         {

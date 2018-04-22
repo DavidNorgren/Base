@@ -60,7 +60,7 @@ namespace Base
             a = color.a * alpha;
         }
 
-        Color(float arr[3])
+        inline Color(float arr[3])
         {
             r = arr[0];
             g = arr[1];
@@ -72,25 +72,54 @@ namespace Base
         {
             // TODO
         }
-    };
 
-    // Unary operators
+        // Binary operators
+
+        inline Color& operator = (const Color& other)
+        {
+            r = other.r;
+            g = other.g;
+            b = other.b;
+            a = other.a;
+            return *this;
+        }
+
+        inline Color operator * (float mul)
+        {
+            return Color(mul * r, mul * g, mul * b, a);
+        }
+
+        inline Color operator + (const Color& other)
+        {
+            return Color(
+                min(1.f, r + other.r),
+                min(1.f, g + other.g),
+                min(1.f, b + other.b),
+                min(1.f, a + other.a)
+            );
+        }
+
+        inline Color operator * (const Color& other)
+        {
+            return Color(r * other.r, g * other.g, b * other.b, a * other.a);
+        }
+
+        // Comparison operators
+
+        inline bool operator == (const Color& other)
+        {
+            return (r == other.r && g == other.g && b == other.b && a == other.a);
+        }
+
+        inline bool operator != (const Color& other)
+        {
+            return !(*this == other);
+        }
+    };
 
     inline std::ostream& operator << (std::ostream& cout, const Color& a)
     {
         return cout << "(" << a.r << "," << a.g << "," << a.b << "," << a.a << ")" << endl;
-    }
-
-    // Binary operators
-
-    inline Color operator + (const Color& a, const Color& b)
-    {
-        return Color(
-            min(1.f, a.r + b.r),
-            min(1.f, a.g + b.g),
-            min(1.f, a.b + b.b),
-            min(1.f, a.a + b.a)
-        );
     }
 
     inline void operator += (Color& a, const Color& b)
@@ -98,19 +127,9 @@ namespace Base
         a = a + b;
     }
 
-    inline Color operator * (const Color& a, const Color& b)
-    {
-        return Color(a.r * b.r, a.g * b.g, a.b * b.b, a.a * b.a);
-    }
-
     inline Color operator * (float a, const Color& b)
     {
         return Color(a * b.r, a * b.g, a * b.b, b.a);
-    }
-
-    inline Color operator * (const Color& a, float b)
-    {
-        return Color(b * a.r, b * a.g, b * a.b, a.a);
     }
 
     inline void operator *= (Color& a, const Color& b)
@@ -121,17 +140,5 @@ namespace Base
     inline void operator *= (Color& a, float b)
     {
         a = a * b;
-    }
-
-    // Comparison operators
-
-    inline bool operator == (const Color& a, const Color& b)
-    {
-        return (a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a);
-    }
-
-    inline bool operator != (const Color& a, const Color& b)
-    {
-        return !(a == b);
     }
 }

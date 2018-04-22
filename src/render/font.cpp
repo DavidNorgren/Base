@@ -72,12 +72,9 @@ void Base::Font::load(FT_Face& face)
             continue;
 
         chars[i] = {
-            (float)glyph->bitmap.width,
-            (float)glyph->bitmap.rows,
-            (float)glyph->bitmap_left,
-            (float)glyph->bitmap_top,
-            (float)glyph->advance.x / 64,
-            (float)glyph->advance.y / 64,
+            { (int)glyph->bitmap.width, (int)glyph->bitmap.rows },
+            { glyph->bitmap_left, glyph->bitmap_top },
+            { (int)(glyph->advance.x / 64.f), (int)(glyph->advance.y / 64.f) },
             (float)glTextureSize.width,
         };
 
@@ -101,11 +98,11 @@ void Base::Font::load(FT_Face& face)
             continue;
 
         // Convert buffer to RGBA
-        Color* glyphBuf = new Color[(int)curChar.width * (int)curChar.height];
-        for (uint j = 0; j < curChar.width * curChar.height; j++)
+        Color* glyphBuf = new Color[(int)curChar.size.width * (int)curChar.size.height];
+        for (uint j = 0; j < curChar.size.width * curChar.size.height; j++)
             glyphBuf[j] = Color(1.f, 1.f, 1.f, glyph->bitmap.buffer[j] / 255.f);
 
-        glTexSubImage2D(GL_TEXTURE_2D, 0, curChar.mapX, 0, curChar.width, curChar.height, GL_RGBA, GL_FLOAT, glyphBuf);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, curChar.mapX, 0, curChar.size.width, curChar.size.height, GL_RGBA, GL_FLOAT, glyphBuf);
 
         delete glyphBuf;
     }
@@ -131,7 +128,7 @@ int Base::Font::stringGetWidth(string text)
             continue;
         
         CharInfo curCharInfo = chars[curChar];
-        dx += curCharInfo.advanceX;
+        dx += curCharInfo.advance.x;
         
         width = max(width, dx);
     }

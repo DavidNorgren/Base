@@ -23,8 +23,8 @@ void Base::Shader::load(string source)
 {
     cout << "Loading " << name << "..." << endl;
     
-    program = glCreateProgram();
-    glGenBuffers(1, &vbo);
+    glProgram = glCreateProgram();
+    glGenBuffers(1, &glVbo);
     
     // Split the source code by the comments into a Vertex and Fragment shader
     List<string> sourceSplit = stringSplit(stringReplace(source, "\r\n", "\n"), "// Fragment\n");
@@ -38,7 +38,7 @@ void Base::Shader::load(string source)
     glShaderSource(vs, 1, &vsSource, NULL);
     glCompileShader(vs);
     glGetShaderiv(vs, GL_COMPILE_STATUS, &isCompiled);
-    glAttachShader(program, vs);
+    glAttachShader(glProgram, vs);
 
     // Vertex shader error handling
     if (!isCompiled)
@@ -57,7 +57,7 @@ void Base::Shader::load(string source)
     glShaderSource(fs, 1, &fsSource, NULL);
     glCompileShader(fs);
     glGetShaderiv(fs, GL_COMPILE_STATUS, &isCompiled);
-    glAttachShader(program, fs);
+    glAttachShader(glProgram, fs);
 
     // Fragment shader error handling
     if (!isCompiled)
@@ -71,27 +71,27 @@ void Base::Shader::load(string source)
     }
 
     // Link shader program
-    glLinkProgram(program);
+    glLinkProgram(glProgram);
     
     cout << "Shader compiled" << endl;
 }
 
 void Base::Shader::select()
 {
-    glUseProgram(program);
+    glUseProgram(glProgram);
 }
 
 void Base::Shader::render2D(Mat4x4f matrix, Vec3f* posData, Vec2f* texCoordData, int vertices, GLuint glTexture, Color color, GLenum mode)
 {
     // Select shader program, get uniforms
-    GLint aPos = glGetAttribLocation(program, "aPos");
-    GLint aTexCoord = glGetAttribLocation(program, "aTexCoord");
-    GLint uMat = glGetUniformLocation(program, "uMat");
-    GLint uSampler = glGetUniformLocation(program, "uSampler");
-    GLint uColor = glGetUniformLocation(program, "uColor");
+    GLint aPos = glGetAttribLocation(glProgram, "aPos");
+    GLint aTexCoord = glGetAttribLocation(glProgram, "aTexCoord");
+    GLint uMat = glGetUniformLocation(glProgram, "uMat");
+    GLint uSampler = glGetUniformLocation(glProgram, "uSampler");
+    GLint uColor = glGetUniformLocation(glProgram, "uColor");
 
     // Select shader's VBO to send into the shader
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, glVbo);
 
     // Bind buffers with data
     uint sizePositions = vertices * sizeof(Vec3f);
