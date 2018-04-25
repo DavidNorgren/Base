@@ -3,27 +3,31 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
-#include "file/file.hpp"
+#include "file/resource.hpp"
 #include "render/color.hpp"
 #include "util/data/size2d.hpp"
 
 
 namespace Base
 {
-    class Image
+    class Image : public Resource
     {
       public:
-        /* Loads an image from a file. */
-        Image(string filename);
-        Image(File* file);
+        /* Loads an image from an external file. */
+        EXPORT Image(string filename);
+
+        /* Loads an image from internal memory. */
+        EXPORT Image(const Data& data);
 
         /* Generates an image from a solid color. */
-        Image(Color color, Size2Di size);
+        EXPORT Image(Color color);
 
         GLuint glTexture;
         Size2Di glTextureSize;
 
+        bool reload(const Data& data) override;
+
       private:
-        void load(void* data);
+        void load(uchar* pixelData);
     };
 }

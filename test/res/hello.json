@@ -1,5 +1,5 @@
 {
-    "foo": "BARZ",
+    "foo": "BAR!",
     "Bar": 100,
     "Array": [ 10, 20, "\"helloWorld\"" ],
     "Objects": [

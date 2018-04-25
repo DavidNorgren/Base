@@ -1,17 +1,26 @@
 #pragma once
 
-#include "file/file.hpp"
+#include "file/resource.hpp"
 
 
 namespace Base
 {
+    struct ResourceException : public runtime_error
+    {
+        ResourceException(string message) : runtime_error(message) {};
+    };
+
     class ResourceHandler
     {
       public:
-        EXPORT ResourceHandler(void* data, uint size);
-        EXPORT File* find(string name);
+        EXPORT ResourceHandler();
+        EXPORT Resource* get(string name);
+
+        void checkReload();
 
       private:
-        Map<string, File*> resMap;
+        void load();
+        Map<string, Resource*> resMap;
+        uint zipLastModified = 0;
     };
 }

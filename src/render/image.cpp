@@ -7,43 +7,48 @@
 #include "util/stringfunc.hpp"
 
 
-Base::Image::Image(string filename)
+EXPORT Base::Image::Image(string filename)
 {
-    void *data = SOIL_load_image(&stringToWstring(filename)[0], &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
-    load(data);
-    SOIL_free_image_data((uchar*)data);
+    uchar *pixelData = SOIL_load_image(&stringToWstring(filename)[0], &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
+    load(pixelData);
 }
 
-Base::Image::Image(File* file)
+EXPORT Base::Image::Image(const Data& data)
 {
-    void *data = SOIL_load_image_from_memory((uchar*)file->rawData, file->size, &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
-    load(data);
-    SOIL_free_image_data((uchar*)data);
+    uchar *pixelData = SOIL_load_image_from_memory((uchar*)data.ptr, data.size, &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
+    load(pixelData);
 }
 
-Base::Image::Image(Color color, Size2Di size)
+EXPORT Base::Image::Image(Color color)
 {
-    this->glTextureSize = size;
-    
-    uchar* data = new uchar[size.width * size.height * 4];
-    for (int c = 0; c < size.width * size.height; c += 4)
-    {
-        data[c] = color.r * 255.f;
-        data[c + 1] = color.g * 255.f;
-        data[c + 2] = color.b * 255.f;
-        data[c + 3] = color.a * 255.f;
-    }
-    
-    load(data);
-    delete data;
+    glTextureSize = { 1, 1 };
+    glGenTextures(1, &glTexture);
+    glBindTexture(GL_TEXTURE_2D, glTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_FLOAT, &color);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Base::Image::load(void* data)
+void Base::Image::load(uchar* pixelData)
 {
     glGenTextures(1, &glTexture);
     glBindTexture(GL_TEXTURE_2D, glTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, glTextureSize.width, glTextureSize.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, glTextureSize.width, glTextureSize.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
     glBindTexture(GL_TEXTURE_2D, 0);
+    SOIL_free_image_data(pixelData);
+}
+
+bool Base::Image::reload(const Data& data)
+{
+    glDeleteTextures(1, &glTexture);
+    uchar *pixelData = SOIL_load_image_from_memory((uchar*)data.ptr, data.size, &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
+    load(pixelData);
+    return true;
 }

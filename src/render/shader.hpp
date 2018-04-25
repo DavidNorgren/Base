@@ -3,37 +3,44 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
+#include "file/resource.hpp"
 #include "util/data/vertex2d.hpp"
 #include "util/data/vertex3d.hpp"
 #include "util/data/mat4.hpp"
-#include "file/file.hpp"
 #include "render/color.hpp"
 
 
 namespace Base
 {
-    class Shader
+    struct ShaderException : public ResourceLoadException
+    {
+        ShaderException(string message) : ResourceLoadException(message) {};
+    };
+
+    class Shader : public Resource
     {
       public:
         /* Loads shader code from a file and compiles it.
            The different shader types are separated in the file
            with comments. */
-        Shader(string filename, function<void(GLuint)> setup = nullptr);
-        Shader(File* file, function<void(GLuint)> setup = nullptr);
+        Shader(const Data& data, function<void(GLuint)> setup = nullptr);
 
         /* Selects the shader for usage */
-        void select();
+        EXPORT void select();
 
         /* Renders a 2D graphic using a projection matrix and buffers for vertex data. */
-        void render2D(Mat4f matrix, Vertex2Di* vertexData, int vertices, GLuint glTexture, Color color = { 1.f }, GLenum mode = GL_TRIANGLES);
+        EXPORT void render2D(Mat4f matrix, Vertex2Di* vertexData, int vertices, GLuint glTexture, Color color = { 1.f }, GLenum mode = GL_TRIANGLES);
 
-        void render3D(Mat4f matrix, GLuint vbo, int vertices, GLuint ibo, int indices, GLuint glTexture);
+        /* Renders a 3D mesh using a transformation matrix and buffers for vertex and index data. */
+        EXPORT void render3D(Mat4f matrix, GLuint vbo, int vertices, GLuint ibo, int indices, GLuint glTexture);
 
+        bool reload(const Data& data) override;
       private:
-        void load(string source);
+        void load(const string& source);
 
         string name;
         uint glProgram, glVbo;
         function<void(uint)> setup;
+        bool isLoaded;
     };
 }

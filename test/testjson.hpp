@@ -74,5 +74,7 @@ namespace Base
         {
             cout << ex.what() << endl;
         }
+        
+        cout << std::flush;
     }
 }

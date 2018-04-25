@@ -142,7 +142,7 @@ EXPORT void Base::drawTextAligned(string text, ScreenPos pos, Font* font, TextAl
 
 EXPORT void Base::drawImage(string name, ScreenPos pos, Color color, float rotation, Vec2f scale)
 {
-    drawImage((Image*)appHandler->resHandler->find(name)->loaded, pos, color, rotation, scale);
+    drawImage((Image*)appHandler->resHandler->get(name), pos, color, rotation, scale);
 }
 
 EXPORT void Base::drawImage(Image* image, ScreenPos pos, Color color, float rotation, Vec2f scale)
@@ -167,7 +167,7 @@ EXPORT void Base::drawImage(Image* image, ScreenPos pos, Color color, float rota
 
 EXPORT void Base::drawSubImage(string name, int subImage, ScreenPos pos, Color color, float rotation, Vec2f scale)
 {
-    drawSubImage((Image*)appHandler->resHandler->find(name)->loaded, subImage, pos, color, rotation, scale);
+    drawSubImage((Image*)appHandler->resHandler->get(name), subImage, pos, color, rotation, scale);
 }
 
 EXPORT void Base::drawSubImage(Image* image, int subImage, ScreenPos pos, Color color, float rotation, Vec2f scale)

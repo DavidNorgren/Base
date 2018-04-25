@@ -18,42 +18,56 @@ set(LIBS_DIR "C:/Dev/Libs")
 if (NOT BASE_BUILD_STATIC)
     set(BASE_BUILD_MODE "static" CACHE STRING "Base build mode")
     set_property(CACHE BASE_BUILD_MODE PROPERTY STRINGS "static;shared;exec")
+    option(BASE_DYNAMIC_RESOURCES ON)
 else()
     set(BASE_BUILD_MODE "static")
+    set(BASE_DYNAMIC_RESOURCES OFF)
 endif()
 
 # Add Base sources
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 if (BASE_BUILD_MODE STREQUAL "exec")
-    
-    # Generate object file containing resources on build
+
+    # Command for updating the resources, run as "make update_res", which
+    # creates an archive with the contents of "test/res"
+    add_custom_target(update_res)
     add_custom_command(
-        OUTPUT "res.o"
+        TARGET update_res
+        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/res.o"
         COMMAND zip -r "${CMAKE_CURRENT_BINARY_DIR}/res.zip" *
-        COMMAND cd "${CMAKE_CURRENT_BINARY_DIR}" && ld -r -b binary -o "res.o" "res.zip"
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/res"
-    )
-    set_source_files_properties(
-        "res.o"
-        PROPERTIES
-        EXTERNAL_OBJECT true
-        GENERATED true
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test/res"
     )
 
-    # Command for cleaning old resources, run as "make clean_res"
-    add_custom_target(clean_res)
-    add_custom_command(
-        TARGET clean_res
-        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/res.zip"
-        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/res.o"
-        COMMAND echo "Cleaned old resources!"
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    )
+    # If dynamic resources are enabled, resources are fetched from an archive during runtime
+    if (BASE_DYNAMIC_RESOURCES)
+
+        # These flags enable dynamic loading by the ResourceHandler class
+        add_definitions("-DDYNAMIC_RESOURCES")
+        add_definitions("-DDYNAMIC_RESOURCES_ZIP=\"${CMAKE_CURRENT_BINARY_DIR}/res.zip\"")
+        message("Base: Dynamic resources are enabled")
+
+    else()
+
+        # Generate object file containing resources on build
+        add_custom_command(
+            OUTPUT "res.o"
+            COMMAND ld -r -b binary -o "res.o" "res.zip"
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        )
+        set_source_files_properties(
+            "res.o"
+            PROPERTIES
+            EXTERNAL_OBJECT true
+            GENERATED true
+        )
+        set(RES_O "res.o")
+
+    endif()
 
     # Create executable
     file(GLOB_RECURSE SRCS "*.cpp")
-    add_executable(base ${SRCS} "res.o")
+    add_executable(base ${SRCS} ${RES_O})
 
 else()
 
@@ -70,13 +84,13 @@ endif()
 
 # Add Boost filesystem & system
 # Latest FindBoost.cmake https://raw.githubusercontent.com/Kitware/CMake/master/Modules/FindBoost.cmake
-# C:\Dev\CMake\share\cmake-3.7\Modules\FindBoost.cmake
+# C:\Dev\CMake\share\cmake-3.11\Modules\FindBoost.cmake
 # MSYS:
 #   cd /c/dev/libs/boost
 #   ./bootstrap.sh gcc --with-libraries=filesystem,system
 #   b2 --toolset=gcc link=static address-model=32
 # TODO: -x32 is added to the .a and must be removed, line 1474 in .cmake, x64 causes crash with b2 command.
-set(BOOST_ROOT "${LIBS_DIR}/boost_1_66_0")
+set(BOOST_ROOT "${LIBS_DIR}/boost_1_67_0")
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
@@ -95,6 +109,11 @@ include_directories(${SOIL_ROOT})
 target_include_directories(base PUBLIC ${SOIL_ROOT})
 file(GLOB SOIL_SRCS "${SOIL_ROOT}/*.c")
 add_library(soil STATIC ${SOIL_SRCS})
+
+# Add tinyobjloader
+set(TINYOBJLOADER_ROOT "${LIBS_DIR}/tinyobjloader")
+include_directories(${TINYOBJLOADER_ROOT})
+target_include_directories(base PUBLIC ${TINYOBJLOADER_ROOT})
 
 # Add GLFW (CMake)
 set(GLFW_ROOT "${LIBS_DIR}/glfw-3.2.1")
@@ -138,6 +157,7 @@ set(LIBS_EXPORT  soil glfw libzip freetype glew          zlib)
 target_link_libraries(base PUBLIC ${LIBS_LINK})
 
 if (BASE_BUILD_MODE STREQUAL "shared")
+
     # https://rix0r.nl/blog/2015/08/13/cmake-guide/
     # Define headers for this library. PUBLIC headers are used for
     # compiling the library, and will be added to consumers' build
@@ -162,4 +182,5 @@ if (BASE_BUILD_MODE STREQUAL "shared")
 
     # This makes the project importable from the build directory
     export(TARGETS base ${LIBS_EXPORT} FILE baseConfig.cmake)
+
 endif()

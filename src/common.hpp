@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdlib>
-#include <cstdint>
+//#include <cstdint>
 #include <functional>
 #include <exception>
 #include <iostream>
@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <string>
 #include <map>
+#include <array>
 
 #define repeat(X) for (uint __repeat_index = 0; __repeat_index < X; ++__repeat_index)
 

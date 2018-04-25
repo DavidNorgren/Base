@@ -1,6 +1,6 @@
 #pragma once
 
-#include <math.h>
+#include <cmath>
 
 
 namespace Base
@@ -41,7 +41,7 @@ namespace Base
 
         inline T length()
         {
-            return sqrt(x * x + y * y);
+            return std::sqrt(x * x + y * y);
         }
 
         inline Vec2 normalize()

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "file/file.hpp"
+#include "file/resource.hpp"
 #include "util/data/list.hpp"
 
 namespace Base
@@ -24,12 +24,12 @@ namespace Base
     };
 
     static const string JsonTypeName[] = {
-        "BOOL",
-        "NULL",
-        "NUMBER",
-        "STRING",
+        "OBJECT",
         "ARRAY",
-        "OBJECT"
+        "STRING",
+        "NUMBER",
+        "BOOL",
+        "NULL"
     };
     
     class JsonFile;
@@ -103,24 +103,24 @@ namespace Base
 
       public:
         // Add
-        EXPORT JsonObject* addObject();
-        EXPORT JsonArray* addArray();
-        EXPORT JsonString* addString(string value);
-        EXPORT JsonNumber* addNumber(float value);
-        EXPORT JsonBool* addBool(bool value);
-        EXPORT JsonNull* addNull();
+        EXPORT JsonObject*  addObject();
+        EXPORT JsonArray*   addArray();
+        EXPORT JsonString*  addString(string value);
+        EXPORT JsonNumber*  addNumber(float value);
+        EXPORT JsonBool*    addBool(bool value);
+        EXPORT JsonNull*    addNull();
         
         // Getters
-        EXPORT JsonObject* getObject(uint index);
-        EXPORT JsonArray* getArray(uint index);
-        EXPORT string getString(uint index);
-        EXPORT float getNumber(uint index);
-        EXPORT bool getBool(uint index);
-        EXPORT JsonType getType(uint index);
-        EXPORT bool isNull(uint index);
-        EXPORT uint getCount() { return values.size(); }
+        EXPORT JsonObject*  getObject(uint index);
+        EXPORT JsonArray*   getArray(uint index);
+        EXPORT string       getString(uint index);
+        EXPORT float        getNumber(uint index);
+        EXPORT bool         getBool(uint index);
+        EXPORT JsonType     getType(uint index);
+        EXPORT bool         isNull(uint index);
+        EXPORT uint         getCount() { return values.size(); }
 
-        JsonType getType() { return JsonType::ARRAY; }
+        JsonType            getType() { return JsonType::ARRAY; }
 
       private:
         List<JsonAny*> values;
@@ -135,24 +135,24 @@ namespace Base
 
       public:
         // Add
-        EXPORT JsonObject* addObject(string name);
-        EXPORT JsonArray* addArray(string name);
-        EXPORT JsonString* addString(string name, string value);
-        EXPORT JsonNumber* addNumber(string name, float value);
-        EXPORT JsonBool* addBool(string name, bool value);
-        EXPORT JsonNull* addNull(string name);
+        EXPORT JsonObject*  addObject(string name);
+        EXPORT JsonArray*   addArray(string name);
+        EXPORT JsonString*  addString(string name, string value);
+        EXPORT JsonNumber*  addNumber(string name, float value);
+        EXPORT JsonBool*    addBool(string name, bool value);
+        EXPORT JsonNull*    addNull(string name);
 
         // Getters
-        EXPORT JsonType getType(string name);
-        EXPORT JsonObject* getObject(string name);
-        EXPORT JsonArray* getArray(string name);
-        EXPORT string getString(string name);
-        EXPORT float getNumber(string name);
-        EXPORT bool getBool(string name);
-        EXPORT bool isNull(string name);
-        EXPORT uint getCount() { return values.size(); }
+        EXPORT JsonType     getType(string name);
+        EXPORT JsonObject*  getObject(string name);
+        EXPORT JsonArray*   getArray(string name);
+        EXPORT string       getString(string name);
+        EXPORT float        getNumber(string name);
+        EXPORT bool         getBool(string name);
+        EXPORT bool         isNull(string name);
+        EXPORT uint         getCount() { return values.size(); }
 
-        JsonType getType() { return JsonType::OBJECT; }
+        JsonType            getType() { return JsonType::OBJECT; }
     
       protected:
         List<string> keys;
@@ -167,27 +167,27 @@ namespace Base
     class JsonFile : public JsonObject
     {
       public:
-        EXPORT JsonFile(string filename);
-        EXPORT JsonFile(File* filename);
-        EXPORT JsonFile() {};
-        EXPORT void save(string filename);
+        EXPORT      JsonFile(const string& filename);
+        EXPORT      JsonFile(const Data& data);
+        EXPORT      JsonFile() {};
+        EXPORT void save(const string& filename);
 
       private:
         // Reading
         char *data, lastChar;
         uint size, position, column, line;
 
-        void readRoot();
-        string readString();
-        float readNumber();
-        char readCharacter();
+        void    readRoot();
+        string  readString();
+        float   readNumber();
+        char    readCharacter();
 
-        JsonAny* readJsonAny();
-        JsonObject* readJsonObject(bool isRoot = false);
-        JsonArray* readJsonArray();
-        JsonString* readJsonString();
-        JsonNumber* readJsonNumber();
-        JsonAny* readJsonWord();
+        JsonAny*      readJsonAny();
+        JsonObject*   readJsonObject(bool isRoot = false);
+        JsonArray*    readJsonArray();
+        JsonString*   readJsonString();
+        JsonNumber*   readJsonNumber();
+        JsonAny*      readJsonWord();
 
         // Writing
         string saveStr;
@@ -196,7 +196,7 @@ namespace Base
 
         void writeTabs();
         void writeChar(char ch);
-        void writeString(string str);
+        void writeString(const string& str);
         void writeEndPrevious();
         void writeStartSet(char ch);
         void writeEndSet(char ch);

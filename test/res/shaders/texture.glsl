@@ -20,12 +20,14 @@ void main(void)
 
 #version 420 core
 
-in vec2 vTexCoord;
+in vec2 vTexCoord; 
 out vec4 fColor;
 uniform sampler2D uSampler;
 uniform vec4 uColor;
 
 void main(void)
 {
-    gl_FragColor = uColor * texture2D(uSampler, vTexCoord);
+    vec4 col = vec4(0.1, 0.7, 1.0, 1.0);
+    gl_FragColor = col * uColor * texture2D(uSampler, vTexCoord);
+    //gl_FragColor = vec4(vTexCoord.x, vTexCoord.y, 1.0, 1.0);
 }

@@ -6,7 +6,7 @@
 // Reference to appHandler instance, used by drawfunc
 Base::AppHandler* appHandler;
 
-EXPORT Base::AppHandler::AppHandler(void* resData, uint resSize)
+EXPORT Base::AppHandler::AppHandler()
 {
     appHandler = this;
     
@@ -18,10 +18,10 @@ EXPORT Base::AppHandler::AppHandler(void* resData, uint resSize)
     glewExperimental = true;
     glewInit();
 
-    cout << "GLEW version: " << glewGetString(GLEW_VERSION) << endl;
-    cout << "OpenGL version: " << glGetString(GL_VERSION) << endl;
-    cout << "OpenGL SL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
-    cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << endl;
+    cout << "GLEW version: "        << glewGetString(GLEW_VERSION)              << endl;
+    cout << "OpenGL version: "      << glGetString(GL_VERSION)                  << endl;
+    cout << "OpenGL SL version: "   << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
+    cout << "OpenGL vendor: "       << glGetString(GL_VENDOR)                   << endl;
     cout << endl;
     
     // Culling
@@ -37,10 +37,10 @@ EXPORT Base::AppHandler::AppHandler(void* resData, uint resSize)
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     
     // Resources
-    resHandler = new ResourceHandler(resData, resSize);
-    drawingFont = (Font*)resHandler->find("fonts/opensans.ttf")->loaded;
-    drawingShader = (Shader*)resHandler->find("shaders/texture.glsl")->loaded;
-    solidColor = new Image(Colors::WHITE, { 1, 1 });
+    resHandler    = new ResourceHandler();
+    drawingFont   = (Font*)resHandler->get("fonts/opensans.ttf");
+    drawingShader = (Shader*)resHandler->get("shaders/texture.glsl");
+    solidColor    = new Image(Colors::WHITE);
 }
 
 EXPORT void Base::AppHandler::launch()

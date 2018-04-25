@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 
 
 namespace Base
@@ -30,16 +30,16 @@ namespace Base
     
     inline float dsin(float a)
     {
-        return sin(a * (PI / 180.f));
+        return std::sin(a * (PI / 180.f));
     }
     
     inline float dcos(float a)
     {
-        return cos(a * (PI / 180.f));
+        return std::cos(a * (PI / 180.f));
     }
     
     inline float dtan(float a)
     {
-        return tan(a * (PI / 180.f));
+        return std::tan(a * (PI / 180.f));
     }
 }

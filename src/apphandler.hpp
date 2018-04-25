@@ -20,13 +20,13 @@ namespace Base
     {
       protected:
         /* Setup OpenGL and load resources. */
-        EXPORT AppHandler(void* resData = nullptr, uint resSize = 0);
+        EXPORT AppHandler();
 
         /* Called by the main window. Implemented by the child. */
         EXPORT virtual void loopEvent() = 0;
-        EXPORT virtual void mouseEvent() = 0;
-        EXPORT virtual void keyEvent() = 0;
-        EXPORT virtual void resizeEvent() = 0;
+        EXPORT void mouseEvent() {};
+        EXPORT void keyEvent() {};
+        EXPORT void resizeEvent() {};
 
         /* Opens the window and starts the window loop. */
         EXPORT void launch();

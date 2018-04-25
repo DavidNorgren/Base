@@ -9,7 +9,7 @@
 #include "util/mathfunc.hpp"
 
 
-Base::Font::Font(string filename, uint start, uint end, uint size)
+EXPORT Base::Font::Font(string filename, uint start, uint end, uint size)
 {
     // Init library
     FT_Library lib;
@@ -20,19 +20,14 @@ Base::Font::Font(string filename, uint start, uint end, uint size)
     this->end = end;
     this->size = size;
 
-    cout << "Loading " << filename << "..." << endl;
-
     // Create the font map from a file on the disk
     if (FT_New_Face(lib, &filename[0], 0, &face))
-    {
-        cout << "Could not open font!" << endl;
-        return;
-    }
+        throw FontException("Could not open font!"); //TODO: can we get more info?
     
     load(face);
 }
 
-Base::Font::Font(File* file, uint size, uint start, uint end)
+EXPORT Base::Font::Font(const Data& data, uint size, uint start, uint end)
 {
     // Init library
     FT_Library lib;
@@ -43,16 +38,42 @@ Base::Font::Font(File* file, uint size, uint start, uint end)
     this->start = start;
     this->end = end;
 
-    cout << "Loading " << file->name << "..." << endl;
-
     // Create the font map from a file in memory
-    if (FT_New_Memory_Face(lib, (uchar*)file->rawData, file->size, 0, &face))
-    {
-        cout << "Could not open font!" << endl;
-        return;
-    }
+    if (FT_New_Memory_Face(lib, (uchar*)data.ptr, data.size, 0, &face))
+        throw FontException("Could not open font!"); //TODO: can we get more info?
     
     load(face);
+}
+
+EXPORT int Base::Font::stringGetWidth(string text)
+{
+    int width = 0, dx = 0;
+    
+    for (uint c = 0; c < text.size(); c++)
+    {
+        uchar curChar = text[c];
+
+        if (curChar == '\n')
+        {
+            dx = 0;
+            continue;
+        }
+        
+        if (curChar < start || curChar > end)
+            continue;
+        
+        CharInfo curCharInfo = chars[curChar];
+        dx += curCharInfo.advance.x;
+        
+        width = max(width, dx);
+    }
+    
+    return width;
+}
+
+EXPORT int Base::Font::stringGetHeight(string text)
+{
+    return (stringGetCount(text, "\n") + stringGetCount(text, "\r") + 1) * glTextureSize.height * LINE_SPACE;
 }
 
 void Base::Font::load(FT_Face& face)
@@ -108,35 +129,4 @@ void Base::Font::load(FT_Face& face)
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-int Base::Font::stringGetWidth(string text)
-{
-    int width = 0, dx = 0;
-    
-    for (uint c = 0; c < text.size(); c++)
-    {
-        uchar curChar = text[c];
-
-        if (curChar == '\n')
-        {
-            dx = 0;
-            continue;
-        }
-        
-        if (curChar < start || curChar > end)
-            continue;
-        
-        CharInfo curCharInfo = chars[curChar];
-        dx += curCharInfo.advance.x;
-        
-        width = max(width, dx);
-    }
-    
-    return width;
-}
-
-int Base::Font::stringGetHeight(string text)
-{
-    return (stringGetCount(text, "\n") + stringGetCount(text, "\r") + 1) * glTextureSize.height * LINE_SPACE;
 }

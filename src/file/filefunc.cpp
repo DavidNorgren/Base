@@ -16,7 +16,7 @@
 
 EXPORT bool Base::fileExists(string filename)
 {
-	return boost::filesystem::exists(filename);
+    return boost::filesystem::exists(filename);
 }
 
 EXPORT int Base::fileGetSize(string filename)
@@ -92,5 +92,5 @@ EXPORT string Base::fileGetContents(string filename)
 
 EXPORT bool Base::directoryExists(string directory)
 {
-	return boost::filesystem::exists(directory);
+    return boost::filesystem::exists(directory);
 }

@@ -1,30 +1,57 @@
 #define ZIP_STATIC
 #include "zip.h"
+#include <boost/filesystem.hpp>
 
 #include "common.hpp"
 #include "file/resourcehandler.hpp"
-#include "file/zipfunc.hpp"
 #include "file/filefunc.hpp"
 #include "render/font.hpp"
 #include "render/image.hpp"
 #include "render/shader.hpp"
+#include "scene/model.hpp"
 
 
- // TODO: Make filename.ttf.ini with settings (and load after processing resources)
-constexpr int FONTS_SIZE = 15;
-constexpr int FONTS_START = 32;
-constexpr int FONTS_END = 128;
+#ifndef DYNAMIC_RESOURCES
+extern char resData[] asm("_binary_res_zip_start");
+extern char resSize[] asm("_binary_res_zip_size");
+#endif
 
-EXPORT Base::ResourceHandler::ResourceHandler(void* data, uint size)
+EXPORT Base::ResourceHandler::ResourceHandler()
 {
-    if (size == 0)
-        return;
+    load();
+}
+
+EXPORT Base::Resource* Base::ResourceHandler::get(string name)
+{
+    Map<string, Resource*>::iterator i = resMap.find(name);
+    if (i == resMap.end())
+        throw ResourceException("Could not find " + name);
     
+    return i->second;
+}
+
+void Base::ResourceHandler::load()
+{
     zip_source_t *src;
     zip_t *za;
     zip_error_t error;
     
-    src = zip_source_buffer_create(data, size, 0, &error);
+    // Load from an external or internal zip archive
+    #ifdef DYNAMIC_RESOURCES
+
+    src = zip_source_file_create(DYNAMIC_RESOURCES_ZIP, 0, -1, &error);
+    cout << "Loading resources from " << DYNAMIC_RESOURCES_ZIP << "..." << endl;
+
+    #else
+
+    if ((uint)resSize == 0)
+        return;
+
+    src = zip_source_buffer_create(resData, (uint)resSize, 0, &error);
+    cout << "Loading resources from memory..." << endl;
+
+    #endif
+
     if (!src)
     {
         cout << "zip_source_buffer_create error: " << zip_error_strerror(&error) << endl;
@@ -54,14 +81,13 @@ EXPORT Base::ResourceHandler::ResourceHandler(void* data, uint size)
             continue;
         }
         
-        File* f = new File();
-        f->name = filename;
-        f->size = zs.size;
-        f->rawData = new char[f->size];
-        
-        if (zip_fread(zf, f->rawData, f->size) <= 0)
+        Data resData;
+        resData.size = zs.size;
+        resData.ptr = new char[zs.size];
+
+        if (zip_fread(zf, resData.ptr, resData.size) <= 0)
         {
-            delete f;
+            delete resData.ptr;
             zip_fclose(zf);
             continue;
         }
@@ -69,31 +95,62 @@ EXPORT Base::ResourceHandler::ResourceHandler(void* data, uint size)
         // Close file
         zip_fclose(zf);
         
-        // Process into a manageable format
-        string ext = fileGetExtension(filename);
-        if (ext == ".ttf")
-            f->loaded = (void*)new Font(f, FONTS_SIZE, FONTS_START, FONTS_END);
-        else if (ext == ".glsl")
-            f->loaded = (void*)new Shader(f);
-        else if (ext == ".png" || ext == ".jpg")
-            f->loaded = (void*)new Image(f);
+        // Process into a new resource
+        try
+        {
+            if (resMap.find(filename) == resMap.end())
+            {
+                Resource* res;
+                string ext = fileGetExtension(filename);
+
+                if (ext == ".ttf")
+                    res = new Font(resData);
+                else if (ext == ".glsl")
+                    res = new Shader(resData);
+                else if (ext == ".obj")
+                    res = new Model(resData);
+                else if (ext == ".png" || ext == ".jpg")
+                    res = new Image(resData);
+                else
+                    res = new TextFile(resData);
+
+                // Add to map
+                resMap[filename] = res;
+                cout << "\tADDED: " << filename << " (" << resData.size << " bytes)" << endl;
+            }
+
+            // Update existing
+            else
+            {
+                if (resMap[filename]->reload(resData))
+                    cout << "\tUPDATED: " << filename << " (" << resData.size << " bytes)" << endl;
+            }
+        }
+        catch (ResourceLoadException e)
+        {
+            cout << "Resource load exception for " << filename << ":\n" << e.what() << endl;
+        }
+
+        delete resData.ptr;
         
-        // Add to map
-        resMap[filename] = f;
-        
-        cout << "\t" << filename << " (" << f->size << " bytes)" << endl;
     }
     
     zip_close(za);
 }
 
-EXPORT Base::File* Base::ResourceHandler::find(string name)
+void Base::ResourceHandler::checkReload()
 {
-    Map<string, File*>::iterator i = resMap.find(name);
-    if (i == resMap.end())
+    #ifdef DYNAMIC_RESOURCES
+    if (!boost::filesystem::exists(DYNAMIC_RESOURCES_ZIP))
+        return;
+    
+    uint lastMod = (uint)boost::filesystem::last_write_time(DYNAMIC_RESOURCES_ZIP);
+    if (lastMod > zipLastModified && zipLastModified > 0)
     {
-        cout << "ResourceHandler: Could not find " << name << endl;
-        exit(EXIT_FAILURE);
+        cout << "UPDATING: last modified: " << zipLastModified << std::flush << endl;
+        load();
     }
-    return i->second;
+
+    zipLastModified = lastMod;
+    #endif
 }

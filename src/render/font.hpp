@@ -6,13 +6,21 @@
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
-#include "file/file.hpp"
+#include "file/resource.hpp"
 #include "util/data/size2d.hpp"
 #include "util/data/vec2.hpp"
 
 namespace Base
 {
     constexpr float LINE_SPACE = 1.25f;
+    constexpr uint FONTS_SIZE = 15;
+    constexpr uint FONTS_START = 32;
+    constexpr uint FONTS_END = 128;
+
+    struct FontException : public runtime_error
+    {
+        FontException(string message) : runtime_error(message) {};
+    };
 
     enum class FontStyle
     {
@@ -27,16 +35,16 @@ namespace Base
         float mapX;
     };
 
-    class Font
+    class Font : public Resource
     {
       public:
         /* Load a new font from a file. */
-        Font(string filename, uint size, uint start, uint end);
-        Font(File* file,      uint size, uint start, uint end);
+        EXPORT Font(string filename,  uint size = FONTS_SIZE, uint start = FONTS_START, uint end = FONTS_END);
+        EXPORT Font(const Data& data, uint size = FONTS_SIZE, uint start = FONTS_START, uint end = FONTS_END);
 
         /* Get text dimensions. */
-        int stringGetWidth(string text);
-        int stringGetHeight(string text);
+        EXPORT int stringGetWidth(string text);
+        EXPORT int stringGetHeight(string text);
 
         uint start, end, size;
         CharInfo* chars;

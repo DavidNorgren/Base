@@ -35,7 +35,7 @@ enum Character
 
 // Read methods
 
-EXPORT Base::JsonFile::JsonFile(string filename)
+EXPORT Base::JsonFile::JsonFile(const string& filename)
 {
     string json = fileGetContents(filename);
     data = &json[0];
@@ -43,10 +43,10 @@ EXPORT Base::JsonFile::JsonFile(string filename)
     readRoot();
 }
 
-EXPORT Base::JsonFile::JsonFile(File* file)
+EXPORT Base::JsonFile::JsonFile(const Data& data)
 {
-    data = file->rawData;
-    size = file->size;
+    this->data = (char*)data.ptr;
+    this->size = data.size;
     readRoot();
 }
 
@@ -324,7 +324,7 @@ Base::JsonAny* Base::JsonFile::readJsonWord()
 
 // Writing methods
 
-EXPORT void Base::JsonFile::save(string filename)
+EXPORT void Base::JsonFile::save(const string& filename)
 {
     saveStr = "";
     tabs = 0;
@@ -348,7 +348,7 @@ void Base::JsonFile::writeChar(char ch)
     saveStr += ch;
 }
 
-void Base::JsonFile::writeString(string str)
+void Base::JsonFile::writeString(const string& str)
 {
     saveStr += str;
 }
@@ -385,7 +385,7 @@ void Base::JsonFile::writeEndSet(char ch)
 void Base::JsonFile::writeJsonAny(Base::JsonAny* any)
 {
     if (!any)
-        throw "JSON write error: Null pointer was passed into an add() method!";
+        throw JsonException("JSON write error: Null pointer was passed into an add() method!");
     
     switch (any->getType())
     {

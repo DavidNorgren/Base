@@ -7,6 +7,7 @@
 
 namespace Base
 {
+    /* An object in the scene with a visual representation. */
     class Object
     {
       public:

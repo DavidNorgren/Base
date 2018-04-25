@@ -6,9 +6,6 @@
 #include "testdraw.hpp"
 
 
-extern char resData[] asm("_binary_res_zip_start");
-extern char resSize[] asm("_binary_res_zip_size");
-
 
 namespace Base
 {
@@ -19,23 +16,24 @@ namespace Base
     
       private:
         void loopEvent() override;
-        void mouseEvent() override {};
-        void keyEvent() override {};
-        void resizeEvent() override {};
     };
     
-    TestApp::TestApp() : AppHandler::AppHandler(resData, (uint)resSize)
+    TestApp::TestApp() : AppHandler::AppHandler()
     {
-        mainWindow->backgroundColor = Colors::LIGHT_GRAY;
+        mainWindow->setTitle("Base");
+        mainWindow->setTargetFramerate(60);
+        mainWindow->setBackgroundColor(Colors::LIGHT_GRAY);
         //testJSON(this);
 
-        cout << std::flush;
         testRenderInit(this);
+
+        cout << std::flush;
         launch();
     }
 
     void TestApp::loopEvent()
     {
+        resHandler->checkReload();
         testRender(this);
         testDraw(this);
     }

@@ -138,12 +138,12 @@ EXPORT Base::Window::Window()
     }
     
     // Initialize cursors
-    cursorArrow = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+    cursorArrow     = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
     cursorHandpoint = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-    cursorBeam = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
-    cursorHResize = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
-    cursorVResize = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
-    currentCursor = cursorArrow;
+    cursorBeam      = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+    cursorHResize   = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+    cursorVResize   = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+    currentCursor   = cursorArrow;
 }
 
 EXPORT void Base::Window::open(function<void()> loopEventFunc,
@@ -151,18 +151,21 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
                                function<void()> keyEventFunc,
                                function<void()> resizeEventFunc)
 {
-    this->loopEventFunc = loopEventFunc;
-    this->mouseEventFunc = mouseEventFunc;
-    this->keyEventFunc = keyEventFunc;
+    this->loopEventFunc   = loopEventFunc;
+    this->mouseEventFunc  = mouseEventFunc;
+    this->keyEventFunc    = keyEventFunc;
     this->resizeEventFunc = resizeEventFunc;
-    
-    // Init FPS counter
-    int lastTime = -1, frame = 0;
-    fps = 0;
     
     maximize();
 
-    //glfwSwapInterval(0);
+    // Init FPS counter
+    double lastTime = glfwGetTime();
+    int frame = 0;
+    fps = 0;
+    
+    // Limit framerate to monitor refresh rate
+    glfwSwapInterval(1);
+
     while (!glfwWindowShouldClose(handle))
     {
         // Clear screen
@@ -186,18 +189,20 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
 
         window->mouseMove = { 0, 0 };
 
-        // Update FPS
-        frame++;
-        if (lastTime != (int)glfwGetTime())
-        {
-            fps = frame;
-            frame = 0;
-        }
-        lastTime = (int)glfwGetTime();
-
         // Swap buffers
         glfwSwapBuffers(handle);
         glfwPollEvents();
+
+        // Calculate FPS from the number of frames rendered in the last second
+        double curTime = glfwGetTime();
+        frame++;
+        fps = std::round(frame / (curTime - lastTime));
+        if ((int)lastTime != (int)curTime)
+        {
+            fps = frame;
+            frame = 0;
+            lastTime = glfwGetTime();
+        }
     }
 
     glfwTerminate();
@@ -222,4 +227,32 @@ EXPORT void Base::Window::setTitle(string title)
 EXPORT void Base::Window::setCursor(GLFWcursor* cursor)
 {
     glfwSetCursor(handle, cursor);
+}
+
+EXPORT void Base::Window::setTargetFramerate(int fps)
+{
+    targetFps = fps;
+}
+
+EXPORT void Base::Window::setBackgroundColor(Color color)
+{
+    backgroundColor = color;
+}
+
+EXPORT float Base::Window::getFrameDelay()
+{
+    if (fps > 0)
+        return (float)targetFps / fps;
+
+    return 1.f;
+}
+
+EXPORT Base::Size2Di Base::Window::getSize()
+{
+    return size;
+}
+
+EXPORT float Base::Window::getRatio()
+{
+    return ratio;
 }

@@ -12,19 +12,23 @@ namespace Base
     class Window
     {
       public:
-        /* Creates the window and OpenGL context. */
         EXPORT Window();
 
-        /* Opens the window. */
         EXPORT void open(function<void()> loopEventFunc,
-                            function<void()> mouseEventFunc = nullptr,
-                            function<void()> keyEventFunc = nullptr,
-                            function<void()> resizeEventFunc = nullptr);
+                         function<void()> mouseEventFunc = nullptr,
+                         function<void()> keyEventFunc = nullptr,
+                         function<void()> resizeEventFunc = nullptr);
 
-        EXPORT void setTitle(string title);
-        EXPORT void setCursor(GLFWcursor* cursor);
         EXPORT void maximize();
 
+        EXPORT void setTargetFramerate(int fps);
+        EXPORT void setTitle(string title);
+        EXPORT void setCursor(GLFWcursor* cursor);
+        EXPORT void setBackgroundColor(Color color);
+        EXPORT float getFrameDelay();
+        EXPORT Size2Di getSize();
+        EXPORT float getRatio();
+        
         /* Window size. */
         Size2Di size;
         float ratio;
@@ -32,8 +36,8 @@ namespace Base
         /* Background. */
         Color backgroundColor = Colors::BLACK;
 
-        /* Window render FPS. */
-        int fps;
+        /* Window render framerate. */
+        int fps, targetFps = 60;
 
         /* Mouse position and button status. */
         ScreenPos mousePos, mousePosPrevious, mousePosClick;

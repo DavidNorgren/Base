@@ -10,6 +10,7 @@
 #include "util/data/mat4.hpp"
 #include "util/data/size2d.hpp"
 #include "util/data/size3d.hpp"
+#include "util/data/vec2.hpp"
 #include "util/data/vec3.hpp"
 #include "util/data/vertex3d.hpp"
 
@@ -26,7 +27,7 @@ namespace Base
         void setBuffers();
         List<Vertex3Df> vertexData;
         List<Vec3ui> indexData;
-    	  GLuint glVbo, glIbo;
+        GLuint glVbo, glIbo;
     };
 
     // Basic shapes (origin in center)
@@ -40,7 +41,7 @@ namespace Base
     class Plane : public TriangleMesh
     {
       public:
-        Plane(Size2Df size, Image* texture);
+        Plane(Size2Df size, Image* texture, Vec2f textureRepeat = { 1.f });
     };
 
     class Sphere : public TriangleMesh
