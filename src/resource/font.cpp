@@ -2,23 +2,23 @@
 #include "GLFW/glfw3.h"
 
 #include "common.hpp"
-#include "render/font.hpp"
+#include "resource/font.hpp"
+#include "resource/resourcehandler.hpp"
 #include "render/color.hpp"
-#include "file/resourcehandler.hpp"
 #include "util/stringfunc.hpp"
 #include "util/mathfunc.hpp"
 
 
-EXPORT Base::Font::Font(string filename, uint start, uint end, uint size)
+EXPORT Base::Font::Font(const string& filename, uint size, uint start, uint end)
 {
     // Init library
     FT_Library lib;
     FT_Face face;
     FT_Init_FreeType(&lib);
 
+    this->size = size;
     this->start = start;
     this->end = end;
-    this->size = size;
 
     // Create the font map from a file on the disk
     if (FT_New_Face(lib, &filename[0], 0, &face))
@@ -45,7 +45,7 @@ EXPORT Base::Font::Font(const Data& data, uint size, uint start, uint end)
     load(face);
 }
 
-EXPORT int Base::Font::stringGetWidth(string text)
+EXPORT int Base::Font::stringGetWidth(const string& text)
 {
     int width = 0, dx = 0;
     
@@ -71,7 +71,7 @@ EXPORT int Base::Font::stringGetWidth(string text)
     return width;
 }
 
-EXPORT int Base::Font::stringGetHeight(string text)
+EXPORT int Base::Font::stringGetHeight(const string& text)
 {
     return (stringGetCount(text, "\n") + stringGetCount(text, "\r") + 1) * glTextureSize.height * LINE_SPACE;
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "render/shader.hpp"
+#include "resource/shader.hpp"
+#include "resource/model.hpp"
 #include "scene/trianglemesh.hpp"
-#include "scene/model.hpp"
 
 
 namespace Base

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "util/data/list.hpp"
+
 
 namespace Base
 {
@@ -29,4 +31,7 @@ namespace Base
 
     /* Returns whether the given directory exists. */
     EXPORT bool directoryExists(string directory);
+
+    /* Returns a list of the files within the given directory. */
+    EXPORT List<string> directoryGetFiles(string directory, bool recurse = false, string filter = "");
 }

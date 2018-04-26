@@ -3,14 +3,14 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
-#include "util/mathfunc.hpp"
-#include "file/resourcehandler.hpp"
+#include "resource/resourcehandler.hpp"
+#include "resource/font.hpp"
+#include "resource/image.hpp"
+#include "resource/shader.hpp"
 #include "render/color.hpp"
-#include "render/font.hpp"
-#include "render/image.hpp"
-#include "render/shader.hpp"
-#include "window/window.hpp"
 #include "scene/scene.hpp"
+#include "window/window.hpp"
+#include "util/mathfunc.hpp"
 
 
 namespace Base

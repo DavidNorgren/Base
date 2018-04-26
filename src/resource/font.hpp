@@ -6,7 +6,7 @@
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
-#include "file/resource.hpp"
+#include "resource/resource.hpp"
 #include "util/data/size2d.hpp"
 #include "util/data/vec2.hpp"
 
@@ -39,12 +39,12 @@ namespace Base
     {
       public:
         /* Load a new font from a file. */
-        EXPORT Font(string filename,  uint size = FONTS_SIZE, uint start = FONTS_START, uint end = FONTS_END);
-        EXPORT Font(const Data& data, uint size = FONTS_SIZE, uint start = FONTS_START, uint end = FONTS_END);
+        EXPORT Font(const string& filename,  uint size = FONTS_SIZE, uint start = FONTS_START, uint end = FONTS_END);
+        EXPORT Font(const Data& data,        uint size = FONTS_SIZE, uint start = FONTS_START, uint end = FONTS_END);
 
         /* Get text dimensions. */
-        EXPORT int stringGetWidth(string text);
-        EXPORT int stringGetHeight(string text);
+        EXPORT int stringGetWidth(const string& text);
+        EXPORT int stringGetHeight(const string& text);
 
         uint start, end, size;
         CharInfo* chars;

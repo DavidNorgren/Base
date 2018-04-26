@@ -2,8 +2,13 @@
 #include "tiny_obj_loader.hpp"
 
 #include "common.hpp"
-#include "scene/model.hpp"
+#include "resource/model.hpp"
 
+
+Base::Model::Model(const string& filename)
+{
+
+}
 
 Base::Model::Model(const Data& data)
 {
@@ -22,7 +27,6 @@ Base::Model::Model(const Data& data)
 
     cout << fileShapes.size() << endl;*/
 }
-
 
 void Base::Model::render(Shader* shader, Mat4f projMat)
 {

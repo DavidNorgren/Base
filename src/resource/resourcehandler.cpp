@@ -3,12 +3,9 @@
 #include <boost/filesystem.hpp>
 
 #include "common.hpp"
-#include "file/resourcehandler.hpp"
+#include "resource/resourcehandler.hpp"
 #include "file/filefunc.hpp"
-#include "render/font.hpp"
-#include "render/image.hpp"
-#include "render/shader.hpp"
-#include "scene/model.hpp"
+#include "util/stringfunc.hpp"
 
 
 #ifndef DYNAMIC_RESOURCES
@@ -32,25 +29,38 @@ EXPORT Base::Resource* Base::ResourceHandler::get(string name)
 
 void Base::ResourceHandler::load()
 {
+    #ifdef DYNAMIC_RESOURCES
+    cout << "Loading dynamic resources: " << DYNAMIC_RESOURCES_DIR << endl;
+
+    List<string> files = directoryGetFiles(DYNAMIC_RESOURCES_DIR, true);
+    for (const string& filename : files)
+    {
+        // Get resource name
+        string name = stringReplace(filename, DYNAMIC_RESOURCES_DIR, "");
+
+        try
+        {
+            // Add to map
+            resMap[name] = Resource::create(filename);
+            resMap[name]->dynamicFilename = filename;
+            cout << "\tADDED: " << name << endl;
+        }
+        catch (ResourceLoadException e)
+        {
+            cout << "Resource load exception for " << name << ":\n" << e.what() << endl;
+        }
+    }
+
+    #else
     zip_source_t *src;
     zip_t *za;
     zip_error_t error;
     
-    // Load from an external or internal zip archive
-    #ifdef DYNAMIC_RESOURCES
-
-    src = zip_source_file_create(DYNAMIC_RESOURCES_ZIP, 0, -1, &error);
-    cout << "Loading resources from " << DYNAMIC_RESOURCES_ZIP << "..." << endl;
-
-    #else
-
     if ((uint)resSize == 0)
         return;
 
     src = zip_source_buffer_create(resData, (uint)resSize, 0, &error);
     cout << "Loading resources from memory..." << endl;
-
-    #endif
 
     if (!src)
     {
@@ -73,7 +83,7 @@ void Base::ResourceHandler::load()
     {
         zip_stat_t zs;
         zip_stat_index(za, i, 0, &zs);
-        string filename = zip_get_name(za, i, ZIP_FL_ENC_RAW);
+        string name = zip_get_name(za, i, ZIP_FL_ENC_RAW);
         zip_file *zf = zip_fopen_index(za, i, 0);
         if (!zf)
         {
@@ -98,59 +108,41 @@ void Base::ResourceHandler::load()
         // Process into a new resource
         try
         {
-            if (resMap.find(filename) == resMap.end())
-            {
-                Resource* res;
-                string ext = fileGetExtension(filename);
-
-                if (ext == ".ttf")
-                    res = new Font(resData);
-                else if (ext == ".glsl")
-                    res = new Shader(resData);
-                else if (ext == ".obj")
-                    res = new Model(resData);
-                else if (ext == ".png" || ext == ".jpg")
-                    res = new Image(resData);
-                else
-                    res = new TextFile(resData);
-
-                // Add to map
-                resMap[filename] = res;
-                cout << "\tADDED: " << filename << " (" << resData.size << " bytes)" << endl;
-            }
-
-            // Update existing
-            else
-            {
-                if (resMap[filename]->reload(resData))
-                    cout << "\tUPDATED: " << filename << " (" << resData.size << " bytes)" << endl;
-            }
+            // Add to map
+            resMap[name] = Resource::create(fileGetExtension(name), resData);
+            cout << "\tADDED: " << name << " (" << resData.size << " bytes)" << endl;
         }
         catch (ResourceLoadException e)
         {
-            cout << "Resource load exception for " << filename << ":\n" << e.what() << endl;
+            cout << "Resource load exception for " << name << ":\n" << e.what() << endl;
         }
 
         delete resData.ptr;
-        
     }
     
     zip_close(za);
+    #endif
 }
 
 void Base::ResourceHandler::checkReload()
 {
     #ifdef DYNAMIC_RESOURCES
-    if (!boost::filesystem::exists(DYNAMIC_RESOURCES_ZIP))
-        return;
     
-    uint lastMod = (uint)boost::filesystem::last_write_time(DYNAMIC_RESOURCES_ZIP);
-    if (lastMod > zipLastModified && zipLastModified > 0)
+    for (Map<string, Resource*>::iterator it = resMap.begin(); it != resMap.end(); it++)
     {
-        cout << "UPDATING: last modified: " << zipLastModified << std::flush << endl;
-        load();
+        const string& name = it->first;
+        Resource* res = it->second;
+
+        try
+        {
+            if (res->checkReload())
+                cout << "UPDATED " << name << endl;
+        }
+        catch (ResourceLoadException e)
+        {
+            cout << "Resource load exception for " << name << ":\n" << e.what() << endl;
+        }
     }
 
-    zipLastModified = lastMod;
     #endif
 }

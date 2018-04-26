@@ -1,8 +1,16 @@
 
 #include "common.hpp"
-#include "render/shader.hpp"
+#include "resource/shader.hpp"
+#include "file/filefunc.hpp"
 #include "util/stringfunc.hpp"
 
+
+Base::Shader::Shader(const string& filename, function<void(GLuint)> setup)
+{
+    glGenBuffers(1, &glVbo);
+    load(fileGetContents(filename));
+    this->setup = setup;
+}
 
 Base::Shader::Shader(const Data& data, function<void(GLuint)> setup)
 {
@@ -141,7 +149,7 @@ void Base::Shader::load(const string& source)
         glGetShaderInfoLog(vs, errorLength, 0, &error[0]);
         glDeleteShader(vs);
         glDeleteProgram(glProgram);
-        throw ShaderException("Vertex shader compilation error:\n" + error);
+        throw ShaderException("Vertex shader compilation error:\n\t" + error);
     }
     
     // Fragment shader setup
@@ -163,7 +171,7 @@ void Base::Shader::load(const string& source)
         glDeleteShader(vs);
         glDeleteShader(fs);
         glDeleteProgram(glProgram);
-        throw ShaderException("Fragment shader compilation error:\n" + error);
+        throw ShaderException("Fragment shader compilation error:\n\t" + error);
     }
 
     // Link shader program
@@ -175,9 +183,9 @@ void Base::Shader::load(const string& source)
     isLoaded = true;
 }
 
-bool Base::Shader::reload(const Data& data)
+bool Base::Shader::reload(const string& filename)
 {
     glDeleteProgram(glProgram);
-    load(string(data.ptr, data.size));
+    load(fileGetContents(filename));
     return true;
 }

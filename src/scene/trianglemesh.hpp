@@ -3,8 +3,8 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
-#include "render/image.hpp"
-#include "render/shader.hpp"
+#include "resource/image.hpp"
+#include "resource/shader.hpp"
 #include "scene/object.hpp"
 #include "util/data/list.hpp"
 #include "util/data/mat4.hpp"

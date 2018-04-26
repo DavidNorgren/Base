@@ -4,8 +4,8 @@
 #include "util/data/region2d.hpp"
 #include "render/color.hpp"
 #include "render/colors.hpp"
-#include "render/image.hpp"
-#include "render/font.hpp"
+#include "resource/image.hpp"
+#include "resource/font.hpp"
 
 
 /* drawfunc - 2D drawing functionality */
@@ -14,6 +14,11 @@ namespace Base
     /* Text alignment. */
     enum class TextAlignX { LEFT, CENTER, RIGHT };
     enum class TextAlignY { TOP, MIDDLE, BOTTOM };
+    struct TextAlign
+    {
+        TextAlignX x;
+        TextAlignY y;
+    };
 
     /* Begins drawing. */
     EXPORT void drawBegin();

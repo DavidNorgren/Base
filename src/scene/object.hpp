@@ -2,8 +2,8 @@
 
 #include "util/data/vec3.hpp"
 #include "util/data/mat4.hpp"
-#include "render/shader.hpp"
-#include "render/image.hpp"
+#include "resource/shader.hpp"
+#include "resource/image.hpp"
 
 namespace Base
 {

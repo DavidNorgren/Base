@@ -3,7 +3,7 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
-#include "file/resource.hpp"
+#include "resource/resource.hpp"
 #include "render/color.hpp"
 #include "util/data/size2d.hpp"
 
@@ -14,7 +14,7 @@ namespace Base
     {
       public:
         /* Loads an image from an external file. */
-        EXPORT Image(string filename);
+        EXPORT Image(const string& filename);
 
         /* Loads an image from internal memory. */
         EXPORT Image(const Data& data);
@@ -25,7 +25,7 @@ namespace Base
         GLuint glTexture;
         Size2Di glTextureSize;
 
-        bool reload(const Data& data) override;
+        bool reload(const string& filename) override;
 
       private:
         void load(uchar* pixelData);

@@ -3,7 +3,7 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
-#include "file/resource.hpp"
+#include "resource/resource.hpp"
 #include "util/data/vertex2d.hpp"
 #include "util/data/vertex3d.hpp"
 #include "util/data/mat4.hpp"
@@ -14,7 +14,7 @@ namespace Base
 {
     struct ShaderException : public ResourceLoadException
     {
-        ShaderException(string message) : ResourceLoadException(message) {};
+        ShaderException(const string& message) : ResourceLoadException(message) {};
     };
 
     class Shader : public Resource
@@ -23,7 +23,8 @@ namespace Base
         /* Loads shader code from a file and compiles it.
            The different shader types are separated in the file
            with comments. */
-        Shader(const Data& data, function<void(GLuint)> setup = nullptr);
+        Shader(const string& filename, function<void(GLuint)> setup = nullptr); 
+        Shader(const Data& data,       function<void(GLuint)> setup = nullptr);
 
         /* Selects the shader for usage */
         EXPORT void select();
@@ -34,7 +35,7 @@ namespace Base
         /* Renders a 3D mesh using a transformation matrix and buffers for vertex and index data. */
         EXPORT void render3D(Mat4f matrix, GLuint vbo, int vertices, GLuint ibo, int indices, GLuint glTexture);
 
-        bool reload(const Data& data) override;
+        bool reload(const string& filename) override;
       private:
         void load(const string& source);
 

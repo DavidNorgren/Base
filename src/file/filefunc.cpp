@@ -5,28 +5,27 @@
 #include "file/filefunc.hpp"
 #include "util/stringfunc.hpp"
 
-#ifdef _WIN32
-    #define SLASH "\\"
-#else
-    #define SLASH "/"
-#endif
 
-#define DOT "."
+namespace bfs = boost::filesystem;
 
+string convertSlash(const string& filename)
+{
+    return Base::stringReplace(filename, "\\", "/");
+}
 
 EXPORT bool Base::fileExists(string filename)
 {
-    return boost::filesystem::exists(filename);
+    return bfs::exists(filename);
 }
 
 EXPORT int Base::fileGetSize(string filename)
 {
-    return boost::filesystem::file_size(filename);
+    return bfs::file_size(filename);
 }
 
 EXPORT string Base::fileGetName(string filename)
 {
-    size_t pos = filename.find_last_of(SLASH);
+    size_t pos = filename.find_last_of("/");
 
     if (pos == string::npos)
         return filename;
@@ -36,7 +35,7 @@ EXPORT string Base::fileGetName(string filename)
 
 EXPORT string Base::fileGetPath(string filename)
 {
-    size_t pos = filename.find_last_of(SLASH);
+    size_t pos = filename.find_last_of('/');
 
     if (pos == string::npos)
         return filename;
@@ -46,7 +45,7 @@ EXPORT string Base::fileGetPath(string filename)
 
 EXPORT string Base::fileGetDirectory(string filename)
 {
-    size_t pos = filename.find_last_of(SLASH);
+    size_t pos = filename.find_last_of('/');
 
     if (pos == string::npos)
         return filename;
@@ -57,7 +56,7 @@ EXPORT string Base::fileGetDirectory(string filename)
 EXPORT string Base::fileGetExtension(string filename)
 {
     string fn = fileGetName(filename);
-    size_t pos = fn.find_last_of(DOT);
+    size_t pos = fn.find_last_of('.');
 
     if (pos == string::npos)
         return "";
@@ -69,7 +68,7 @@ EXPORT string Base::fileSetExtension(string filename, string ext)
 {
     string fn = fileGetName(filename);
     string fp = fileGetPath(filename);
-    size_t pos = fn.find_last_of(DOT);
+    size_t pos = fn.find_last_of('.');
 
     if (pos != string::npos)
         fn = fn.substr(0, pos);
@@ -92,5 +91,23 @@ EXPORT string Base::fileGetContents(string filename)
 
 EXPORT bool Base::directoryExists(string directory)
 {
-    return boost::filesystem::exists(directory);
+    return bfs::exists(directory);
+}
+
+EXPORT Base::List<string> Base::directoryGetFiles(string directory, bool recurse, string filter)
+{
+    List<string> files;
+    bfs::path dirPath(directory);
+    bfs::directory_iterator end_itr;
+
+    for (bfs::directory_iterator itr(dirPath); itr != end_itr; ++itr)
+    {
+        bfs::path curPath = itr->path();
+        if (bfs::is_directory(curPath) && recurse)
+            files.add(directoryGetFiles(curPath.string(), true, filter));
+        else if (bfs::is_regular_file(curPath))
+            files.add(convertSlash(curPath.string()));
+    }
+
+    return files;
 }

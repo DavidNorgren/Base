@@ -1,6 +1,6 @@
 #pragma once
 
-#include "file/resource.hpp"
+#include "resource/resource.hpp"
 
 
 namespace Base
@@ -21,6 +21,6 @@ namespace Base
       private:
         void load();
         Map<string, Resource*> resMap;
-        uint zipLastModified = 0;
+        uint resLastModified = 0;
     };
 }

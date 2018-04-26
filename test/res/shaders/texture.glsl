@@ -27,7 +27,6 @@ uniform vec4 uColor;
 
 void main(void)
 {
-    vec4 col = vec4(0.1, 0.7, 1.0, 1.0);
-    gl_FragColor = col * uColor * texture2D(uSampler, vTexCoord);
+    gl_FragColor = uColor * texture2D(uSampler, vTexCoord);
     //gl_FragColor = vec4(vTexCoord.x, vTexCoord.y, 1.0, 1.0);
 }

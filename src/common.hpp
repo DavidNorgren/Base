@@ -25,3 +25,10 @@ template<typename T, typename R> using Map = std::map<T, R>;
 
 using uint = unsigned int;
 using uchar = unsigned char;
+    
+/* A container with a pointer to raw byte data, along with its size. */
+struct Data
+{
+    char* ptr;
+    uint size;
+};

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "file/resource.hpp"
 #include "util/data/list.hpp"
+#include "resource/resource.hpp"
 
 namespace Base
 {

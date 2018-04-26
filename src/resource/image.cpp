@@ -3,11 +3,11 @@
 #include "GL/glew.h"
 
 #include "common.hpp"
-#include "render/image.hpp"
+#include "resource/image.hpp"
 #include "util/stringfunc.hpp"
 
 
-EXPORT Base::Image::Image(string filename)
+EXPORT Base::Image::Image(const string& filename)
 {
     uchar *pixelData = SOIL_load_image(&stringToWstring(filename)[0], &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
     load(pixelData);
@@ -45,10 +45,10 @@ void Base::Image::load(uchar* pixelData)
     SOIL_free_image_data(pixelData);
 }
 
-bool Base::Image::reload(const Data& data)
+bool Base::Image::reload(const string& filename)
 {
     glDeleteTextures(1, &glTexture);
-    uchar *pixelData = SOIL_load_image_from_memory((uchar*)data.ptr, data.size, &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
+    uchar *pixelData = SOIL_load_image(&stringToWstring(filename)[0], &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
     load(pixelData);
     return true;
 }
