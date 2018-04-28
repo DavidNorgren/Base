@@ -5,27 +5,18 @@
 #include "util/stringfunc.hpp"
 
 
-Base::Shader::Shader(const string& filename, function<void(GLuint)> setup)
+EXPORT void Base::Shader::setSetupFunc(function<void(GLuint)> setup)
 {
-    glGenBuffers(1, &glVbo);
-    load(fileGetContents(filename));
     this->setup = setup;
 }
 
-Base::Shader::Shader(const Data& data, function<void(GLuint)> setup)
-{
-    glGenBuffers(1, &glVbo);
-    load(string(data.ptr, data.size));
-    this->setup = setup;
-}
-
-EXPORT void Base::Shader::select()
+EXPORT void Base::Shader::select() const
 {
     if (isLoaded)
         glUseProgram(glProgram);
 }
 
-EXPORT void Base::Shader::render2D(Mat4f matrix, Vertex2Di* vertexData, int vertices, GLuint glTexture, Color color, GLenum mode)
+EXPORT void Base::Shader::render2D(const Mat4f& matrix, Vertex2Di* vertexData, int vertices, GLuint glTexture, const Color& color, GLenum mode) const
 {
     if (!isLoaded)
         return;
@@ -69,15 +60,15 @@ EXPORT void Base::Shader::render2D(Mat4f matrix, Vertex2Di* vertexData, int vert
     // TODO ERROR CHECK
 }
 
-EXPORT void Base::Shader::render3D(Base::Mat4f matrix, GLuint vbo, int vertices, GLuint ibo, int indices, GLuint glTexture)
+EXPORT void Base::Shader::render3D(const Base::Mat4f& matrix, GLuint vbo, int vertices, GLuint ibo, int indices, GLuint glTexture) const
 {
     if (!isLoaded)
         return;
 
     // Select shader program, get uniforms
     GLint aPos      = glGetAttribLocation(glProgram, "aPos");
-    GLint aNormal   = glGetAttribLocation(glProgram, "aNormal");
     GLint aTexCoord = glGetAttribLocation(glProgram, "aTexCoord");
+    GLint aNormal   = glGetAttribLocation(glProgram, "aNormal");
     GLint uMat      = glGetUniformLocation(glProgram, "uMat");
     GLint uSampler  = glGetUniformLocation(glProgram, "uSampler");
     GLint uColor    = glGetUniformLocation(glProgram, "uColor");
@@ -88,11 +79,11 @@ EXPORT void Base::Shader::render3D(Base::Mat4f matrix, GLuint vbo, int vertices,
 
     // Pass buffers
     glEnableVertexAttribArray(aPos);
-    glEnableVertexAttribArray(aNormal);
     glEnableVertexAttribArray(aTexCoord);
+    glEnableVertexAttribArray(aNormal);
     glVertexAttribPointer(aPos,      3, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), 0);
-    glVertexAttribPointer(aNormal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), (void*)sizeof(Vec3f));
-    glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), (void*)(sizeof(Vec3f) + sizeof(Vec3f)));
+    glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), (void*)sizeof(Vec3f));
+    glVertexAttribPointer(aNormal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), (void*)(sizeof(Vec2f) + sizeof(Vec3f)));
 
     // Send in matrix
     glUniformMatrix4fv(uMat, 1, GL_FALSE, matrix.elem);
@@ -113,20 +104,34 @@ EXPORT void Base::Shader::render3D(Base::Mat4f matrix, GLuint vbo, int vertices,
 
     // Reset
     glDisableVertexAttribArray(aPos);
-    glDisableVertexAttribArray(aNormal);
     glDisableVertexAttribArray(aTexCoord);
+    glDisableVertexAttribArray(aNormal);
     glBindTexture(GL_TEXTURE_2D, 0);
     
     // TODO ERROR CHECK
 }
 
-void Base::Shader::load(const string& source)
+void Base::Shader::load(const FilePath& file)
+{
+    glGenBuffers(1, &glVbo);
+    load(fileGetText(file));
+    this->setup = setup;
+}
+
+void Base::Shader::load(const FileData& data)
+{
+    glGenBuffers(1, &glVbo);
+    load(string(&data[0], data.size()));
+    this->setup = setup;
+}
+
+void Base::Shader::load(const string& code)
 {
     glProgram = glCreateProgram();
     isLoaded = false;
 
     // Split the source code by the comments into a Vertex and Fragment shader
-    List<string> sourceSplit = stringSplit(stringReplace(source, "\r\n", "\n"), "// Fragment\n");
+    List<string> sourceSplit = stringSplit(stringReplace(code, "\r\n", "\n"), "// Fragment\n");
     string vertexSource = sourceSplit[0];
     string fragmentSource = sourceSplit[1];
     
@@ -180,12 +185,11 @@ void Base::Shader::load(const string& source)
     glDetachShader(glProgram, fs);
     glDeleteShader(vs);
     glDeleteShader(fs);
-    isLoaded = true;
 }
 
-bool Base::Shader::reload(const string& filename)
+bool Base::Shader::reload(const FilePath& file)
 {
     glDeleteProgram(glProgram);
-    load(fileGetContents(filename));
+    load(fileGetText(file));
     return true;
 }

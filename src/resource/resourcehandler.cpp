@@ -8,6 +8,10 @@
 #include "util/stringfunc.hpp"
 
 
+// DEBUG!
+//#define DYNAMIC_RESOURCES
+//#define DYNAMIC_RESOURCES_DIR ""
+
 #ifndef DYNAMIC_RESOURCES
 extern char resData[] asm("_binary_res_zip_start");
 extern char resSize[] asm("_binary_res_zip_size");
@@ -15,42 +19,8 @@ extern char resSize[] asm("_binary_res_zip_size");
 
 EXPORT Base::ResourceHandler::ResourceHandler()
 {
-    load();
-}
-
-EXPORT Base::Resource* Base::ResourceHandler::get(string name)
-{
-    Map<string, Resource*>::iterator i = resMap.find(name);
-    if (i == resMap.end())
-        throw ResourceException("Could not find " + name);
-    
-    return i->second;
-}
-
-void Base::ResourceHandler::load()
-{
     #ifdef DYNAMIC_RESOURCES
-    cout << "Loading dynamic resources: " << DYNAMIC_RESOURCES_DIR << endl;
-
-    List<string> files = directoryGetFiles(DYNAMIC_RESOURCES_DIR, true);
-    for (const string& filename : files)
-    {
-        // Get resource name
-        string name = stringReplace(filename, DYNAMIC_RESOURCES_DIR, "");
-
-        try
-        {
-            // Add to map
-            resMap[name] = Resource::create(filename);
-            resMap[name]->dynamicFilename = filename;
-            cout << "\tADDED: " << name << endl;
-        }
-        catch (ResourceLoadException e)
-        {
-            cout << "Resource load exception for " << name << ":\n" << e.what() << endl;
-        }
-    }
-
+    cout << "[ResourceHandler] Loading dynamic resources from " << DYNAMIC_RESOURCES_DIR << endl;
     #else
     zip_source_t *src;
     zip_t *za;
@@ -60,7 +30,7 @@ void Base::ResourceHandler::load()
         return;
 
     src = zip_source_buffer_create(resData, (uint)resSize, 0, &error);
-    cout << "Loading resources from memory..." << endl;
+    cout << "[ResourceHandler] Loading resources from memory" << endl;
 
     if (!src)
     {
@@ -77,7 +47,7 @@ void Base::ResourceHandler::load()
     
     int files_total = zip_get_num_files(za);
     
-    cout << "Found resources: " << files_total << endl;
+    cout << "[ResourceHandler] Found resources: " << files_total << endl;
     
     for (int i = 0; i < files_total; i++)
     {
@@ -91,13 +61,9 @@ void Base::ResourceHandler::load()
             continue;
         }
         
-        Data resData;
-        resData.size = zs.size;
-        resData.ptr = new char[zs.size];
-
-        if (zip_fread(zf, resData.ptr, resData.size) <= 0)
+        FileData data(zs.size);
+        if (zip_fread(zf, &data[0], data.size()) <= 0)
         {
-            delete resData.ptr;
             zip_fclose(zf);
             continue;
         }
@@ -105,44 +71,48 @@ void Base::ResourceHandler::load()
         // Close file
         zip_fclose(zf);
         
-        // Process into a new resource
-        try
-        {
-            // Add to map
-            resMap[name] = Resource::create(fileGetExtension(name), resData);
-            cout << "\tADDED: " << name << " (" << resData.size << " bytes)" << endl;
-        }
-        catch (ResourceLoadException e)
-        {
-            cout << "Resource load exception for " << name << ":\n" << e.what() << endl;
-        }
-
-        delete resData.ptr;
+        // Add new resource and bind data
+        resMap[name] = Resource::createInternal(name, data);
+        cout << "\tADDED: " << name << " (" << data.size() << " bytes)" << endl;
     }
     
     zip_close(za);
     #endif
 }
 
-void Base::ResourceHandler::checkReload()
+EXPORT Base::Resource* Base::ResourceHandler::get(const string& name)
 {
-    #ifdef DYNAMIC_RESOURCES
-    
-    for (Map<string, Resource*>::iterator it = resMap.begin(); it != resMap.end(); it++)
-    {
-        const string& name = it->first;
-        Resource* res = it->second;
+    auto i = resMap.find(name);
+    Resource* res;
 
-        try
+    if (i == resMap.end())
+    {
+    #ifdef DYNAMIC_RESOURCES
+        FilePath file = DirectoryPath(DYNAMIC_RESOURCES_DIR).getFilePath(name);
+        if (fileExists(file))
         {
-            if (res->checkReload())
-                cout << "UPDATED " << name << endl;
+            // Add new resource and bind filename
+            res = Resource::createDynamic(name, file);
+            resMap[name] = res;
+            cout << "\tADDED: " << name << endl;
         }
-        catch (ResourceLoadException e)
-        {
-            cout << "Resource load exception for " << name << ":\n" << e.what() << endl;
-        }
+        else
+    #endif
+        throw ResourceException("Could not find " + name);
+    }
+    else
+        res = i->second;
+    
+    // Process if not already loaded or re-load if the file was changed (dynamic resources only)
+    try
+    {
+        if (res->checkLoad())
+            cout << "[ResourceHandler] LOADED " << name << endl << std::flush;
+    }
+    catch (std::exception e)
+    {
+        cout << "Resource load exception for " << name << ":\n" << e.what() << endl << std::flush;
     }
 
-    #endif
+    return res;
 }

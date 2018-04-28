@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cmath>
+#include "util/mathfunc.hpp"
 
 
 namespace Base
@@ -44,7 +44,7 @@ namespace Base
 
         inline T length()
         {
-            return std::sqrt(x * x + y * y + z * z);
+            return sqrt(x * x + y * y + z * z);
         }
 
         inline Vec3 normalize()
@@ -53,6 +53,19 @@ namespace Base
             if (len == (T)0)
                 return Vec3((T)0);
             return Vec3(x / len, y / len, z / len);
+        }
+
+        inline Vec3 rotate(const Vec3&a, float angle)
+        {
+            float d = dot(this, a);
+            float c = dcos(angle);
+            float ci = 1.f - c;
+            float s = dsin(angle);
+            return Vec3(
+                a.x * d * ci + x * c + (-a.z * y + a.x * z) * s,
+                a.y * d * ci + y * c + (a.z * x - a.y * z) * s,
+                a.z * d * ci + z * c + (-a.x * x + a.y * y) * s
+            );
         }
 
         static inline T distance(const Vec3& a, const Vec3& b)
@@ -101,12 +114,27 @@ namespace Base
                 return normalize(eta * incidence.eVec - (eta*negNdotV + sqrtf(k)) * nn.eVec);
             }
 
+        }*/
+        
+        // Get/Set via [] operator
+        
+        inline T operator [] (int i) const
+        {
+            if (i == 0)
+                return x;
+            else if (i == 1)
+                return y;
+            return z;
         }
 
-        static inline Vec3 rotate(const Vec3& vec, const Vec3& around, T angle)
+        inline T& operator [] (int i)
         {
-            return embree::xfmVector(embree::AffineSpace3fa::rotate(around.eVec, embree::deg2rad(angle)), vec.eVec);
-        }*/
+            if (i == 0)
+                return x;
+            else if (i == 1)
+                return y;
+            return z;
+        }
 
         // Unary operators
 
@@ -139,9 +167,9 @@ namespace Base
         }
 
 
-        inline Vec3<T> operator - (const Vec3<T>& other) const
+        inline Vec3 operator - (const Vec3& other) const
         {
-            return Vec3<T>(x - other.x, y - other.y, z - other.z); 
+            return Vec3(x - other.x, y - other.y, z - other.z); 
         }
 
         inline void operator -= (const Vec3& other)
@@ -163,14 +191,21 @@ namespace Base
             z *= mul;
         }
 
-        // Comparison operators
-
-        inline bool operator == (const Vec3& other)
+        inline void operator *= (const Vec3& other)
         {
-            return (x == other.x && y == other.y && z == other.z);
+            x *= other.x;
+            y *= other.y;
+            z *= other.z;
         }
 
-        inline bool operator != (const Vec3& other)
+        // Comparison operators
+
+        inline bool operator == (const Vec3& other) const
+        {
+            return (approxEq(x, other.x) && approxEq(y, other.y) && approxEq(z, other.z));
+        }
+
+        inline bool operator != (const Vec3& other) const
         {
             return !(this == other);
         }

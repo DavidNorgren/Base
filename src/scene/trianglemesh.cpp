@@ -10,12 +10,40 @@ EXPORT Base::TriangleMesh::~TriangleMesh()
     glDeleteBuffers(1, &glIbo);
 }
 
-void Base::TriangleMesh::render(Shader* shader, Mat4f projMat)
+void Base::TriangleMesh::render(Shader* shader, const Mat4f& projMat) const
 {
-    shader->render3D(projMat, glVbo, vertexData.size(), glIbo, indexData.size() * 3, texture->glTexture);
+    shader->render3D(projMat * matrix, glVbo, vertexData.size(), glIbo, indexData.size(), material->texture->glTexture);
 }
 
-void Base::TriangleMesh::setBuffers()
+uint Base::TriangleMesh::addVertex(Vertex3Df vertex)
+{
+    vertexData.add(vertex);
+    return vertexData.size() - 1;
+}
+
+void Base::TriangleMesh::addTriangle(const Vec3ui& indices)
+{
+    indexData.add(indices[0]);
+    indexData.add(indices[1]);
+    indexData.add(indices[2]);
+}
+
+void Base::TriangleMesh::addIndex(uint index)
+{
+    indexData.add(index);
+}
+
+void Base::TriangleMesh::addTriangle(Vertex3Df v1, Vertex3Df v2, Vertex3Df v3)
+{
+    vertexData.add(v1);
+    vertexData.add(v2);
+    vertexData.add(v3);
+    indexData.add((uint)(vertexData.size() - 3));
+    indexData.add((uint)(vertexData.size() - 2));
+    indexData.add((uint)(vertexData.size() - 1));
+}
+
+void Base::TriangleMesh::update()
 {
     // Set up VBO (Vertex buffer object)
     glGenBuffers(1, &glVbo);
@@ -25,25 +53,42 @@ void Base::TriangleMesh::setBuffers()
     // Set up IBO (Index buffer object)
     glGenBuffers(1, &glIbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glIbo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexData.size() * sizeof(Vec3ui), &indexData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexData.size() * sizeof(uint), &indexData[0], GL_STATIC_DRAW);
 }
 
-Base::Plane::Plane(Base::Size2Df size, Base::Image* texture, Vec2f textureRepeat)
+int Base::TriangleMesh::getVertexIndex(const Vertex3Df& vertex)
 {
-    this->texture = texture;
+    int index = 0;
+    for (const Vertex3Df& checkVertex : vertexData)
+    {
+        if (checkVertex == vertex)
+            return index;
+        index++;
+    }
 
+    return -1;
+}
+
+int Base::TriangleMesh::getTriangleCount()
+{
+    return indexData.size() / 3;
+}
+
+Base::Plane::Plane(const Base::Size2Df& size, Base::Material* material, const Vec2f& textureRepeat) : Base::TriangleMesh(material)
+{
     Vec3f normal = { 0, 1, 0 };
 
     vertexData = {
-        { { -size.width / 2.f, 0.f, -size.height / 2.f }, normal, { 0, 0 }},
-        { {  size.width / 2.f, 0.f, -size.height / 2.f }, normal, { textureRepeat.x, 0 }},
-        { {  size.width / 2.f, 0.f,  size.height / 2.f }, normal, textureRepeat },
-        { { -size.width / 2.f, 0.f,  size.height / 2.f }, normal, { 0, textureRepeat.y }}
+        { { -size.width / 2.f, 0.f, -size.height / 2.f }, { 0, 0 },               normal },
+        { {  size.width / 2.f, 0.f, -size.height / 2.f }, { textureRepeat.x, 0 }, normal },
+        { {  size.width / 2.f, 0.f,  size.height / 2.f }, textureRepeat,          normal },
+        { { -size.width / 2.f, 0.f,  size.height / 2.f }, { 0, textureRepeat.y }, normal }
     };
 
     indexData = {
-        { 0, 1, 2 } , { 2, 3, 0 }
+        2, 1, 0,
+        0, 3, 2
     };
 
-    setBuffers();
+    update();
 }

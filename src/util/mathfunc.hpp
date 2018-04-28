@@ -4,28 +4,40 @@
 #include <cmath>
 
 
+using std::abs;
+using std::sqrt;
+
 namespace Base
 {
     constexpr float PI = 3.14159265;
 
-    template<typename T> inline T min(T x, T y)
+    template<typename T> inline T min(const T& a, const T& b)
     {
-        return x < y ? x : y;
+        return a < b ? a : b;
     }
 
-    template<typename T> inline T max(T x, T y)
+    template<typename T> inline T max(const T& a, const T& b)
     {
-        return x > y ? x : y;
+        return a > b ? a : b;
     }
 
-    template<typename T> inline T mod(T a, T b)
+    template<typename T> inline T mod(const T& a, const T& b)
     {
         return (a % b + b) % b;
     }
 
-    template<typename T> inline T clamp(T x, T lower, T upper)
+    template<typename T> inline T clamp(const T& a, const T& lower, const T& upper)
     {
-        return max(lower, min(upper, x));
+        return max(lower, min(upper, a));
+    }
+
+    template<typename T> inline T approxEq(const T& a, const T& b, double absEpsilon = 1e-8, double relEpsilon = 1e-5)
+    {
+        double diff = abs(a - b);
+        if (diff <= absEpsilon)
+            return true;
+    
+        return diff <= ((abs(a) < fabs(b) ? fabs(b) : fabs(a)) * relEpsilon);
     }
     
     inline float dsin(float a)

@@ -14,18 +14,12 @@ namespace Base
 
         // Constructors
 
-        Mat4()
-        {
-            elem[0] = 1.f; elem[4] = 0.f; elem[8] = 0.f; elem[12] = 0.f;
-            elem[1] = 0.f; elem[5] = 1.f; elem[9] = 0.f; elem[13] = 0.f;
-            elem[2] = 0.f; elem[6] = 0.f; elem[10] = 1.f; elem[14] = 0.f;
-            elem[3] = 0.f; elem[7] = 0.f; elem[11] = 0.f; elem[15] = 1.f;
-        }
+        Mat4() {}
 
         Mat4(T x1, T y1, T z1, T w1,
-               T x2, T y2, T z2, T w2,
-               T x3, T y3, T z3, T w3,
-               T x4, T y4, T z4, T w4)
+             T x2, T y2, T z2, T w2,
+             T x3, T y3, T z3, T w3,
+             T x4, T y4, T z4, T w4)
         {
             elem[0] = x1; elem[4] = y1; elem[8] = z1; elem[12] = w1;
             elem[1] = x2; elem[5] = y2; elem[9] = z2; elem[13] = w2;
@@ -36,10 +30,20 @@ namespace Base
         inline Mat4(const Mat4& other)
         {
             for (int i = 0; i < 16; i++)
-                elem[i] = other.elem[i];
+                elem[i] = other[i];
         }
 
         // Methods
+
+        static inline Mat4 identity()
+        {
+            return Mat4(
+                1.f, 0.f, 0.f, 0.0,
+                0.f, 1.f, 0.f, 0.0,
+                0.f, 0.f, 1.f, 0.0,
+                0.f, 0.f, 0.f, 1.f
+            );
+        }
 
         /* Builds a translation matrix. */
         static inline Mat4 translate(const Vec3<T>& vec)
@@ -121,16 +125,28 @@ namespace Base
         /* Builds a view matrix for looking at a point. */
         static inline Mat4 viewLookAt(const Vec3<T>& eye, const Vec3<T>& at, const Vec3<T>& up)
         {
-            Vec3<T> look = (at - eye).normalize();
-            Vec3<T> side = Vec3<T>::cross(look, up);
+            Vec3<T> look = (eye - at).normalize();
+            Vec3<T> side = Vec3<T>::cross(look, up).normalize();
             Vec3<T> newUp = Vec3<T>::cross(side, look);
 
             return Mat4(
                 side.x, side.y, side.z, 0.f,
                 newUp.x, newUp.y, newUp.z, 0.f,
-                -look.x, -look.y, -look.z, 0.f,
+                look.x, look.y, look.z, 0.f,
                 0.f, 0.f, 0.f, 1.f
             );
+        }
+        
+        // Get/Set via [] operator
+        
+        inline T operator [] (int i) const
+        {
+            return elem[i];
+        }
+
+        inline T &operator [] (int i)
+        {
+            return elem[i];
         }
 
         // Binary operators
@@ -138,7 +154,7 @@ namespace Base
         Mat4& operator = (const Mat4& other)
         {
             for (int i = 0; i < 16; i++)
-                elem[i] = other.elem[i];
+                elem[i] = other[i];
             return *this;
         }
 
@@ -149,10 +165,10 @@ namespace Base
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    product.elem[j * 4 + i] = 0.f;
+                    product[j * 4 + i] = 0.f;
 
                     for (int k = 0; k < 4; k++)
-                        product.elem[j * 4 + i] += elem[k * 4 + i] * other.elem[j * 4 + k];
+                        product[j * 4 + i] += elem[k * 4 + i] * other[j * 4 + k];
                 }
             }
             return product;
@@ -173,7 +189,7 @@ namespace Base
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 4; j++)
-                cout << mat.elem[j * 4 + i] << (j < 3 ? "," : "");
+                cout << mat[j * 4 + i] << (j < 3 ? "," : "");
             cout << endl;
         }
         return cout;

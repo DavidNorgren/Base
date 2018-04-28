@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 
 namespace Base
 {
@@ -18,12 +16,17 @@ namespace Base
             vec.push_back(value);
         }
 
-        void add(List<T> list)
+        void addList(const List<T>& list)
         {
             vec.insert(vec.end(), list.vec.begin(), list.vec.end());
         }
 
-        int find(T value)
+        void addList(const std::vector<T>& vec)
+        {
+            this->vec.insert(this->vec.end(), vec.begin(), vec.end());
+        }
+
+        int find(const T& value) const
         {
             auto i = std::find(vec.begin(), vec.end(), value);
             if (i == vec.end())
@@ -36,7 +39,7 @@ namespace Base
             vec.erase(vec.begin() + index);
         }
 
-        void remove(T value)
+        void remove(const T& value)
         {
             auto i = std::find(vec.begin(), vec.end(), value);
             if (i == vec.end())
@@ -54,14 +57,19 @@ namespace Base
             vec.insert(vec.begin() + index, list.vec.begin(), list.vec.end());
         }
 
-        uint size()
+        uint size() const
         {
             return vec.size();
         }
 
+        void clear()
+        {
+            vec.clear();
+        }
+
         void sort(bool descending = true)
         {
-          // TODO
+            // TODO
         }
 
         inline List& operator = (const std::vector<T>& other)
@@ -72,15 +80,13 @@ namespace Base
 
         // Get/Set via [] operator
         inline T  operator [] (int i) const { return vec[i]; }
-        inline T &operator [] (int i)       { return vec[i]; }
+        inline T& operator [] (int i)       { return vec[i]; }
 
         // Support for range-based for loops
-        typename std::vector<T>::iterator begin() { return vec.begin(); }
-        typename std::vector<T>::const_iterator begin() const { return vec.begin(); }
-        typename std::vector<T>::const_iterator cbegin() const { return vec.begin(); }
-        typename std::vector<T>::iterator end() { return vec.end(); }
-        typename std::vector<T>::const_iterator end() const { return vec.end(); }
-        typename std::vector<T>::const_iterator cend() const { return vec.end(); }
+        typename std::vector<T>::iterator begin()               { return vec.begin(); }
+        typename std::vector<T>::const_iterator begin() const   { return vec.begin(); }
+        typename std::vector<T>::iterator end()                 { return vec.end(); }
+        typename std::vector<T>::const_iterator end() const     { return vec.end(); }
     
       protected:
         std::vector<T> vec;

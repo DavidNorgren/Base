@@ -12,22 +12,20 @@
 namespace Base
 {
     /* Text alignment. */
-    enum class TextAlignX { LEFT, CENTER, RIGHT };
-    enum class TextAlignY { TOP, MIDDLE, BOTTOM };
     struct TextAlign
     {
-        TextAlignX x;
-        TextAlignY y;
+        enum { LEFT, CENTER, RIGHT } x;
+        enum { TOP, MIDDLE, BOTTOM } y;
     };
 
     /* Begins drawing. */
     EXPORT void drawBegin();
 
     /* Clears using a drawing color. */
-    EXPORT void drawClear(Color color);
+    EXPORT void drawClear(const Color& color);
 
     /* Sets a render area. */
-    EXPORT void setDrawingArea(ScreenArea area);
+    EXPORT void setDrawingArea(const ScreenArea& area);
     EXPORT ScreenArea getDrawingArea();
     EXPORT void resetDrawingArea();
 
@@ -36,21 +34,21 @@ namespace Base
     EXPORT float getDrawingAlpha();
 
     /* Draws a piece of text using the drawing font. */
-    EXPORT void drawText(string text, ScreenPos pos,             Color color = Colors::BLACK);
-    EXPORT void drawText(string text, ScreenPos pos, Font* font, Color color = Colors::BLACK);
-    EXPORT void drawTextAligned(string text, ScreenPos pos,             TextAlignX alignX = TextAlignX::LEFT, TextAlignY alignY = TextAlignY::TOP, Color color = Colors::BLACK);
-    EXPORT void drawTextAligned(string text, ScreenPos pos, Font* font, TextAlignX alignX = TextAlignX::LEFT, TextAlignY alignY = TextAlignY::TOP, Color color = Colors::BLACK);
+    EXPORT void drawText(const string& text, const ScreenPos& pos,             const Color& color = Colors::BLACK);
+    EXPORT void drawText(const string& text, const ScreenPos& pos, Font* font, const Color& color = Colors::BLACK);
+    EXPORT void drawTextAligned(const string& text, const ScreenPos& pos,             const TextAlign& align, const Color& color = Colors::BLACK);
+    EXPORT void drawTextAligned(const string& text, const ScreenPos& pos, Font* font, const TextAlign& align, const Color& color = Colors::BLACK);
 
     /* Draws an image. */
-    EXPORT void drawImage(string name,  ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2f scale = { 1.f, 1.f });
-    EXPORT void drawImage(Image* image, ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2f scale = { 1.f, 1.f });
-    EXPORT void drawSubImage(string image, int subImage, ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2f scale = { 1.f, 1.f });
-    EXPORT void drawSubImage(Image* image, int subImage, ScreenPos pos, Color color = Colors::WHITE, float rotation = 0.f, Vec2f scale = { 1.f, 1.f });
+    EXPORT void drawImage(const string& name, const ScreenPos& pos, const Color& color = Colors::WHITE, float rotation = 0.f, const Vec2f& scale = { 1.f, 1.f });
+    EXPORT void drawImage(Image* image,       const ScreenPos& pos, const Color& color = Colors::WHITE, float rotation = 0.f, const Vec2f& scale = { 1.f, 1.f });
+    EXPORT void drawSubImage(const string& image, int subImage, const ScreenPos& pos, const Color& color = Colors::WHITE, float rotation = 0.f, const Vec2f& scale = { 1.f, 1.f });
+    EXPORT void drawSubImage(Image* image,        int subImage, const ScreenPos& pos, const Color& color = Colors::WHITE, float rotation = 0.f, const Vec2f& scale = { 1.f, 1.f });
 
     /* Draws a colored box. */
-    EXPORT void drawBox(ScreenArea box, Color color, bool outline = false, int outlineThickness = 1);
-    EXPORT void drawBoxEdges(ScreenArea box, Color color, string edgeImage, bool edgeTopLeft = true, bool edgeTopRight = true, bool edgeBottomRight = true, bool edgeBottomLeft = true);
+    EXPORT void drawBox(const ScreenArea& box, const Color& color, bool outline = false, int outlineThickness = 1);
+    EXPORT void drawBoxEdges(const ScreenArea& box, const Color& color, const string& edgeImage, bool edgeTopLeft = true, bool edgeTopRight = true, bool edgeBottomRight = true, bool edgeBottomLeft = true);
     
     /* Draws a line */
-    EXPORT void drawLine(ScreenPos start, ScreenPos end, Color color, int thickness = 1);
+    EXPORT void drawLine(const ScreenPos& start, const ScreenPos& end, const Color& color, int thickness = 1);
 }

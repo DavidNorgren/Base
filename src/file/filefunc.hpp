@@ -1,37 +1,33 @@
 #pragma once
 
+#include "file/directorypath.hpp"
+#include "file/filepath.hpp"
 #include "util/data/list.hpp"
 
 
 namespace Base
 {
     /* Returns whether the given file exists. */
-    EXPORT bool fileExists(string filename);
+    EXPORT bool fileExists(const FilePath& file);
 
     /* Returns the size of the given file, in bytes. */
-    EXPORT int fileGetSize(string filename);
+    EXPORT int fileGetSize(const FilePath& file);
 
-    /* Returns the name of the file, without the path. */
-    EXPORT string fileGetName(string filename);
+    /* Returns the timestamp when the file was last changed. */
+    EXPORT uint fileGetLastChange(const FilePath& file);
 
-    /* Returns the path to the given file, including the final slash. */
-    EXPORT string fileGetPath(string filename);
+    /* Returns the byte data o fhte file. */
+    EXPORT FileData fileGetData(const FilePath& file);
 
-    /* Returns the directory of the given file, not including the final slash. */
-    EXPORT string fileGetDirectory(string filename);
+    /* Returns the contents of the given text file as a single string. */
+    EXPORT string fileGetText(const FilePath& file);
 
-    /* Returns the extension of the file, including the leading dot. */
-    EXPORT string fileGetExtension(string filename);
-
-    /* Returns the filename with the new extension (extension must include the leading dot). */
-    EXPORT string fileSetExtension(string filename, string ext);
-
-    /* Returns the contents of the given text file. */
-    EXPORT string fileGetContents(string filename);
+    /* Returns the contents of the given text file as a list of lines. */
+    EXPORT List<string> fileGetLines(const FilePath& file);
 
     /* Returns whether the given directory exists. */
-    EXPORT bool directoryExists(string directory);
+    EXPORT bool directoryExists(const DirectoryPath& directory);
 
     /* Returns a list of the files within the given directory. */
-    EXPORT List<string> directoryGetFiles(string directory, bool recurse = false, string filter = "");
+    EXPORT List<FilePath> directoryGetFiles(const DirectoryPath& directory, bool recurse = false, const string& filter = "");
 }

@@ -10,12 +10,10 @@
 #include "util/data/size2d.hpp"
 #include "util/data/vec2.hpp"
 
+
 namespace Base
 {
     constexpr float LINE_SPACE = 1.25f;
-    constexpr uint FONTS_SIZE = 15;
-    constexpr uint FONTS_START = 32;
-    constexpr uint FONTS_END = 128;
 
     struct FontException : public runtime_error
     {
@@ -38,9 +36,7 @@ namespace Base
     class Font : public Resource
     {
       public:
-        /* Load a new font from a file. */
-        EXPORT Font(const string& filename,  uint size = FONTS_SIZE, uint start = FONTS_START, uint end = FONTS_END);
-        EXPORT Font(const Data& data,        uint size = FONTS_SIZE, uint start = FONTS_START, uint end = FONTS_END);
+        Font() {};
 
         /* Get text dimensions. */
         EXPORT int stringGetWidth(const string& text);
@@ -53,6 +49,8 @@ namespace Base
         Size2Di glTextureSize;
 
       private:
+        void load(const FilePath& file) override;
+        void load(const FileData& data) override;
         void load(FT_Face& face);
     };
 }

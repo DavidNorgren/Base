@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cmath>
+#include "util/mathfunc.hpp"
 
 
 namespace Base
@@ -41,7 +41,7 @@ namespace Base
 
         inline T length()
         {
-            return std::sqrt(x * x + y * y);
+            return sqrt(x * x + y * y);
         }
 
         inline Vec2 normalize()
@@ -61,13 +61,33 @@ namespace Base
         {
             return a.x * b.x + a.y * b.y;
         }
+        
+        // Get/Set via [] operator
+        
+        /*inline T operator [] (int i) const
+        {
+            return elem[i];
+        }
+
+        inline T &operator [] (int i)
+        {
+            return elem[i];
+        }*/
 
         // Unary operators
 
-        inline Vec2 operator - ()
+        inline T operator [] (int i) const
         {
-            return Vec2(-x, -y);
+            if (i == 0)
+                return x;
+            return y;
+        }
 
+        inline T& operator [] (int i)
+        {
+            if (i == 0)
+                return x;
+            return y;
         }
         
         // Binary operators
@@ -92,7 +112,7 @@ namespace Base
 
         inline Vec2 operator - (const Vec2& other) const
         {
-            return Vec2(other.x, other.y); 
+            return Vec2(x - other.x, y - other.y); 
         }
 
         inline void operator -= (const Vec2& other)
@@ -112,14 +132,20 @@ namespace Base
             y *= mul;
         }
 
-        // Comparison operators
-
-        inline bool operator == (const Vec2& other)
+        inline void operator *= (const Vec2& other)
         {
-            return (x == other.x && y == other.y);
+            x *= other.x;
+            y *= other.y;
         }
 
-        inline bool operator != (const Vec2& other)
+        // Comparison operators
+
+        inline bool operator == (const Vec2& other) const
+        {
+            return (approxEq(x, other.x) && approxEq(y, other.y));
+        }
+
+        inline bool operator != (const Vec2& other) const
         {
             return !(this == other);
         }

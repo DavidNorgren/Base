@@ -1,5 +1,4 @@
 #include <boost/filesystem.hpp>
-#include <sys/stat.h>
 
 #include "common.hpp"
 #include "file/filefunc.hpp"
@@ -8,105 +7,77 @@
 
 namespace bfs = boost::filesystem;
 
-string convertSlash(const string& filename)
+EXPORT bool Base::fileExists(const Base::FilePath& file)
 {
-    return Base::stringReplace(filename, "\\", "/");
+    return bfs::exists(file.getFullPath());
 }
 
-EXPORT bool Base::fileExists(string filename)
+EXPORT int Base::fileGetSize(const Base::FilePath& file)
 {
-    return bfs::exists(filename);
+    return bfs::file_size(file.getFullPath());
 }
 
-EXPORT int Base::fileGetSize(string filename)
+EXPORT uint Base::fileGetLastChange(const Base::FilePath& file)
 {
-    return bfs::file_size(filename);
+    return (uint)boost::filesystem::last_write_time(file.getFullPath());
 }
 
-EXPORT string Base::fileGetName(string filename)
+EXPORT FileData Base::fileGetData(const Base::FilePath& file)
 {
-    size_t pos = filename.find_last_of("/");
+    std::ifstream ifs(file.getFullPath(), std::ios::binary | std::ios::ate);
+    std::ifstream::pos_type pos = ifs.tellg();
 
-    if (pos == string::npos)
-        return filename;
+    FileData data(pos);
+    ifs.seekg(0, std::ios::beg);
+    ifs.read(&data[0], pos);
 
-    return filename.substr(pos + 1, filename.size() - pos - 1);
+    return data;
 }
 
-EXPORT string Base::fileGetPath(string filename)
+EXPORT string Base::fileGetText(const Base::FilePath& file)
 {
-    size_t pos = filename.find_last_of('/');
-
-    if (pos == string::npos)
-        return filename;
-
-    return filename.substr(0, pos + 1);
-}
-
-EXPORT string Base::fileGetDirectory(string filename)
-{
-    size_t pos = filename.find_last_of('/');
-
-    if (pos == string::npos)
-        return filename;
-
-    return filename.substr(0, pos);
-}
-
-EXPORT string Base::fileGetExtension(string filename)
-{
-    string fn = fileGetName(filename);
-    size_t pos = fn.find_last_of('.');
-
-    if (pos == string::npos)
-        return "";
-
-    return fn.substr(pos, fn.size() - pos);
-}
-
-EXPORT string Base::fileSetExtension(string filename, string ext)
-{
-    string fn = fileGetName(filename);
-    string fp = fileGetPath(filename);
-    size_t pos = fn.find_last_of('.');
-
-    if (pos != string::npos)
-        fn = fn.substr(0, pos);
-    
-    return fp + fn + ext;
-}
-
-EXPORT string Base::fileGetContents(string filename)
-{
-    std::ifstream file(filename);
+    std::ifstream ifs(file.getFullPath());
     string line, contents = "";
     
-    while (getline(file, line))
+    while (getline(ifs, line))
         contents += line + '\n';
     
-    file.close();
-    
+    ifs.close();
     return contents;
 }
 
-EXPORT bool Base::directoryExists(string directory)
+EXPORT Base::List<string> Base::fileGetLines(const Base::FilePath& file)
 {
-    return bfs::exists(directory);
+    std::ifstream ifs(file.getFullPath());
+    List<string> lines;
+    string line;
+    
+    while (getline(ifs, line))
+        lines.add(line);
+    
+    ifs.close();
+    
+    return lines;
 }
 
-EXPORT Base::List<string> Base::directoryGetFiles(string directory, bool recurse, string filter)
+EXPORT bool Base::directoryExists(const Base::DirectoryPath& directory)
 {
-    List<string> files;
-    bfs::path dirPath(directory);
+    return bfs::exists(directory.getFullPath());
+}
+
+EXPORT Base::List<Base::FilePath> Base::directoryGetFiles(const Base::DirectoryPath& directory, bool recurse, const string& filter)
+{
+    List<FilePath> files;
+    bfs::path dirPath(directory.getFullPath());
     bfs::directory_iterator end_itr;
 
     for (bfs::directory_iterator itr(dirPath); itr != end_itr; ++itr)
     {
         bfs::path curPath = itr->path();
         if (bfs::is_directory(curPath) && recurse)
-            files.add(directoryGetFiles(curPath.string(), true, filter));
+            files.addList(directoryGetFiles(DirectoryPath(curPath.string()), true, filter));
         else if (bfs::is_regular_file(curPath))
-            files.add(convertSlash(curPath.string()));
+            files.add(FilePath(curPath.string()));
     }
 
     return files;

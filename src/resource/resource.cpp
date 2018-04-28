@@ -6,52 +6,93 @@
 #include "resource/image.hpp"
 #include "resource/shader.hpp"
 #include "resource/model.hpp"
+#include "resource/testscene.hpp"
 #include "file/filefunc.hpp"
 
 
 namespace bfs = boost::filesystem;
 
-Base::Resource* Base::Resource::create(const string& filename)
+Base::Resource* Base::Resource::createDynamic(const string& name, FilePath file)
 {
-    string ext = fileGetExtension(filename);
-    if (ext == ".ttf")
-        return new Font(filename);
-    else if (ext == ".glsl")
-        return new Shader(filename);
-    else if (ext == ".obj")
-        return new Model(filename);
-    else if (ext == ".png" || ext == ".jpg")
-        return new Image(filename);
-    else
-        return new TextFile(filename);
+    Resource* res = create(file.getExtension());
+    res->isDynamic = true;
+    res->dynamicFile = file;
+    res->dynamicLastChange = 0;
+    return res;
 }
 
-Base::Resource* Base::Resource::create(const string& fileExtension, const Data& data)
+Base::Resource* Base::Resource::createInternal(const string& name, FileData data)
 {
-    if (fileExtension == ".ttf")
-        return new Font(data);
-    else if (fileExtension == ".glsl")
-        return new Shader(data);
-    else if (fileExtension == ".obj")
-        return new Model(data);
-    else if (fileExtension == ".png" || fileExtension == ".jpg")
-        return new Image(data);
-    else
-        return new TextFile(data);
+    Resource* res = create(FilePath(name).getExtension());
+    res->isDynamic = false;
+    res->data = data;
+    return res;
 }
 
-bool Base::Resource::checkReload()
+Base::Resource* Base::Resource::create(const string& fileExt)
 {
-    if (!boost::filesystem::exists(dynamicFilename))
-        return false;
-        
-    uint lastMod = (uint)boost::filesystem::last_write_time(dynamicFilename);
-    if (lastMod > dynamicLastTime && dynamicLastTime > 0)
+    if (fileExt == ".ttf")
+        return new Font();
+    else if (fileExt == ".glsl")
+        return new Shader();
+    else if (fileExt == ".png" ||
+             fileExt == ".jpg")
+        return new Image();
+    else if (fileExt == ".obj")
+        return new Model();
+    else if (fileExt == ".testscene")
+        return new TestScene();
+    else
+        return new TextFile();
+}
+
+bool Base::Resource::checkLoad()
+{
+    // Dynamic resources are updated as soon as their disk counterpart is modified.
+    if (isDynamic)
     {
-        dynamicLastTime = lastMod;
-        return reload(dynamicFilename);
+        if (!fileExists(dynamicFile))
+            return false;
+
+        if (!isLoaded)
+        {
+            load(dynamicFile);
+            isLoaded = true;
+            return true;
+        }
+        else
+        {
+            // Check if file has been changed since last time
+            uint lastChange = fileGetLastChange(dynamicFile);
+            if (lastChange > dynamicLastChange && dynamicLastChange > 0)
+            {
+                dynamicLastChange = lastChange;
+                isLoaded = false;
+                isLoaded = reload(dynamicFile);
+                return isLoaded;
+            }
+
+            dynamicLastChange = lastChange;
+            return false;
+        }
     }
 
-    dynamicLastTime = lastMod;
+    // Load from internal data (once only)
+    else if (!isLoaded)
+    {
+        load(data);
+        isLoaded = true;
+    }
+
     return false;
+}
+
+void Base::TextFile::load(const FilePath& file)
+{
+    text = fileGetText(file);
+}
+
+void Base::TextFile::load(const FileData& data)
+{
+    text = string(&data[0], data.size());
 }

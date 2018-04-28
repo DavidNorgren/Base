@@ -35,18 +35,19 @@ enum Character
 
 // Read methods
 
-EXPORT Base::JsonFile::JsonFile(const string& filename)
+EXPORT Base::JsonFile::JsonFile(const FilePath& file)
 {
-    string json = fileGetContents(filename);
+    string json = fileGetText(file);
     data = &json[0];
     size = json.length();
     readRoot();
 }
 
-EXPORT Base::JsonFile::JsonFile(const Data& data)
+EXPORT Base::JsonFile::JsonFile(const string& json)
 {
-    this->data = (char*)data.ptr;
-    this->size = data.size;
+    string cJson = json;
+    this->data = &cJson[0];
+    this->size = cJson.length();
     readRoot();
 }
 
@@ -324,7 +325,7 @@ Base::JsonAny* Base::JsonFile::readJsonWord()
 
 // Writing methods
 
-EXPORT void Base::JsonFile::save(const string& filename)
+EXPORT void Base::JsonFile::save(const FilePath& filename)
 {
     saveStr = "";
     tabs = 0;
@@ -332,7 +333,7 @@ EXPORT void Base::JsonFile::save(const string& filename)
     writeJsonObject(this);
 
     std::ofstream outStream;
-    outStream.open(filename);
+    outStream.open(filename.getFullPath());
     outStream << saveStr;
     outStream.close();
 }
@@ -558,7 +559,7 @@ EXPORT bool Base::JsonArray::getBool(uint index)
     return ((JsonBool*)get(index, JsonType::BOOL))->value;
 }
 
-EXPORT Base::JsonType Base::JsonObject::getType(string name)
+EXPORT Base::JsonType Base::JsonObject::getType(const string& name)
 {
     if (values.find(name) == values.end())
         throw JsonException("Value with name \"" + name + "\" was not found");
@@ -566,12 +567,12 @@ EXPORT Base::JsonType Base::JsonObject::getType(string name)
     return values[name]->getType();
 }
 
-EXPORT bool Base::JsonObject::isNull(string name)
+EXPORT bool Base::JsonObject::isNull(const string& name)
 {
     return (getType(name) == JsonType::NULLVALUE);
 }
 
-Base::JsonAny* Base::JsonObject::get(string name, JsonType type)
+Base::JsonAny* Base::JsonObject::get(const string& name, JsonType type)
 {
     try
     {
@@ -587,27 +588,27 @@ Base::JsonAny* Base::JsonObject::get(string name, JsonType type)
     }
 }
 
-EXPORT Base::JsonObject* Base::JsonObject::getObject(string name)
+EXPORT Base::JsonObject* Base::JsonObject::getObject(const string& name)
 {
     return (JsonObject*)get(name, JsonType::OBJECT);
 }
 
-EXPORT Base::JsonArray* Base::JsonObject::getArray(string name)
+EXPORT Base::JsonArray* Base::JsonObject::getArray(const string& name)
 {
     return (JsonArray*)get(name, JsonType::ARRAY);
 }
 
-EXPORT string Base::JsonObject::getString(string name)
+EXPORT string Base::JsonObject::getString(const string& name)
 {
     return ((JsonString*)get(name, JsonType::STRING))->value;
 }
 
-EXPORT float Base::JsonObject::getNumber(string name)
+EXPORT float Base::JsonObject::getNumber(const string& name)
 {
     return ((JsonNumber*)get(name, JsonType::NUMBER))->value;
 }
 
-EXPORT bool Base::JsonObject::getBool(string name)
+EXPORT bool Base::JsonObject::getBool(const string& name)
 {
     return ((JsonBool*)get(name, JsonType::BOOL))->value;
 }
@@ -630,7 +631,7 @@ EXPORT Base::JsonArray* Base::JsonArray::addArray()
     return (JsonArray*)add(new JsonArray());
 }
 
-EXPORT Base::JsonString* Base::JsonArray::addString(string value)
+EXPORT Base::JsonString* Base::JsonArray::addString(const string& value)
 {
     return (JsonString*)add(new JsonString(value));
 }
@@ -650,7 +651,7 @@ EXPORT Base::JsonNull* Base::JsonArray::addNull()
     return (JsonNull*)add(new JsonNull());
 }
 
-Base::JsonAny* Base::JsonObject::add(string name, JsonAny* any)
+Base::JsonAny* Base::JsonObject::add(const string& name, JsonAny* any)
 {
     if (values.find(name) != values.end())
         throw JsonException("JSON get error: A value of name \"" + name + "\" has already been added.");
@@ -660,32 +661,32 @@ Base::JsonAny* Base::JsonObject::add(string name, JsonAny* any)
     return any;
 }
 
-EXPORT Base::JsonObject* Base::JsonObject::addObject(string name)
+EXPORT Base::JsonObject* Base::JsonObject::addObject(const string& name)
 {
     return (JsonObject*)add(name, new JsonObject());
 }
 
-EXPORT Base::JsonArray* Base::JsonObject::addArray(string name)
+EXPORT Base::JsonArray* Base::JsonObject::addArray(const string& name)
 {
     return (JsonArray*)add(name, new JsonArray());
 }
 
-EXPORT Base::JsonString* Base::JsonObject::addString(string name, string value)
+EXPORT Base::JsonString* Base::JsonObject::addString(const string& name, const string& value)
 {
     return (JsonString*)add(name, new JsonString(value));
 }
 
-EXPORT Base::JsonNumber* Base::JsonObject::addNumber(string name, float value)
+EXPORT Base::JsonNumber* Base::JsonObject::addNumber(const string& name, float value)
 {
     return (JsonNumber*)add(name, new JsonNumber(value));
 }
 
-EXPORT Base::JsonBool* Base::JsonObject::addBool(string name, bool value)
+EXPORT Base::JsonBool* Base::JsonObject::addBool(const string& name, bool value)
 {
     return (JsonBool*)add(name, new JsonBool(value));
 }
 
-EXPORT Base::JsonNull* Base::JsonObject::addNull(string name)
+EXPORT Base::JsonNull* Base::JsonObject::addNull(const string& name)
 {
     return (JsonNull*)add(name, new JsonNull());
 }

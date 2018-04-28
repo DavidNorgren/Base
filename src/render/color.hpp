@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdio.h> // sscanf
+
 #include "util/mathfunc.hpp"
 
 
@@ -10,12 +12,8 @@ namespace Base
     {
         float r, g, b, a;
 
-        Color()
-        {
-            r = g = b = 0.f;
-            a = 1.f;
-        }
-
+        Color() {}
+        
         Color(int red, int green, int blue, int alpha = 255)
         {
             this->r = (float)red / 255.f;
@@ -24,13 +22,7 @@ namespace Base
             this->a = (float)alpha / 255.f;
         }
 
-        Color(float value)
-        {
-            r = g = b = value;
-            a = 1.f;
-        }
-
-        Color(float value, float alpha)
+        Color(float value, float alpha = 1.f)
         {
             r = g = b = value;
             this->a = alpha;
@@ -44,15 +36,7 @@ namespace Base
             this->a = alpha;
         }
 
-        Color(const Color& color)
-        {
-            r = color.r;
-            g = color.g;
-            b = color.b;
-            a = color.a;
-        }
-
-        Color(const Color& color, float alpha)
+        Color(const Color& color, float alpha = 1.f)
         {
             r = color.r;
             g = color.g;
@@ -68,9 +52,28 @@ namespace Base
             a = 1.f;
         }
 
-        Color(string hex)
+        Color(const string& hex)
         {
-            // TODO
+            string nHex = hex;
+
+            if (nHex[0] == '#')
+                nHex = hex.substr(1, hex.length() - 1);
+
+            int iR, iG, iB, iA;
+            iR = iG = iB = 0;
+            iA = 255;
+            
+            switch (hex.length() / 2)
+            {
+                case 1:  sscanf(&nHex[0], "%02x", &iR); iG = iB = iR;               break;
+                case 3:  sscanf(&nHex[0], "%02x%02x%02x", &iR, &iG, &iB);           break;
+                case 4:  sscanf(&nHex[0], "%02x%02x%02x%02x", &iR, &iG, &iB, &iA);  break;
+            }
+
+            r = iR / 255.f;
+            g = iG / 255.f;
+            b = iB / 255.f;
+            a = iA / 255.f;
         }
 
         // Binary operators
@@ -84,12 +87,12 @@ namespace Base
             return *this;
         }
 
-        inline Color operator * (float mul)
+        inline Color operator * (float mul) const
         {
             return Color(mul * r, mul * g, mul * b, a);
         }
 
-        inline Color operator + (const Color& other)
+        inline Color operator + (const Color& other) const
         {
             return Color(
                 min(1.f, r + other.r),
@@ -99,19 +102,19 @@ namespace Base
             );
         }
 
-        inline Color operator * (const Color& other)
+        inline Color operator * (const Color& other) const
         {
             return Color(r * other.r, g * other.g, b * other.b, a * other.a);
         }
 
         // Comparison operators
 
-        inline bool operator == (const Color& other)
+        inline bool operator == (const Color& other) const
         {
-            return (r == other.r && g == other.g && b == other.b && a == other.a);
+            return (approxEq(r, other.r) && approxEq(g, other.g) && approxEq(b, other.b) && approxEq(a, other.a));
         }
 
-        inline bool operator != (const Color& other)
+        inline bool operator != (const Color& other) const
         {
             return !(*this == other);
         }

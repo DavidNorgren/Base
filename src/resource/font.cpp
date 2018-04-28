@@ -9,41 +9,9 @@
 #include "util/mathfunc.hpp"
 
 
-EXPORT Base::Font::Font(const string& filename, uint size, uint start, uint end)
-{
-    // Init library
-    FT_Library lib;
-    FT_Face face;
-    FT_Init_FreeType(&lib);
-
-    this->size = size;
-    this->start = start;
-    this->end = end;
-
-    // Create the font map from a file on the disk
-    if (FT_New_Face(lib, &filename[0], 0, &face))
-        throw FontException("Could not open font!"); //TODO: can we get more info?
-    
-    load(face);
-}
-
-EXPORT Base::Font::Font(const Data& data, uint size, uint start, uint end)
-{
-    // Init library
-    FT_Library lib;
-    FT_Face face;
-    FT_Init_FreeType(&lib);
-
-    this->size = size;
-    this->start = start;
-    this->end = end;
-
-    // Create the font map from a file in memory
-    if (FT_New_Memory_Face(lib, (uchar*)data.ptr, data.size, 0, &face))
-        throw FontException("Could not open font!"); //TODO: can we get more info?
-    
-    load(face);
-}
+constexpr uint FONTS_SIZE = 15;
+constexpr uint FONTS_START = 32;
+constexpr uint FONTS_END = 128;
 
 EXPORT int Base::Font::stringGetWidth(const string& text)
 {
@@ -76,8 +44,40 @@ EXPORT int Base::Font::stringGetHeight(const string& text)
     return (stringGetCount(text, "\n") + stringGetCount(text, "\r") + 1) * glTextureSize.height * LINE_SPACE;
 }
 
+void Base::Font::load(const FilePath& file)
+{
+    // Init library
+    FT_Library lib;
+    FT_Face face;
+    FT_Init_FreeType(&lib);
+
+    // Create the font map from a file on the disk
+    if (FT_New_Face(lib, &file.getFullPath()[0], 0, &face))
+        throw FontException("Could not open font " + file.getFullPath() + "!"); //TODO: can we get more info?
+    
+    load(face);
+}
+
+void Base::Font::load(const FileData& data)
+{
+    // Init library
+    FT_Library lib;
+    FT_Face face;
+    FT_Init_FreeType(&lib);
+
+    // Create the font map from a file in memory
+    if (FT_New_Memory_Face(lib, (uchar*)&data[0], data.size(), 0, &face))
+        throw FontException("Could not open font!"); //TODO: can we get more info?
+    
+    load(face);
+}
+
 void Base::Font::load(FT_Face& face)
 {
+    this->size  = FONTS_SIZE;
+    this->start = FONTS_START;
+    this->end   = FONTS_END;
+
     // Set size of the font
     FT_GlyphSlot glyph = face->glyph;
     FT_Set_Pixel_Sizes(face, 0, size);

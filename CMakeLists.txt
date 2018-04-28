@@ -11,14 +11,14 @@ add_definitions("-DEXPORT=__declspec(dllexport)")
 set(LIBS_DIR "C:/Dev/Libs")
 
 # Base can be built in any of the following three modes:
-# "exec" to produce an executable file, used for testing
+# "test" to produce an executable file used for testing
 # "shared" to produce a DLL file, used by other applications during development
 # "static" to include the code in the final application executable
 # BASE_BUILD_STATIC will overwrite this to "static"
 if (NOT BASE_BUILD_STATIC)
 
     set(BASE_BUILD_MODE "static" CACHE STRING "Base build mode")
-    set_property(CACHE BASE_BUILD_MODE PROPERTY STRINGS "static;shared;exec")
+    set_property(CACHE BASE_BUILD_MODE PROPERTY STRINGS "static;shared;test")
     option(BASE_DYNAMIC_RESOURCES ON)
 
 else()
@@ -31,16 +31,21 @@ endif()
 # Add Base sources
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-if (BASE_BUILD_MODE STREQUAL "exec")
+if (BASE_BUILD_MODE STREQUAL "test")
 
     # If dynamic resources are enabled, resources are fetched from an archive during runtime
     if (BASE_DYNAMIC_RESOURCES)
 
+        set(DYNAMIC_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test/res/")
+        set(DYNAMIC_RESOURCES_CHECK_TIME 1000) # Msec between each update check
+
         # These flags enable dynamic loading by the ResourceHandler class
         add_definitions("-DDYNAMIC_RESOURCES")
-        add_definitions("-DDYNAMIC_RESOURCES_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/test/res/\"")
-        message("Base: Dynamic resources are enabled")
-        message("Base: DYNAMIC_RESOURCES_DIR = ${CMAKE_CURRENT_SOURCE_DIR}/test/res/")
+        add_definitions("-DDYNAMIC_RESOURCES_DIR=\"${DYNAMIC_RESOURCES_DIR}\"")
+        add_definitions("-DYNAMIC_RESOURCES_CHECK_TIME=1000")
+        message("[Base] Dynamic resources are enabled")
+        message("[Base] DYNAMIC_RESOURCES_DIR = ${DYNAMIC_RESOURCES_DIR}")
+        message("[Base] DYNAMIC_RESOURCES_CHECK_TIME = ${DYNAMIC_RESOURCES_CHECK_TIME} msec")
 
     else()
 

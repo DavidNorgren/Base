@@ -7,19 +7,11 @@
 #include "util/stringfunc.hpp"
 
 
-EXPORT Base::Image::Image(const string& filename)
-{
-    uchar *pixelData = SOIL_load_image(&stringToWstring(filename)[0], &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
-    load(pixelData);
-}
+constexpr bool genMipmap = true;
+constexpr uint genMipmapLevels = 8;
 
-EXPORT Base::Image::Image(const Data& data)
-{
-    uchar *pixelData = SOIL_load_image_from_memory((uchar*)data.ptr, data.size, &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
-    load(pixelData);
-}
 
-EXPORT Base::Image::Image(Color color)
+EXPORT Base::Image::Image(const Color& color)
 {
     glTextureSize = { 1, 1 };
     glGenTextures(1, &glTexture);
@@ -32,23 +24,49 @@ EXPORT Base::Image::Image(Color color)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void Base::Image::load(const FilePath& file)
+{
+    uchar *pixelData = SOIL_load_image(&stringToWstring(file.getFullPath())[0], &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
+    load(pixelData);
+}
+
+void Base::Image::load(const FileData& data)
+{
+    uchar *pixelData = SOIL_load_image_from_memory((uchar*)&data[0], data.size(), &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
+    load(pixelData);
+}
+
 void Base::Image::load(uchar* pixelData)
 {
     glGenTextures(1, &glTexture);
     glBindTexture(GL_TEXTURE_2D, glTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, glTextureSize.width, glTextureSize.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    
+    if (genMipmap)
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexStorage2D(GL_TEXTURE_2D, genMipmapLevels, GL_RGBA8, glTextureSize.width, glTextureSize.height);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, glTextureSize.width, glTextureSize.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, glTextureSize.width, glTextureSize.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
+    }
+
     glBindTexture(GL_TEXTURE_2D, 0);
     SOIL_free_image_data(pixelData);
+    isLoaded = true;
 }
 
-bool Base::Image::reload(const string& filename)
+bool Base::Image::reload(const FilePath& file)
 {
     glDeleteTextures(1, &glTexture);
-    uchar *pixelData = SOIL_load_image(&stringToWstring(filename)[0], &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
+    uchar *pixelData = SOIL_load_image(&stringToWstring(file.getFullPath())[0], &glTextureSize.width, &glTextureSize.height, 0, SOIL_LOAD_RGBA);
     load(pixelData);
     return true;
 }

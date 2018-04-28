@@ -4,12 +4,12 @@
 #include "util/stringfunc.hpp"
 
 
-EXPORT string Base::stringEscapeQuotes(string str)
+EXPORT string Base::stringEscapeQuotes(const string& str)
 {
     return stringReplace(str, "\"", "\\\"");
 }
 
-EXPORT string Base::wstringToString(wstring wstr)
+EXPORT string Base::wstringToString(const wstring& wstr)
 {
     string result;
     result.resize(wstr.length());
@@ -17,7 +17,7 @@ EXPORT string Base::wstringToString(wstring wstr)
     return result;
 }
 
-EXPORT wstring Base::stringToWstring(string str)
+EXPORT wstring Base::stringToWstring(const string& str)
 {
     wstring result;
     result.resize(str.length());
@@ -25,54 +25,57 @@ EXPORT wstring Base::stringToWstring(string str)
     return result;
 }
 
-EXPORT Base::List<string> Base::stringSplit(string str, string sep)
+EXPORT Base::List<string> Base::stringSplit(const string& str, const string& sep)
 {
-    str += sep;
+    string nStr = str + sep;
     List<string> result;
-    string::size_type pos = str.find(sep);
+    string::size_type pos = nStr.find(sep);
     string::size_type lastPos = 0;
 
     while (pos != string::npos)
     {
-        result.add(str.substr(lastPos, pos - lastPos));
+        result.add(nStr.substr(lastPos, pos - lastPos));
         lastPos = pos + sep.size();
-        pos = str.find(sep, lastPos);
+        pos = nStr.find(sep, lastPos);
     }
     
     return result;
 }
 
-EXPORT string Base::stringReplace(string str, string from, string to)
+EXPORT string Base::stringReplace(const string& str, const string& from, const string& to)
 {
     if (from.empty())
         return str;
     
+    string nStr = str;
     size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != string::npos)
+    while((start_pos = nStr.find(from, start_pos)) != string::npos)
     {
-        str.replace(start_pos, from.length(), to);
+        nStr.replace(start_pos, from.length(), to);
         start_pos += to.length();
     }
     
-    return str;
+    return nStr;
 }
 
-EXPORT string Base::stringSubstring(string str, int from, int length)
+EXPORT string Base::stringSubstring(const string& str, int from, int length)
 {
     return str.substr(from, length);
 }
 
-EXPORT string Base::stringErase(string str, int from, int length)
+EXPORT string Base::stringErase(const string& str, int from, int length)
 {
-    return str.erase(from, length);
+    string nStr = str;
+    return nStr.erase(from, length);
 }
 
-EXPORT string Base::stringInsert(string str, string substr, int index)
+EXPORT string Base::stringInsert(const string& str, const string& substr, int index)
 {
-    return str.insert(index, substr);
+    string nStr = str;
+    return nStr.insert(index, substr);
 }
 
-EXPORT string Base::stringRepeat(string str, int count)
+EXPORT string Base::stringRepeat(const string& str, int count)
 {
     string repeatStr = "";
     repeat (count)
@@ -80,7 +83,7 @@ EXPORT string Base::stringRepeat(string str, int count)
     return repeatStr;
 }
 
-EXPORT int Base::stringGetCount(string str, string sub, int index)
+EXPORT int Base::stringGetCount(const string& str, const string& sub, int index)
 {
     int count = 0;
     size_t pos = str.find(sub, index);
@@ -92,4 +95,16 @@ EXPORT int Base::stringGetCount(string str, string sub, int index)
     }
     
     return count;
+}
+
+EXPORT Base::List<string> Base::stringGetLines(const string& str)
+{
+    std::stringstream sstream(str);
+    List<string> contents;
+    string line;
+    
+    while (getline(sstream, line))
+        contents.add(line);
+    
+    return contents;
 }

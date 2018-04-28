@@ -5,7 +5,7 @@
 
 using namespace std::chrono;
 
-Base::Timer::Timer(string name)
+Base::Timer::Timer(const string& name)
 {
     this->name = name;
     startTime = high_resolution_clock::now();
@@ -18,7 +18,7 @@ void Base::Timer::stop()
     time = timeSpan.count() * 1000.0;
 }
 
-void Base::Timer::print()
+void Base::Timer::print() const
 {
     cout << name << " timer: " << toStringPrec(time, 3) << "ms" << endl;
 }
@@ -29,7 +29,7 @@ void Base::Timer::stopAndPrint()
     print();
 }
 
-double Base::Timer::getDuration()
+double Base::Timer::getDuration() const
 {
     return time;
 }

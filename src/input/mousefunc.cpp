@@ -23,7 +23,7 @@ Base::Vec2i Base::mouseMove()
     return appHandler->mainWindow->mouseMove;
 }
 
-bool Base::mouseInBox(ScreenArea box)
+bool Base::mouseInBox(const ScreenArea& box)
 {
     ScreenPos mouse = appHandler->mainWindow->mousePos;
     return (mouse.x >= box.pos.x && mouse.x < box.pos.x + box.width &&
@@ -63,6 +63,11 @@ bool Base::mouseRightPressed()
 bool Base::mouseRightReleased()
 {
     return appHandler->mainWindow->mouseReleased[GLFW_MOUSE_BUTTON_RIGHT];
+}
+
+Base::Vec2f Base::mouseScroll()
+{
+    return appHandler->mainWindow->mouseScroll;
 }
 
 void Base::mouseClear()

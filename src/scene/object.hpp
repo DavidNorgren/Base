@@ -3,7 +3,6 @@
 #include "util/data/vec3.hpp"
 #include "util/data/mat4.hpp"
 #include "resource/shader.hpp"
-#include "resource/image.hpp"
 
 namespace Base
 {
@@ -11,10 +10,17 @@ namespace Base
     class Object
     {
       public:
-        virtual void render(Shader* shader, Mat4f projMat) = 0;
+        Object();
+        virtual void render(Shader* shader, const Mat4f& projMat) const = 0;
+
+        Object* translate(const Vec3f& translate);
+        Object* scale(const Vec3f& scale);
+        Object* rotateZ(const float angle);
+        void resetTransform();
 
       protected:
-        Vec3f pos, rot, scale;
-        Image* texture;
+        void buildMatrix();
+        Vec3f pos, rot, sca;
+        Mat4f matrix;
     };
 }

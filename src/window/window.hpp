@@ -21,13 +21,14 @@ namespace Base
 
         EXPORT void maximize();
 
-        EXPORT void setTargetFramerate(int fps);
-        EXPORT void setTitle(string title);
-        EXPORT void setCursor(GLFWcursor* cursor);
-        EXPORT void setBackgroundColor(Color color);
-        EXPORT float getFrameDelay();
-        EXPORT Size2Di getSize();
-        EXPORT float getRatio();
+        EXPORT void     setTargetFramerate(int fps);
+        EXPORT void     setTitle(const string& title);
+        EXPORT void     setCursor(GLFWcursor* cursor);
+        EXPORT void     setBackgroundColor(const Color& color);
+
+        EXPORT float    getFrameDelay() const;
+        EXPORT Size2Di  getSize() const;
+        EXPORT float    getRatio() const;
         
         /* Window size. */
         Size2Di size;
@@ -44,6 +45,7 @@ namespace Base
         Vec2i mouseMove;
         bool mouseDown[GLFW_MOUSE_BUTTON_LAST], mousePressed[GLFW_MOUSE_BUTTON_LAST], mouseReleased[GLFW_MOUSE_BUTTON_LAST];
         double mouselastClickTime = 0, mouseLastClickDuration = 0;
+        Vec2f mouseScroll;
 
         /* Keyboard status. */
         bool keyDown[GLFW_KEY_LAST], keyPressed[GLFW_KEY_LAST], keyReleased[GLFW_KEY_LAST];

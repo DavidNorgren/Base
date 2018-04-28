@@ -1,9 +1,10 @@
 #pragma once
 
+#include "util/data/list.hpp"
+#include "resource/resource.hpp"
 #include "scene/object.hpp"
 #include "scene/trianglemesh.hpp"
 #include "scene/material.hpp"
-#include "resource/resource.hpp"
 
 
 namespace Base
@@ -16,11 +17,16 @@ namespace Base
     class Model : public Object, public Resource
     {
       public:
-        Model(const string& filename);
-        Model(const Data& data);
-        void render(Shader* shader, Mat4f projMat);
+        Model() {};
+
+        void render(Shader* shader, const Mat4f& projMat) const override;
 
       private:
+        void load(const FilePath& file) override;
+        void load(const FileData& data) override;
+        void load(const List<string>& lines);
+        bool reload(const FilePath& file) override;
+
         List<TriangleMesh*> meshes;
         List<Material*> materials;
     };

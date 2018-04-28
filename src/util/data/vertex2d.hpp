@@ -9,6 +9,20 @@ namespace Base
     {
         Vec2<T> pos;
         Vec2f texCoord;
+
+        Vertex2Df() {}
+
+        // Comparison operators
+
+        inline bool operator == (const Vertex2D& other)
+        {
+            return (pos == other.pos && texCoord == other.texCoord);
+        }
+
+        inline bool operator != (const Vertex2D& other)
+        {
+            return !(this == other);
+        }
     };
 
     using Vertex2Di = Vertex2D<int>;

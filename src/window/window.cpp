@@ -41,13 +41,19 @@ void windowMouseButtonCallback(GLFWwindow* handle, int button, int action, int m
     }
 }
 
+void windowScrollCallback(GLFWwindow* handle, double x, double y)
+{
+    window->mouseScroll = { (float)x, (float)y };
+    if (window->mouseEventFunc)
+        window->mouseEventFunc();
+}
+
 void windowCursorPosCallback(GLFWwindow* handle, double x, double y)
 {
     // Mouse was moved!
     window->mousePosPrevious = window->mousePos;
     window->mousePos = { (int)x, (int)y };
-    window->mouseMove = Base::Vec2i(window->mousePos.x - window->mousePosPrevious.x,
-                               window->mousePos.y - window->mousePosPrevious.y);
+    window->mouseMove = Base::Vec2i(window->mousePos - window->mousePosPrevious);
     
     // Call event and set cursor
     if (window->mouseEventFunc)
@@ -94,14 +100,14 @@ void windowCharModsCallback(GLFWwindow* handle, uint codepoint, int mods)
 void windowSizeCallback(GLFWwindow* handle, int width, int height)
 {
     // The window was resized!
-    width = Base::max(1, width);
+    width  = Base::max(1, width);
     height = Base::max(1, height);
 
     glViewport(0, 0, width, height);
-    window->ortho = Base::Mat4f::ortho(0.f, width, height, 0.f, 0.f, 1.f);
-    window->size.width = width;
+    window->ortho       = Base::Mat4f::ortho(0.f, width, height, 0.f, 0.f, 1.f);
+    window->size.width  = width;
     window->size.height = height;
-    window->ratio = (float)width / height;
+    window->ratio       = (float)width / height;
     
     if (window->resizeEventFunc)
         window->resizeEventFunc();
@@ -116,6 +122,7 @@ EXPORT Base::Window::Window()
 
     // Set callbacks
     glfwSetMouseButtonCallback(handle, windowMouseButtonCallback);
+    glfwSetScrollCallback(handle, windowScrollCallback);
     glfwSetCursorPosCallback(handle, windowCursorPosCallback);
     glfwSetKeyCallback(handle, windowKeyCallback);
     glfwSetCharModsCallback(handle, windowCharModsCallback);
@@ -125,15 +132,15 @@ EXPORT Base::Window::Window()
     charPressed = 0;
     for (uint k = 0; k < GLFW_KEY_LAST; k++)
     {
-        keyDown[k] = false;
-        keyPressed[k] = false;
+        keyDown[k]     = false;
+        keyPressed[k]  = false;
         keyReleased[k] = false;
     }
 
     for (uint m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++)
     {
-        mouseDown[m] = false;
-        mousePressed[m] = false;
+        mouseDown[m]     = false;
+        mousePressed[m]  = false;
         mouseReleased[m] = false;
     }
     
@@ -177,17 +184,18 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
         // Reset input
         for (uint k = 0; k < GLFW_KEY_LAST; k++)
         {
-            keyPressed[k] = false;
+            keyPressed[k]  = false;
             keyReleased[k] = false;
         }
 
         for (uint m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++)
         {
-            mousePressed[m] = false;
+            mousePressed[m]  = false;
             mouseReleased[m] = false;
         }
 
-        window->mouseMove = { 0, 0 };
+        window->mouseMove   = { 0, 0 };
+        window->mouseScroll = { 0.f, 0.f };
 
         // Swap buffers
         glfwSwapBuffers(handle);
@@ -199,8 +207,8 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
         fps = std::round(frame / (curTime - lastTime));
         if ((int)lastTime != (int)curTime)
         {
-            fps = frame;
-            frame = 0;
+            fps      = frame;
+            frame    = 0;
             lastTime = glfwGetTime();
         }
     }
@@ -219,7 +227,7 @@ EXPORT void Base::Window::maximize()
 #endif*/
 }
 
-EXPORT void Base::Window::setTitle(string title)
+EXPORT void Base::Window::setTitle(const string& title)
 {
     glfwSetWindowTitle(handle, &title[0]);
 }
@@ -234,12 +242,12 @@ EXPORT void Base::Window::setTargetFramerate(int fps)
     targetFps = fps;
 }
 
-EXPORT void Base::Window::setBackgroundColor(Color color)
+EXPORT void Base::Window::setBackgroundColor(const Color& color)
 {
     backgroundColor = color;
 }
 
-EXPORT float Base::Window::getFrameDelay()
+EXPORT float Base::Window::getFrameDelay() const
 {
     if (fps > 0)
         return (float)targetFps / fps;
@@ -247,12 +255,12 @@ EXPORT float Base::Window::getFrameDelay()
     return 1.f;
 }
 
-EXPORT Base::Size2Di Base::Window::getSize()
+EXPORT Base::Size2Di Base::Window::getSize() const
 {
     return size;
 }
 
-EXPORT float Base::Window::getRatio()
+EXPORT float Base::Window::getRatio() const
 {
     return ratio;
 }

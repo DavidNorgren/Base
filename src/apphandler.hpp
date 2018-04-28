@@ -8,10 +8,9 @@
 #include "resource/image.hpp"
 #include "resource/shader.hpp"
 #include "render/color.hpp"
-#include "scene/scene.hpp"
 #include "window/window.hpp"
 #include "util/mathfunc.hpp"
-
+#include "scene/scene.hpp"
 
 namespace Base
 {
@@ -24,9 +23,9 @@ namespace Base
 
         /* Called by the main window. Implemented by the child. */
         EXPORT virtual void loopEvent() = 0;
-        EXPORT void mouseEvent() {};
-        EXPORT void keyEvent() {};
-        EXPORT void resizeEvent() {};
+        EXPORT virtual void mouseEvent() {};
+        EXPORT virtual void keyEvent() {};
+        EXPORT virtual void resizeEvent() {};
 
         /* Opens the window and starts the window loop. */
         EXPORT void launch();
