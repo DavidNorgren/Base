@@ -149,7 +149,7 @@ EXPORT void Base::drawImage(const string& name, const ScreenPos& pos, const Colo
 
 EXPORT void Base::drawImage(Image* image, const ScreenPos& pos, const Color& color, float rotation, const Vec2f& scale)
 {
-    Size2Di size = image->glTextureSize;
+    Size2Di size = image->getSize();
     Vertex2Di vertexData[4] = {
         { { 0, 0 },                    { 0, 0 } },
         { { size.width, 0 },           { 1, 0 } },
@@ -163,7 +163,7 @@ EXPORT void Base::drawImage(Image* image, const ScreenPos& pos, const Color& col
                     Mat4f::scale({ scale.x, scale.y, 1.f });
 
     appHandler->drawingShader->render2D(mat, vertexData, 4,
-                                        image->glTexture, Color(color, appHandler->drawingAlpha),
+                                        image->getGlTexture(), Color(color, appHandler->drawingAlpha),
                                         GL_TRIANGLE_STRIP);
 }
 
@@ -174,7 +174,7 @@ EXPORT void Base::drawSubImage(const string& name, int subImage, const ScreenPos
 
 EXPORT void Base::drawSubImage(Image* image, int subImage, const ScreenPos& pos, const Color& color, float rotation, const Vec2f& scale)
 {
-    Size2Di size    = image->glTextureSize;
+    Size2Di size    = image->getSize();
     int subImages   = size.width / size.height;
     Vec2f texStart  = { (float)subImage / (float)subImages, 0.f };
     Vec2f texEnd    = { texStart.x + (float)size.height / size.width, 1.f };
@@ -192,7 +192,7 @@ EXPORT void Base::drawSubImage(Image* image, int subImage, const ScreenPos& pos,
                 Mat4f::scale({ scale.x, scale.y, 1.f });
                  
     appHandler->drawingShader->render2D(mat, vertexData, 4, 
-                                        image->glTexture, Color(color, appHandler->drawingAlpha),
+                                        image->getGlTexture(), Color(color, appHandler->drawingAlpha),
                                         GL_TRIANGLE_STRIP);
 }
 
@@ -208,7 +208,7 @@ EXPORT void Base::drawBox(const ScreenArea& box, const Color& color, bool outlin
 
     glLineWidth(outlineThickness);
     appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, vertexData, 5,
-                                        appHandler->solidColor->glTexture, Color(color, appHandler->drawingAlpha),
+                                        appHandler->solidColor->getGlTexture(), Color(color, appHandler->drawingAlpha),
                                         outline ? GL_LINE_STRIP : GL_TRIANGLE_FAN);
 }
 
@@ -299,6 +299,6 @@ EXPORT void Base::drawLine(const ScreenPos& start, const ScreenPos& end, const C
     
     glLineWidth(thickness);
     appHandler->drawingShader->render2D(appHandler->mainWindow->ortho, vertexData , 2,
-                                        appHandler->solidColor->glTexture, Color(color, appHandler->drawingAlpha),
+                                        appHandler->solidColor->getGlTexture(), Color(color, appHandler->drawingAlpha),
                                         GL_LINES);
 }

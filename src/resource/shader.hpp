@@ -38,7 +38,7 @@ namespace Base
         void load(const FilePath& file) override; 
         void load(const FileData& data) override;
         void load(const string& code);
-        bool reload(const FilePath& file) override;
+        void cleanUp() override;
 
         string name;
         uint glProgram, glVbo;

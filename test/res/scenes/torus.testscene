@@ -1,0 +1,9 @@
+{
+    "backgroundColor": "#000000",
+    "objects": [
+        {
+            "model": "models/TorusKnot.obj",
+            "scale": [ 4, 4, 4 ]
+        }
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "backgroundColor": "#C6C0FA",
+    "objects": [
+        {
+            "model": "models/sponza/sponza.obj",
+            "scale": [ 4, 4, 4 ]
+        }
+    ]
+}

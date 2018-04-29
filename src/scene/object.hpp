@@ -15,11 +15,15 @@ namespace Base
 
         Object* translate(const Vec3f& translate);
         Object* scale(const Vec3f& scale);
-        Object* rotateZ(const float angle);
+        Object* rotate(const Vec3f& angles);
+        Object* rotateX(float angle);
+        Object* rotateY(float angle);
+        Object* rotateZ(float angle);
+
+        void buildMatrix();
         void resetTransform();
 
       protected:
-        void buildMatrix();
         Vec3f pos, rot, sca;
         Mat4f matrix;
     };

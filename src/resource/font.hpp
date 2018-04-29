@@ -52,5 +52,6 @@ namespace Base
         void load(const FilePath& file) override;
         void load(const FileData& data) override;
         void load(FT_Face& face);
+        void cleanUp() override;
     };
 }

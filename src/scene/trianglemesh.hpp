@@ -40,6 +40,9 @@ namespace Base
            Indices are automatically generated and added. */
         void addTriangle(Vertex3Df v1, Vertex3Df v2, Vertex3Df v3);
 
+        /* Calculates the normals from the triangle data. */
+        void setNormals();
+
         /* Returns the index of a vertex with the given values.
            Gives -1 if it could not be found. */
         int getVertexIndex(const Vertex3Df& vertex);

@@ -16,16 +16,14 @@ namespace Base
     {
       friend ResourceHandler;
 
+      public:
+        ~Resource() { cleanUp(); }
+
       protected:
         /* Loads the resource from an external file or
            internal memory. */
         virtual void load(const FilePath& file) = 0;
         virtual void load(const FileData& file) = 0;
-        
-        /* Implemented by reload-able children only when dynamic resources
-           are enabled and the associated file is changed on the disk.
-           Returns whether the resource was successfully reloaded. */ 
-        virtual bool reload(const FilePath& file) { return false; };
 
         /* Checks whether the file data should be loaded. */
         bool checkLoad();
@@ -37,6 +35,7 @@ namespace Base
         bool isLoaded = false;
 
       private:
+        virtual void cleanUp() {};
         static Base::Resource* create(const string& fileExt);
         FileData data;
 

@@ -101,7 +101,7 @@ void Base::Model::load(const List<string>& lines)
                         vertex = {
                             std::stoi(vertexSplit[0]),
                             (vertexSplit[1] != "" ? std::stoi(vertexSplit[1]) : 0),
-                            std::stoi(vertexSplit[2])
+                            0
                         };
                         break;
                 }
@@ -154,13 +154,12 @@ void Base::Model::load(const List<string>& lines)
             vertex.texCoord = (vIndices[1] < objTexCoords.size()) ? 
                                 objTexCoords[vIndices[1]] : Vec2f(0.f);
                             
-            vertex.normal   = (vIndices[2] < objNormals.size()) ? 
-                                objNormals[vIndices[2]] : Vec3f(0.f);
+            vertex.normal   = Vec3f(0.f);
 
             // Re-use vertex if possible, otherwise add new
-            //int vIndex = mesh->getVertexIndex(vertex);
-            //if (vIndex < 0)
-            int    vIndex = mesh->addVertex(vertex);
+            int vIndex = mesh->getVertexIndex(vertex);
+            if (vIndex < 0)
+                vIndex = mesh->addVertex(vertex);
 
             // Generate triangles by adding references to the first
             // and last added vertex in this polygon
@@ -178,11 +177,20 @@ void Base::Model::load(const List<string>& lines)
     }
 
     t2.stopAndPrint();
+
+    mesh->setNormals();
     mesh->update();
     meshes.add(mesh);
 }
 
-bool Base::Model::reload(const FilePath& file)
+void Base::Model::cleanUp()
 {
+    for (TriangleMesh* mesh : meshes)
+        delete mesh;
 
+    for (Material* material : materials)
+        delete material;
+    
+    meshes.clear();
+    materials.clear();
 }

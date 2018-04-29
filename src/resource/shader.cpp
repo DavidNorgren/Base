@@ -115,14 +115,12 @@ void Base::Shader::load(const FilePath& file)
 {
     glGenBuffers(1, &glVbo);
     load(fileGetText(file));
-    this->setup = setup;
 }
 
 void Base::Shader::load(const FileData& data)
 {
     glGenBuffers(1, &glVbo);
     load(string(&data[0], data.size()));
-    this->setup = setup;
 }
 
 void Base::Shader::load(const string& code)
@@ -187,9 +185,7 @@ void Base::Shader::load(const string& code)
     glDeleteShader(fs);
 }
 
-bool Base::Shader::reload(const FilePath& file)
+void Base::Shader::cleanUp()
 {
     glDeleteProgram(glProgram);
-    load(fileGetText(file));
-    return true;
 }

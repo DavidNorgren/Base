@@ -63,16 +63,20 @@ bool Base::Resource::checkLoad()
         else
         {
             // Check if file has been changed since last time
-            uint lastChange = fileGetLastChange(dynamicFile);
-            if (lastChange > dynamicLastChange && dynamicLastChange > 0)
+            if (uint lastChange = fileGetLastChange(dynamicFile))
             {
-                dynamicLastChange = lastChange;
-                isLoaded = false;
-                isLoaded = reload(dynamicFile);
-                return isLoaded;
-            }
+                if (lastChange > dynamicLastChange && dynamicLastChange > 0)
+                {
+                    dynamicLastChange = lastChange;
+                    cleanUp();
+                    isLoaded = false;
+                    load(dynamicFile);
+                    isLoaded = true;
+                    return true;
+                }
 
-            dynamicLastChange = lastChange;
+                dynamicLastChange = lastChange;
+            }
             return false;
         }
     }

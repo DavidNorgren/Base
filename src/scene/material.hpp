@@ -9,8 +9,11 @@ namespace Base
     class Material
     {
       public:
-        Material() { texture = new Image(Colors::GREEN); }
+        Material() {}
         Material(Image* texture) : texture(texture) {}
-        Image* texture;
+        Image* getTexture();
+
+      private:
+        Image* texture = nullptr;
     };
 }

@@ -9,14 +9,36 @@ Base::Object::Object()
 Base::Object* Base::Object::translate(const Vec3f& translate)
 {
     pos += translate;
-    matrix = Mat4f::translate(translate) * matrix;
     return this;
 }
 
 Base::Object* Base::Object::scale(const Vec3f& scale)
 {
     sca *= scale;
-    matrix = Mat4f::scale(scale) * matrix;
+    return this;
+}
+
+Base::Object* Base::Object::rotate(const Vec3f& angles)
+{
+    rot += angles;
+    return this;
+}
+
+Base::Object* Base::Object::rotateX(float angle)
+{
+    rot.x += angle;
+    return this;
+}
+
+Base::Object* Base::Object::rotateY(float angle)
+{
+    rot.y += angle;
+    return this;
+}
+
+Base::Object* Base::Object::rotateZ(float angle)
+{
+    rot.z += angle;
     return this;
 }
 
@@ -31,6 +53,8 @@ void Base::Object::resetTransform()
 void Base::Object::buildMatrix()
 {
     matrix = Mat4f::translate(pos) *
-            // Mat4f::rotate({ 0.f, 1.f, 0.f }, rot.y) *
+             Mat4f::rotate({ 1.f, 0.f, 0.f }, rot.x) *
+             Mat4f::rotate({ 0.f, 1.f, 0.f }, rot.y) *
+             Mat4f::rotate({ 0.f, 0.f, 1.f }, rot.z) *
              Mat4f::scale(sca);
 }

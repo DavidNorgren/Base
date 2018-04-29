@@ -18,7 +18,7 @@ namespace Base
         void load(const FilePath& file) override;
         void load(const FileData& data) override;
         void load(const string& json);
-        bool reload(const FilePath& file) override;
+        void cleanUp() override;
         
         List<TriangleMesh*> meshes;
         Map<string, Material*> sceneMaterialMap;

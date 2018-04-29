@@ -1,0 +1,36 @@
+{
+    "backgroundColor": "#101050",
+    "materials": {
+        "checkerBoard": {
+            "image": "images/checker.png"
+        }
+    },
+    "objects": [
+        {
+            "model": "plane",
+            "size": [ 2000, 2000 ],
+            "repeat": [ 40, 40 ],
+            "material": "checkerBoard"
+        },
+        {
+            "model": "models/teapot/teapot.obj",
+            "position": [ 30, 20, -20 ],
+            "scale": [ 0.5, 0.5, 0.5 ]
+        },
+        {
+            "model": "models/bunny.obj",
+            "position": [ -20, -7, 20 ],
+            "scale": [ 200, 200, 200 ]
+        },
+        {
+            "model": "models/box.obj", 
+            "rotation": [ 0, 45, 45 ],
+            "scale": [ 10, 10, 10 ],
+            "position": [ 15, 30, 30 ]
+        },
+        {
+            "model": "models/teddy.obj",
+            "position": [ -20, 19, -30 ]
+        }
+    ]
+}

@@ -4,6 +4,7 @@
 #include "common.hpp"
 #include "scene/trianglemesh.hpp"
 
+
 EXPORT Base::TriangleMesh::~TriangleMesh()
 {
     glDeleteBuffers(1, &glVbo);
@@ -12,7 +13,7 @@ EXPORT Base::TriangleMesh::~TriangleMesh()
 
 void Base::TriangleMesh::render(Shader* shader, const Mat4f& projMat) const
 {
-    shader->render3D(projMat * matrix, glVbo, vertexData.size(), glIbo, indexData.size(), material->texture->glTexture);
+    shader->render3D(projMat * matrix, glVbo, vertexData.size(), glIbo, indexData.size(), material->getTexture()->getGlTexture());
 }
 
 uint Base::TriangleMesh::addVertex(Vertex3Df vertex)
@@ -43,6 +44,30 @@ void Base::TriangleMesh::addTriangle(Vertex3Df v1, Vertex3Df v2, Vertex3Df v3)
     indexData.add((uint)(vertexData.size() - 1));
 }
 
+void Base::TriangleMesh::setNormals()
+{
+    for (uint i = 0; i < indexData.size(); i += 3)
+    {
+        Vec3ui triangle       = { indexData[i], indexData[i + 1], indexData[i + 2] };
+        Vertex3Df* vertices[] = { &vertexData[triangle[0]], &vertexData[triangle[1]], &vertexData[triangle[2]] };
+
+        // Normal of the triangle
+        Vec3f normal = Vec3f::cross(
+            vertices[1]->pos - vertices[0]->pos,
+            vertices[2]->pos - vertices[0]->pos
+        );
+
+        // Add triangle normal to each vertex
+        vertices[0]->normal += normal;
+        vertices[1]->normal += normal;
+        vertices[2]->normal += normal;
+    }
+    
+    // Normalize
+    for (uint i = 0; i < vertexData.size(); i++)
+        vertexData[i].normal = vertexData[i].normal.normalize();
+}
+
 void Base::TriangleMesh::update()
 {
     // Set up VBO (Vertex buffer object)
@@ -58,15 +83,12 @@ void Base::TriangleMesh::update()
 
 int Base::TriangleMesh::getVertexIndex(const Vertex3Df& vertex)
 {
-    int index = 0;
-    for (const Vertex3Df& checkVertex : vertexData)
-    {
-        if (checkVertex == vertex)
-            return index;
-        index++;
-    }
+    int index;
+    for (index = vertexData.size() - 1; index > -1; index--)
+        if (vertexData[index] == vertex)
+            break;
 
-    return -1;
+    return index;
 }
 
 int Base::TriangleMesh::getTriangleCount()

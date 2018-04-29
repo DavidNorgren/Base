@@ -62,17 +62,10 @@ namespace Base
             return a.x * b.x + a.y * b.y;
         }
         
-        // Get/Set via [] operator
-        
-        /*inline T operator [] (int i) const
+        static inline bool approxEq(const Vec2& a, const Vec2& b)
         {
-            return elem[i];
+            return (approxEq(a.x, b.x) && approxEq(a.y, b.y));
         }
-
-        inline T &operator [] (int i)
-        {
-            return elem[i];
-        }*/
 
         // Unary operators
 
@@ -142,7 +135,7 @@ namespace Base
 
         inline bool operator == (const Vec2& other) const
         {
-            return (approxEq(x, other.x) && approxEq(y, other.y));
+            return (x == other.x && y == other.y);
         }
 
         inline bool operator != (const Vec2& other) const

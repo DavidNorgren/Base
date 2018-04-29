@@ -83,7 +83,7 @@ EXPORT Base::ResourceHandler::ResourceHandler()
 EXPORT Base::Resource* Base::ResourceHandler::get(const string& name)
 {
     auto i = resMap.find(name);
-    Resource* res;
+    Resource* res = nullptr;
 
     if (i == resMap.end())
     {
@@ -109,7 +109,7 @@ EXPORT Base::Resource* Base::ResourceHandler::get(const string& name)
         if (res->checkLoad())
             cout << "[ResourceHandler] LOADED " << name << endl << std::flush;
     }
-    catch (std::exception e)
+    catch (runtime_error e)
     {
         cout << "Resource load exception for " << name << ":\n" << e.what() << endl << std::flush;
     }

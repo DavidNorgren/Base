@@ -42,10 +42,8 @@ if (BASE_BUILD_MODE STREQUAL "test")
         # These flags enable dynamic loading by the ResourceHandler class
         add_definitions("-DDYNAMIC_RESOURCES")
         add_definitions("-DDYNAMIC_RESOURCES_DIR=\"${DYNAMIC_RESOURCES_DIR}\"")
-        add_definitions("-DYNAMIC_RESOURCES_CHECK_TIME=1000")
         message("[Base] Dynamic resources are enabled")
         message("[Base] DYNAMIC_RESOURCES_DIR = ${DYNAMIC_RESOURCES_DIR}")
-        message("[Base] DYNAMIC_RESOURCES_CHECK_TIME = ${DYNAMIC_RESOURCES_CHECK_TIME} msec")
 
     else()
 

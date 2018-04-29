@@ -19,7 +19,14 @@ EXPORT int Base::fileGetSize(const Base::FilePath& file)
 
 EXPORT uint Base::fileGetLastChange(const Base::FilePath& file)
 {
-    return (uint)boost::filesystem::last_write_time(file.getFullPath());
+    try
+    {
+        return (uint)boost::filesystem::last_write_time(file.getFullPath());
+    }
+    catch (std::exception e)
+    {
+        return 0;
+    }
 }
 
 EXPORT FileData Base::fileGetData(const Base::FilePath& file)

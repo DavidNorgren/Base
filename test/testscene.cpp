@@ -1,5 +1,6 @@
 #include "test.hpp"
 #include "resource/shader.hpp"
+#include "resource/model.hpp"
 #include "resource/testscene.hpp"
 #include "input/mousefunc.hpp"
 
@@ -7,10 +8,10 @@
 void Base::TestApp::testSceneInit()
 {
     // Setup camera
-    camAngleXZ   = camGoalAngleXZ = 90.f;
-    camAngleY    = camGoalAngleY  = 20.f;
-    camZoom      = camGoalZoom    = 100.f;
-    camMove      = false;
+    camAngleXZ = camGoalAngleXZ = 90.f;
+    camAngleY  = camGoalAngleY  = 20.f;
+    camZoom    = camGoalZoom    = 100.f;
+    camMove    = false;
 }
 
 void Base::TestApp::testSceneInput()
@@ -20,7 +21,7 @@ void Base::TestApp::testSceneInput()
     {
         if (mouseLeftDown())
         {
-            camGoalAngleXZ -= mouseMove().x * 0.25f;
+            camGoalAngleXZ += mouseMove().x * 0.25f;
             camGoalAngleY  += mouseMove().y * 0.25f;
             camGoalAngleY   = clamp(camGoalAngleY, -89.f, 89.f);
         }
@@ -31,7 +32,7 @@ void Base::TestApp::testSceneInput()
         camMove = true;
     
     // Scroll zooms (sideways scroll will also rotate)
-    camGoalAngleXZ -= mouseScroll().x * 5.f;
+    camGoalAngleXZ += mouseScroll().x * 5.f;
     camGoalZoom    *= 1.f - 0.1f * mouseScroll().y;
     camGoalZoom     = clamp(camGoalZoom, 10.f, 2000.f);
 }
@@ -39,7 +40,11 @@ void Base::TestApp::testSceneInput()
 void Base::TestApp::testSceneRender()
 {
     // Load the scene from JSON during start or when modified
-    currentScene = (TestScene*)resHandler->get("scenes/chess.testscene");
+    currentScene = (TestScene*)resHandler->get("scenes/checker.testscene");
+
+    // Animate some objects
+    float d = mainWindow->getFrameDelay();
+    ((Model*)resHandler->get("models/teapot/teapot.obj"))->rotateY(d)->buildMatrix();
 
     // Camera rotates in a circle around the scene origin
     currentScene->camera.pos = {
@@ -54,5 +59,5 @@ void Base::TestApp::testSceneRender()
     camZoom    += (camGoalZoom    - camZoom)    / 5.f;
     
     // Render some goodness
-    currentScene->render((Shader*)resHandler->get("shaders/texture.glsl"));
+    currentScene->render((Shader*)resHandler->get("shaders/test.glsl"));
 }

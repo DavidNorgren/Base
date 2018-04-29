@@ -130,3 +130,8 @@ void Base::Font::load(FT_Face& face)
 
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void Base::Font::cleanUp()
+{
+    glDeleteTextures(1, &glTexture);  
+}

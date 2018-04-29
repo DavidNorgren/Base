@@ -59,21 +59,14 @@ namespace Base
         /* Builds a rotation matrix around an axis. */
         static inline Mat4 rotate(const Vec3<T>& around, T angle)
         {
-            /*Vec3 u = around;
+            const Vec3<T>& u = around;
             T s = dsin(angle);
             T c = dcos(angle);
             return Mat4(
-                u.x*u.x+(1.f-u.x*u.x)*c,  u.x*u.y*(1.f-c)-u.z*s,    u.x*u.z*(1.f-c)+u.y*s,    0.f,
-                u.x*u.y*(1.f-c)+u.z*s,    u.y*u.y+(1.f-u.y*u.y)*c,  u.y*u.z*(1.f-c)-u.x*s,    0.f,
-                u.x*u.z*(1.f-c)-u.y*s,    u.y*u.z*(1.f-c)+u.x*s,    u.z*u.z+(1.f-u.z*u.z)*c,  0.f,
-                0.f,                      0.f,                      0.f,                      1.f
-            );*/
-            // TODO: Work for any angle
-            return Mat4(
-                dcos(angle), -dsin(angle), 0.f, 0.f,
-                dsin(angle), dcos(angle), 0.f, 0.f,
-                0.f, 0.f, 1.f, 0.f,
-                0.f, 0.f, 0.f, 1.f
+                u.x * u.x + (1.f - u.x * u.x) * c, u.x * u.y * (1.f - c) - u.z * s,   u.x * u.z * (1.f - c) + u.y * s,   0.f,
+                u.x * u.y * (1.f - c)  + u.z  * s, u.y * u.y + (1.f - u.y * u.y) * c, u.y * u.z * (1.f - c) - u.x * s,   0.f,
+                u.x * u.z * (1.f - c)  - u.y  * s, u.y * u.z * (1.f - c) + u.x * s,   u.z * u.z + (1.f - u.z * u.z) * c, 0.f,
+                0.f,                               0.f,                               0.f,                               1.f
             );
         }
 
@@ -125,14 +118,14 @@ namespace Base
         /* Builds a view matrix for looking at a point. */
         static inline Mat4 viewLookAt(const Vec3<T>& eye, const Vec3<T>& at, const Vec3<T>& up)
         {
-            Vec3<T> look = (eye - at).normalize();
+            Vec3<T> look = (at - eye).normalize();
             Vec3<T> side = Vec3<T>::cross(look, up).normalize();
             Vec3<T> newUp = Vec3<T>::cross(side, look);
 
             return Mat4(
                 side.x, side.y, side.z, 0.f,
                 newUp.x, newUp.y, newUp.z, 0.f,
-                look.x, look.y, look.z, 0.f,
+                -look.x, -look.y, -look.z, 0.f,
                 0.f, 0.f, 0.f, 1.f
             );
         }

@@ -77,6 +77,11 @@ namespace Base
         {
             return a.x * b.x + a.y * b.y + a.z * b.z;
         }
+        
+        static inline bool approxEq(const Vec3& a, const Vec3& b)
+        {
+            return (approxEq(a.x, b.x) && approxEq(a.y, b.y) && approxEq(a.z, b.z));
+        }
 
         static inline Vec3 cross(const Vec3& a, const Vec3& b)
         {
@@ -202,7 +207,7 @@ namespace Base
 
         inline bool operator == (const Vec3& other) const
         {
-            return (approxEq(x, other.x) && approxEq(y, other.y) && approxEq(z, other.z));
+            return (x == other.x && y == other.y && z == other.z);
         }
 
         inline bool operator != (const Vec3& other) const

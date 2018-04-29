@@ -15,7 +15,7 @@ namespace Base
             mainWindow->setTargetFramerate(60);
             mainWindow->setBackgroundColor(Color(0.05f, 0.05f, 0.1f));
 
-            testJSON();
+            //testJSON();
             testSceneInit();
 
             cout << std::flush;

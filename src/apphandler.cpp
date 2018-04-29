@@ -24,10 +24,6 @@ EXPORT Base::AppHandler::AppHandler()
     cout << "OpenGL vendor: "       << glGetString(GL_VENDOR)                   << endl;
     cout << endl;
     
-    int what;
-    glGetIntegerv(GL_DEPTH_BITS, &what);
-    cout << what << endl;
-    
     // Culling
 	glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);

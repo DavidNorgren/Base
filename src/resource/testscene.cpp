@@ -24,12 +24,15 @@ void Base::TestScene::load(const string& json)
     appHandler->mainWindow->setBackgroundColor(jf.getString("backgroundColor"));
 
     // Define materials
-    JsonObject* jfMaterials = jf.getObject("materials");
-    for (string name : jfMaterials->getKeys())
+    if (jf.getKeyExists("materials"))
     {
-        JsonObject* jfMat = jfMaterials->getObject(name);
-        Image* img = (Image*)appHandler->resHandler->get(jfMat->getString("image"));
-        sceneMaterialMap[name] = new Material(img);
+        JsonObject* jfMaterials = jf.getObject("materials");
+        for (string name : jfMaterials->getKeys())
+        {
+            JsonObject* jfMat = jfMaterials->getObject(name);
+            Image* img = (Image*)appHandler->resHandler->get(jfMat->getString("image"));
+            sceneMaterialMap[name] = new Material(img);
+        }
     }
 
     // Objects
@@ -62,44 +65,39 @@ void Base::TestScene::load(const string& json)
                 obj = (Model*)appHandler->resHandler->get(model);
                 obj->resetTransform();
             }
-            catch (ResourceException e) {} // Ignore missing resources
+            catch (ResourceException e)
+            {
+                continue; // Ignore missing resources
+            }
         }
 
         // Apply transforms
-        if (jfObj->getKeyExists("transform"))
-        {
-            JsonArray* jfTransforms = jfObj->getArray("transform");
-            for (JsonAny* jfTransformAny : jfTransforms->getValues())
-            {
-                JsonObject* jfTransform = (JsonObject*)jfTransformAny;
-                string type = jfTransform->getString("type");
-                Vec3f vec = jfTransform->getVec3<float>("vec");
-
-                if (type == "scale")
-                    obj->scale(vec);
-                else if (type == "translate")
-                    obj->translate(vec);
-            }
-        }
+        if (jfObj->getKeyExists("position"))
+            obj->translate(jfObj->getVec3<float>("position"));
+            
+        if (jfObj->getKeyExists("rotation"))
+            obj->rotate(jfObj->getVec3<float>("rotation"));
+            
+        if (jfObj->getKeyExists("scale"))
+            obj->scale(jfObj->getVec3<float>("scale"));
+            
+        obj->buildMatrix();
 
         // Finally add object to scene
         objects.add(obj);
     }
 }
 
-bool Base::TestScene::reload(const FilePath& file)
+void Base::TestScene::cleanUp()
 {
     // Cleanup
     for (Map<string, Material*>::iterator it = sceneMaterialMap.begin(); it != sceneMaterialMap.end(); it++)
         delete it->second;
-    sceneMaterialMap.clear();
 
     for (TriangleMesh* mesh : meshes)
         delete mesh;
-    meshes.clear();
-    
-    objects.clear();
 
-    load(fileGetText(file));
-    return true;
+    sceneMaterialMap.clear();
+    meshes.clear();
+    objects.clear();
 }
