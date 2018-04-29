@@ -3,6 +3,7 @@
 #include "resource/resource.hpp"
 #include "resource/shader.hpp"
 #include "scene/object.hpp"
+#include "scene/light.hpp"
 #include "scene/camera.hpp"
 #include "util/data/list.hpp"
 
@@ -12,9 +13,15 @@ namespace Base
     {
       public:
         Scene() {}
-        void render(Shader* shader);
+
+        /* Render the scene from the camera's POV. */
+        void render(Shader* shader) const;
+
+        /* Render the scene from a custom POV. */
+        void render(Shader* shader, const Mat4f& matVP) const;
         
         List<Object*> objects;
+        List<Light*> lights;
         Camera camera;
     };
 }

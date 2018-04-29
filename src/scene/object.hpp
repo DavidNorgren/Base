@@ -11,7 +11,7 @@ namespace Base
     {
       public:
         Object();
-        virtual void render(Shader* shader, const Mat4f& projMat) const = 0;
+        virtual void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const = 0;
 
         Object* translate(const Vec3f& translate);
         Object* scale(const Vec3f& scale);

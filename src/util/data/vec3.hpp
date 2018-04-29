@@ -143,7 +143,7 @@ namespace Base
 
         // Unary operators
 
-        inline Vec3 operator - ()
+        inline Vec3 operator - () const
         {
             return Vec3(-x, -y, -z);
 

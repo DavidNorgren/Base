@@ -1,4 +1,4 @@
-/* Renders using a colored texture */
+/* Renders using the normals as colors. */
 
 // Vertex
 
@@ -7,12 +7,15 @@
 in vec3 aPos;
 in vec2 aTexCoord;
 in vec3 aNormal;
+out vec4 vColor;
 out vec2 vTexCoord;
+uniform mat4 uMatM;
 uniform mat4 uMatMVP;
 
 void main()
 {
-    vTexCoord = aTexCoord;
+	vec3 norm = normalize((uMatM * vec4(aNormal, 0.0)).xyz);
+    vColor = vec4((norm + vec3(1.0)) / 2.0, 1.0);
     gl_Position = uMatMVP * vec4(aPos, 1.0);
 }
 
@@ -20,12 +23,10 @@ void main()
 
 #version 420 core
 
-in vec2 vTexCoord; 
+in vec4 vColor; 
 layout(location = 0) out vec4 out_FragColor;
-uniform sampler2D uSampler;
-uniform vec4 uColor;
 
 void main()
 {
-    out_FragColor = uColor * texture2D(uSampler, vTexCoord);
+    out_FragColor = vColor;
 }

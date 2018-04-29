@@ -24,6 +24,7 @@ void Base::TestScene::load(const string& json)
     appHandler->mainWindow->setBackgroundColor(jf.getString("backgroundColor"));
 
     // Define materials
+    sceneMaterialMap[""] = new Material();
     if (jf.getKeyExists("materials"))
     {
         JsonObject* jfMaterials = jf.getObject("materials");
@@ -44,7 +45,7 @@ void Base::TestScene::load(const string& json)
 
         // Find material from name
         string model = jfObj->getString("model");
-        Material* material;
+        Material* material = sceneMaterialMap[""];
         if (jfObj->getKeyExists("material"))
             material = sceneMaterialMap[jfObj->getString("material")];
 
@@ -52,7 +53,9 @@ void Base::TestScene::load(const string& json)
         if (model == "plane")
         {
             Size2Df size = jfObj->getSize2D<float>("size");
-            Vec2f repeat = jfObj->getVec2<float>("repeat");
+            Vec2f repeat = { 1.f };
+            if (jfObj->getKeyExists("repeat"))
+                repeat = jfObj->getVec2<float>("repeat");
             obj = new Plane(size, material, repeat);
             meshes.add((TriangleMesh*)obj);
         }

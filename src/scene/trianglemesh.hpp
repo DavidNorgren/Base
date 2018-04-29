@@ -25,7 +25,7 @@ namespace Base
         TriangleMesh(Material* material) : material(material), Object() {}
         EXPORT ~TriangleMesh();
 
-        void render(Shader* shader, const Mat4f& projMat) const override;
+        void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const override;
 
         /* Adds a single vertex and returns its index. */
         uint addVertex(Vertex3Df vertex);

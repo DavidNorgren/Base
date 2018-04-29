@@ -13,13 +13,19 @@
             "material": "checkerBoard"
         },
         {
+            "model": "plane",
+            "size": [ 30, 30 ],
+            "position": [ 40, 13, -50 ],
+            "rotation": [ 0, 45, 60 ]
+        },
+        {
             "model": "models/teapot/teapot.obj",
             "position": [ 30, 20, -20 ],
             "scale": [ 0.5, 0.5, 0.5 ]
         },
         {
             "model": "models/bunny.obj",
-            "position": [ -20, -7, 20 ],
+            "position": [ -30, -7, 20 ],
             "scale": [ 200, 200, 200 ]
         },
         {
@@ -30,7 +36,15 @@
         },
         {
             "model": "models/teddy.obj",
-            "position": [ -20, 19, -30 ]
+            "position": [ -20, 19, -30 ],
+            "rotation": [ 0, -20, 0 ]
+        }
+    ],
+    "lights": [
+        {
+            "type": "directional",
+            "position": [ 200, 200, 100 ],
+            "color": "#ffffff"
         }
     ]
 }

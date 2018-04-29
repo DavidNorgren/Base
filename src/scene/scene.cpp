@@ -4,10 +4,15 @@
 #include "apphandler.hpp"
 
 
-void Base::Scene::render(Shader* shader)
+void Base::Scene::render(Shader* shader) const
+{
+    render(shader, camera.getMatrix(appHandler->mainWindow->getRatio()));
+}
+
+void Base::Scene::render(Shader* shader, const Mat4f& matVP) const
 {
     shader->select();
-    Mat4f projMat = camera.getMatrix(appHandler->mainWindow->getRatio());
+    glClear(GL_DEPTH_BUFFER_BIT);
     for (Object* obj : objects)
-        obj->render(shader, projMat);
+        obj->render(shader, Mat4f::identity(), matVP);
 }

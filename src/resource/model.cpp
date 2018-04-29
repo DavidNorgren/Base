@@ -8,10 +8,10 @@
 #include "util/timer.hpp"
 
 
-void Base::Model::render(Shader* shader, const Mat4f& projMat) const
+void Base::Model::render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const
 {
     for (TriangleMesh* mesh : meshes)
-        mesh->render(shader, projMat * matrix);
+        mesh->render(shader, matM * matrix, matVP);
 }
 
 void Base::Model::load(const FilePath& file)

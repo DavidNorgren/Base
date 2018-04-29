@@ -11,9 +11,9 @@ EXPORT Base::TriangleMesh::~TriangleMesh()
     glDeleteBuffers(1, &glIbo);
 }
 
-void Base::TriangleMesh::render(Shader* shader, const Mat4f& projMat) const
+void Base::TriangleMesh::render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const
 {
-    shader->render3D(projMat * matrix, glVbo, vertexData.size(), glIbo, indexData.size(), material->getTexture()->getGlTexture());
+    shader->render3D(matM * matrix, matVP, glVbo, vertexData.size(), glIbo, indexData.size(), material->getTexture()->getGlTexture());
 }
 
 uint Base::TriangleMesh::addVertex(Vertex3Df vertex)

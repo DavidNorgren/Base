@@ -69,6 +69,12 @@ namespace Base
 
         // Unary operators
 
+        inline Vec2 operator - () const
+        {
+            return Vec2(-x, -y);
+
+        }
+
         inline T operator [] (int i) const
         {
             if (i == 0)

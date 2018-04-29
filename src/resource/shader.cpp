@@ -5,7 +5,7 @@
 #include "util/stringfunc.hpp"
 
 
-EXPORT void Base::Shader::setSetupFunc(function<void(GLuint)> setup)
+EXPORT void Base::Shader::setSetupFunc(ShaderSetup setup)
 {
     this->setup = setup;
 }
@@ -16,7 +16,7 @@ EXPORT void Base::Shader::select() const
         glUseProgram(glProgram);
 }
 
-EXPORT void Base::Shader::render2D(const Mat4f& matrix, Vertex2Di* vertexData, int vertices, GLuint glTexture, const Color& color, GLenum mode) const
+EXPORT void Base::Shader::render2D(const Mat4f& matMVP, Vertex2Di* vertexData, int vertices, GLuint glTexture, const Color& color, GLenum mode) const
 {
     if (!isLoaded)
         return;
@@ -24,7 +24,7 @@ EXPORT void Base::Shader::render2D(const Mat4f& matrix, Vertex2Di* vertexData, i
     // Select shader program, get uniforms
     GLint aPos      = glGetAttribLocation(glProgram, "aPos");
     GLint aTexCoord = glGetAttribLocation(glProgram, "aTexCoord");
-    GLint uMat      = glGetUniformLocation(glProgram, "uMat");
+    GLint uMatMVP   = glGetUniformLocation(glProgram, "uMatMVP");
     GLint uSampler  = glGetUniformLocation(glProgram, "uSampler");
     GLint uColor    = glGetUniformLocation(glProgram, "uColor");
 
@@ -39,7 +39,7 @@ EXPORT void Base::Shader::render2D(const Mat4f& matrix, Vertex2Di* vertexData, i
     glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2Di), (void*)sizeof(Vec2f));
     
     // Send in matrix
-    glUniformMatrix4fv(uMat, 1, GL_FALSE, matrix.elem);
+    glUniformMatrix4fv(uMatMVP, 1, GL_FALSE, matMVP.elem);
 
     // Send in color
     glUniform4fv(uColor, 1, (float*)&color);
@@ -48,6 +48,10 @@ EXPORT void Base::Shader::render2D(const Mat4f& matrix, Vertex2Di* vertexData, i
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, glTexture);
     glUniform1i(uSampler, 0);
+
+    // Call setup
+    if (setup)
+        setup(glProgram, Mat4f::identity());
 
     // Draw all triangles
     glDrawArrays(mode, 0, vertices);
@@ -60,7 +64,7 @@ EXPORT void Base::Shader::render2D(const Mat4f& matrix, Vertex2Di* vertexData, i
     // TODO ERROR CHECK
 }
 
-EXPORT void Base::Shader::render3D(const Base::Mat4f& matrix, GLuint vbo, int vertices, GLuint ibo, int indices, GLuint glTexture) const
+EXPORT void Base::Shader::render3D(const Mat4f& matM, const Mat4f& matVP, GLuint vbo, int vertices, GLuint ibo, int indices, GLuint glTexture) const
 {
     if (!isLoaded)
         return;
@@ -69,7 +73,8 @@ EXPORT void Base::Shader::render3D(const Base::Mat4f& matrix, GLuint vbo, int ve
     GLint aPos      = glGetAttribLocation(glProgram, "aPos");
     GLint aTexCoord = glGetAttribLocation(glProgram, "aTexCoord");
     GLint aNormal   = glGetAttribLocation(glProgram, "aNormal");
-    GLint uMat      = glGetUniformLocation(glProgram, "uMat");
+    GLint uMatM     = glGetUniformLocation(glProgram, "uMatM");
+    GLint uMatMVP   = glGetUniformLocation(glProgram, "uMatMVP");
     GLint uSampler  = glGetUniformLocation(glProgram, "uSampler");
     GLint uColor    = glGetUniformLocation(glProgram, "uColor");
 
@@ -85,8 +90,9 @@ EXPORT void Base::Shader::render3D(const Base::Mat4f& matrix, GLuint vbo, int ve
     glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), (void*)sizeof(Vec3f));
     glVertexAttribPointer(aNormal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), (void*)(sizeof(Vec2f) + sizeof(Vec3f)));
 
-    // Send in matrix
-    glUniformMatrix4fv(uMat, 1, GL_FALSE, matrix.elem);
+    // Send in matrices
+    glUniformMatrix4fv(uMatM,   1, GL_FALSE, matM.elem);
+    glUniformMatrix4fv(uMatMVP, 1, GL_FALSE, (matVP * matM).elem);
 
     // Send in color
     Color color = { 1.f };
@@ -97,6 +103,10 @@ EXPORT void Base::Shader::render3D(const Base::Mat4f& matrix, GLuint vbo, int ve
     glBindTexture(GL_TEXTURE_2D, glTexture);
     glUniform1i(uSampler, 0);
 
+    // Call setup
+    if (setup)
+        setup(glProgram, matM);
+
     // Draw all triangles
     glEnable(GL_DEPTH_TEST);
     glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, 0);
@@ -106,7 +116,6 @@ EXPORT void Base::Shader::render3D(const Base::Mat4f& matrix, GLuint vbo, int ve
     glDisableVertexAttribArray(aPos);
     glDisableVertexAttribArray(aTexCoord);
     glDisableVertexAttribArray(aNormal);
-    glBindTexture(GL_TEXTURE_2D, 0);
     
     // TODO ERROR CHECK
 }

@@ -7,6 +7,7 @@
 EXPORT void Base::drawBegin()
 {
     appHandler->drawingShader->select();
+    glViewport(0, 0, appHandler->mainWindow->size.width, appHandler->mainWindow->size.height);
     resetDrawingArea();
 }
 

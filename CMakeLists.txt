@@ -2,13 +2,16 @@ cmake_minimum_required(VERSION 3.7)
 
 # Set project
 project(base)
-set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "-static-libgcc -static-libstdc++")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 add_definitions("-DEXPORT=__declspec(dllexport)")
 set(LIBS_DIR "C:/Dev/Libs")
+
+set(BASE_BUILD_TYPE "Debug" CACHE STRING "Base build type")
+set_property(CACHE BASE_BUILD_TYPE PROPERTY STRINGS "Debug;Release")
+set(CMAKE_BUILD_TYPE ${BASE_BUILD_TYPE})
 
 # Base can be built in any of the following three modes:
 # "test" to produce an executable file used for testing
@@ -17,8 +20,8 @@ set(LIBS_DIR "C:/Dev/Libs")
 # BASE_BUILD_STATIC will overwrite this to "static"
 if (NOT BASE_BUILD_STATIC)
 
-    set(BASE_BUILD_MODE "static" CACHE STRING "Base build mode")
-    set_property(CACHE BASE_BUILD_MODE PROPERTY STRINGS "static;shared;test")
+    set(BASE_BUILD_MODE "Static" CACHE STRING "Base build mode")
+    set_property(CACHE BASE_BUILD_MODE PROPERTY STRINGS "Static;Shared;Test")
     option(BASE_DYNAMIC_RESOURCES ON)
 
 else()
@@ -31,13 +34,12 @@ endif()
 # Add Base sources
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-if (BASE_BUILD_MODE STREQUAL "test")
+if (BASE_BUILD_MODE STREQUAL "Test")
 
     # If dynamic resources are enabled, resources are fetched from an archive during runtime
     if (BASE_DYNAMIC_RESOURCES)
 
         set(DYNAMIC_RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test/res/")
-        set(DYNAMIC_RESOURCES_CHECK_TIME 1000) # Msec between each update check
 
         # These flags enable dynamic loading by the ResourceHandler class
         add_definitions("-DDYNAMIC_RESOURCES")
@@ -86,7 +88,7 @@ else()
     file(GLOB_RECURSE SRCS "src/*.cpp")
 
     # Create library
-    if (BASE_BUILD_MODE STREQUAL "shared")
+    if (BASE_BUILD_MODE STREQUAL "Shared")
         add_library(base SHARED ${SRCS})
     else()
         add_library(base STATIC ${SRCS})
@@ -168,7 +170,7 @@ set(LIBS_INSTALL soil      libzip          glew          zlib)
 set(LIBS_EXPORT  soil glfw libzip freetype glew          zlib)
 target_link_libraries(base PUBLIC ${LIBS_LINK})
 
-if (BASE_BUILD_MODE STREQUAL "shared")
+if (BASE_BUILD_MODE STREQUAL "Shared")
 
     # https://rix0r.nl/blog/2015/08/13/cmake-guide/
     # Define headers for this library. PUBLIC headers are used for

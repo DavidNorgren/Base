@@ -8,7 +8,7 @@ namespace Base
     class Camera
     {
       public:
-        EXPORT Mat4f getMatrix(float ratio);
+        EXPORT Mat4f getMatrix(float ratio) const;
         
         Vec3f xaxis, yaxis, zaxis, pos;
         float fov;

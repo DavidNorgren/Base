@@ -19,7 +19,7 @@ namespace Base
       public:
         Model() {};
 
-        void render(Shader* shader, const Mat4f& projMat) const override;
+        void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const override;
 
       private:
         void load(const FilePath& file) override;

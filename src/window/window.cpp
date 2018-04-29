@@ -103,7 +103,6 @@ void windowSizeCallback(GLFWwindow* handle, int width, int height)
     width  = Base::max(1, width);
     height = Base::max(1, height);
 
-    glViewport(0, 0, width, height);
     window->ortho       = Base::Mat4f::ortho(0.f, width, height, 0.f, 0.f, 1.f);
     window->size.width  = width;
     window->size.height = height;
