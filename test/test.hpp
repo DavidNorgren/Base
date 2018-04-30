@@ -11,7 +11,7 @@ namespace Base
       public:
         TestApp()
         {
-            mainWindow->setTitle("Base");
+            mainWindow->setTitle("BaseTest");
             mainWindow->setTargetFramerate(60);
             mainWindow->setBackgroundColor(Color(0.05f, 0.05f, 0.1f));
 

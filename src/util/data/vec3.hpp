@@ -216,9 +216,9 @@ namespace Base
         }
     };
 
-    template<typename T> inline std::ostream& operator << (std::ostream& cout, const Vec3<T>& vec)
+    template<typename T> inline std::ostream& operator << (std::ostream& out, const Vec3<T>& vec)
     {
-        return cout << "(" << vec.x << "," << vec.y << "," << vec.z << ")" << endl;
+        return out << "(" << vec.x << "," << vec.y << "," << vec.z << ")" << endl;
     }
 
     template<typename T> inline Vec3<T> operator * (const T& mul, const Vec3<T>& vec)

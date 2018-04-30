@@ -89,6 +89,23 @@ void Base::TestScene::load(const string& json)
         // Finally add object to scene
         objects.add(obj);
     }
+
+    // Lights
+    if (jf.getKeyExists("lights"))
+    {
+        JsonArray* jfLights = jf.getArray("lights");
+        for (JsonAny* jfAny : jfLights->getValues())
+        {
+            JsonObject* jfLight = (JsonObject*)jfAny;
+            Light* light = new Light();
+            light->pos   = jfLight->getVec3<float>("position");
+            light->color = jfLight->getString("color");
+            light->dir   = light->pos.normalize();
+            // TODO type
+
+            lights.add(light);
+        }
+    }
 }
 
 void Base::TestScene::cleanUp()
@@ -99,8 +116,12 @@ void Base::TestScene::cleanUp()
 
     for (TriangleMesh* mesh : meshes)
         delete mesh;
+        
+    for (Light* light : lights)
+        delete light;
 
     sceneMaterialMap.clear();
     meshes.clear();
     objects.clear();
+    lights.clear();
 }

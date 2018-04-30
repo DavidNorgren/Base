@@ -180,21 +180,34 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
         // Call loop function
         loopEventFunc();
 
-        // Reset input
+        // Reset/update keyboard input
+        bool isAnyDown = false;
         for (uint k = 0; k < GLFW_KEY_LAST; k++)
         {
+            if (keyDown[k])
+                isAnyDown = true;
             keyPressed[k]  = false;
             keyReleased[k] = false;
         }
+        
+        if (isAnyDown && keyEventFunc)
+            keyEventFunc();
 
+        // Reset/update mouse input
+        isAnyDown = false;
         for (uint m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++)
         {
+            if (mouseDown[m])
+                isAnyDown = true;
             mousePressed[m]  = false;
             mouseReleased[m] = false;
         }
 
         window->mouseMove   = { 0, 0 };
         window->mouseScroll = { 0.f, 0.f };
+
+        if (isAnyDown && mouseEventFunc)
+            mouseEventFunc();
 
         // Swap buffers
         glfwSwapBuffers(handle);
@@ -217,13 +230,7 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
 
 EXPORT void Base::Window::maximize()
 {
-//#ifdef _WIN32
     glfwMaximizeWindow(handle);
-/*#else
-    const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    glfwSetWindowPos(handle, 25, 25);
-    glfwSetWindowSize(handle, mode->width - 50, mode->height - 100);
-#endif*/
 }
 
 EXPORT void Base::Window::setTitle(const string& title)

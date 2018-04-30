@@ -5,14 +5,14 @@
 #include "input/mousefunc.hpp"
 
 
+const string testScene = "scenes/checker.testscene";
+const string testShader = "shaders/shadows.glsl";
+
 // TODO: move somewhere
-GLuint FramebufferName;
-GLuint depthTexture;
+Base::Light* sceneLight;
+GLuint depthFramebuffer, depthTexture;
 Base::Mat4f biasMat, depthVP, depthBiasVP;
-Base::Shader* shadowsShader;
-Base::Shader* depthShader;
-Base::Size2Di bufSize = { 1024, 1024 };
-Base::Vec3f lightPos = { 80.f, 80.f, 80.f };
+Base::Size2Di bufSize = { 2048, 2048 };
 
 void Base::TestApp::testSceneInit()
 {
@@ -22,12 +22,11 @@ void Base::TestApp::testSceneInit()
     camZoom    = camGoalZoom    = 100.f;
     camMove    = false;
 
-
     // SETUP SHADOWS!
 
     // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
-    glGenFramebuffers(1, &FramebufferName);
-    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+    glGenFramebuffers(1, &depthFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthFramebuffer);
 
     // Depth texture. Slower than a depth buffer, but you can sample it later in your shader
     glGenTextures(1, &depthTexture);
@@ -35,8 +34,10 @@ void Base::TestApp::testSceneInit()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, bufSize.width, bufSize.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    Color borderColor(1.f);
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, (float*)&borderColor);  
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
 
     glDrawBuffer(GL_NONE); // No color buffer is drawn to.
@@ -46,6 +47,7 @@ void Base::TestApp::testSceneInit()
     ((Shader*)resHandler->get("shaders/shadows.glsl"))->setSetupFunc([&](GLuint glProgram, const Mat4f& matM)
     {
         GLint uDepthSampler = glGetUniformLocation(glProgram, "uDepthSampler");
+        GLint uLightDir = glGetUniformLocation(glProgram, "uLightDir");
         GLint uMatDepthBiasMVP = glGetUniformLocation(glProgram, "uMatDepthBiasMVP");
 
         // Send in depth matrix
@@ -55,6 +57,8 @@ void Base::TestApp::testSceneInit()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, depthTexture);
         glUniform1i(uDepthSampler, 1);
+        
+        glUniform3fv(uLightDir, 1, (float*)&sceneLight->dir);
     });
 
     biasMat = Mat4f(
@@ -88,15 +92,18 @@ void Base::TestApp::testSceneInput()
     camGoalZoom     = clamp(camGoalZoom, 10.f, 2000.f);
 
     // Move light
-    lightPos.x += (keyDown(GLFW_KEY_D) - keyDown(GLFW_KEY_A)) * 10.f;
-    lightPos.y += (keyDown(GLFW_KEY_Q) - keyDown(GLFW_KEY_E)) * 10.f;
-    lightPos.z += (keyDown(GLFW_KEY_W) - keyDown(GLFW_KEY_S)) * 10.f;
+    sceneLight->translate({
+        (keyDown(GLFW_KEY_D) - keyDown(GLFW_KEY_A)) * 10.f,
+        (keyDown(GLFW_KEY_Q) - keyDown(GLFW_KEY_E)) * 10.f,
+        (keyDown(GLFW_KEY_S) - keyDown(GLFW_KEY_W)) * 10.f
+    });
 }
 
 void Base::TestApp::testSceneRender()
 {
     // Load the scene from JSON during start or when modified
-    currentScene = (TestScene*)resHandler->get("scenes/checker.testscene");
+    currentScene = (TestScene*)resHandler->get(testScene);
+    sceneLight = currentScene->lights[0];
 
     // Animate some objects
     float d = mainWindow->getFrameDelay();
@@ -116,18 +123,17 @@ void Base::TestApp::testSceneRender()
     camZoom    += (camGoalZoom    - camZoom)    / 5.f;
     
     // Render from light
-    Mat4f P = Mat4f::ortho(-100.f, 100.f, -100.f, 100.f, -500.f, 500.f);
-    Mat4f V = Mat4f::viewLookAt(lightPos, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f });
+    Mat4f P = Mat4f::ortho(-100.f, 100.f, -100.f, 100.f, -300.f, 300.f);
+    Mat4f V = Mat4f::viewLookAt(sceneLight->pos, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f });
     depthVP = P * V;
     depthBiasVP = biasMat * depthVP;
 
-    glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthFramebuffer);
     glViewport(0, 0, bufSize.width, bufSize.height);
     currentScene->render((Shader*)resHandler->get("shaders/depth.glsl"), depthVP);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
     // Render some goodness
     glViewport(0, 0, mainWindow->size.width, mainWindow->size.height);
-    currentScene->render((Shader*)resHandler->get("shaders/shadows.glsl"));
+    currentScene->render((Shader*)resHandler->get(testShader));
 }

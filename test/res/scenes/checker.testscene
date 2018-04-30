@@ -43,7 +43,7 @@
     "lights": [
         {
             "type": "directional",
-            "position": [ 200, 200, 100 ],
+            "position": [ 100, 100, 100 ],
             "color": "#ffffff"
         }
     ]

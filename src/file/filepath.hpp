@@ -86,9 +86,9 @@ namespace Base
         string fileName;
     };
     
-    inline std::ostream& operator << (std::ostream& cout, const FilePath& file)
+    inline std::ostream& operator << (std::ostream& out, const FilePath& file)
     {
-        cout << file.getFullPath() << endl;
+        out << file.getFullPath() << endl;
     }
 
     inline FilePath DirectoryPath::getFilePath(const string& name)

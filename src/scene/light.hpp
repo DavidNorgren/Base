@@ -10,6 +10,8 @@ namespace Base
       public:
         Light() {}
 
+        Light* translate(const Vec3f& translate);
+
         Vec3f pos;
         Vec3f dir;
         Color color;

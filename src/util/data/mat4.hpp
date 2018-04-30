@@ -177,15 +177,15 @@ namespace Base
         }
     };
 
-    template<typename T> std::ostream& operator << (std::ostream& cout, const Mat4<T>& mat)
+    template<typename T> std::ostream& operator << (std::ostream& out, const Mat4<T>& mat)
     {
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 4; j++)
-                cout << mat[j * 4 + i] << (j < 3 ? "," : "");
-            cout << endl;
+                out << mat[j * 4 + i] << (j < 3 ? "," : "");
+            out << endl;
         }
-        return cout;
+        return out;
     }
 
     template<typename T> inline void operator *= (Mat4<T>& a, const Mat4<T>& b)

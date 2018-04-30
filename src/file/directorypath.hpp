@@ -35,8 +35,8 @@ namespace Base
         string dirName;
     };
     
-    inline std::ostream& operator << (std::ostream& cout, const DirectoryPath& directory)
+    inline std::ostream& operator << (std::ostream& out, const DirectoryPath& directory)
     {
-        cout << directory.getFullPath() << endl;
+        out << directory.getFullPath() << endl;
     }
 }

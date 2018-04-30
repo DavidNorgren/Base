@@ -67,9 +67,9 @@ namespace Base
         }
     };
     
-    template<typename T> inline std::ostream& operator << (std::ostream& cout, const Region2D<T>& region)
+    template<typename T> inline std::ostream& operator << (std::ostream& out, const Region2D<T>& region)
     {
-        return cout << "(Position: " << region.pos << ", Size:" << region.size << ")" << endl;
+        return out << "(Position: " << region.pos << ", Size:" << region.size << ")" << endl;
     }
 
     // Define shorthands

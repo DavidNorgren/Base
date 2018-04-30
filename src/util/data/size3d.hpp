@@ -32,9 +32,9 @@ namespace Base
         }
     };
 
-    template<typename T> inline std::ostream& operator << (std::ostream& cout, const Size3D<T>& size)
+    template<typename T> inline std::ostream& operator << (std::ostream& out, const Size3D<T>& size)
     {
-        return cout << "(" << size.width << "," << size.length << "," << size.height << ")" << endl;
+        return out << "(" << size.width << "," << size.length << "," << size.height << ")" << endl;
     }
 
     // Define shorthands
