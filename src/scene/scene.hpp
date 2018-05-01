@@ -15,7 +15,9 @@ namespace Base
         Scene() { camera = new Camera(); }
 
         EXPORT void render(Shader* shader, Camera* camera = nullptr);
+        EXPORT Object* findObject(const string& name) const;
         
+        Map<string, Object*> objectNames;
         List<Object*> objects;
         List<Light*> lights;
         Camera* camera;

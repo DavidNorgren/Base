@@ -169,11 +169,12 @@ void Base::Font::load(FT_Face& face)
             continue;
 
         // Convert buffer to RGBA
-        Color* glyphBuf = new Color[(int)curChar.size.width * (int)curChar.size.height];
-        for (uint j = 0; j < curChar.size.width * curChar.size.height; j++)
-            glyphBuf[j] = Color(1.f, 1.f, 1.f, glyph->bitmap.buffer[j] / 255.f);
+        Color* glyphBuf = new Color[curChar.size.x * curChar.size.y];
+        for (uint x = 0; x < curChar.size.x; x++)
+            for (uint y = 0; y < curChar.size.y; y++)
+                glyphBuf[x + y * curChar.size.x] = Color(1.f, 1.f, 1.f, glyph->bitmap.buffer[x + (curChar.size.y - 1 - y) * curChar.size.x] / 255.f);
 
-        glTexSubImage2D(GL_TEXTURE_2D, 0, curChar.mapX, 0, curChar.size.width, curChar.size.height, GL_RGBA, GL_FLOAT, glyphBuf);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, curChar.mapX, size.height - curChar.size.height, curChar.size.width, curChar.size.height, GL_RGBA, GL_FLOAT, glyphBuf);
 
         delete glyphBuf;
     }

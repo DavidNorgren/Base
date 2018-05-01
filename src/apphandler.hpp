@@ -5,9 +5,9 @@
 
 #include "resource/resourcehandler.hpp"
 #include "resource/font.hpp"
-#include "resource/image.hpp"
 #include "resource/shader.hpp"
 #include "render/color.hpp"
+#include "render/image.hpp"
 #include "window/window.hpp"
 #include "util/mathfunc.hpp"
 #include "scene/scene.hpp"

@@ -7,7 +7,7 @@
 #include FT_FREETYPE_H
 
 #include "resource/resource.hpp"
-#include "resource/image.hpp"
+#include "render/image.hpp"
 #include "util/data/list.hpp"
 #include "util/data/size2d.hpp"
 #include "util/data/vec2.hpp"
@@ -33,7 +33,7 @@ namespace Base
 
     /* A texture sheet of characters and methods for calculating
        string dimensions. */
-    class Font : public Image
+    class Font : public Image, public Resource
     {
       public:
         Font() {};

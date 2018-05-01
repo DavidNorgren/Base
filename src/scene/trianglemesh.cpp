@@ -102,14 +102,14 @@ EXPORT int Base::TriangleMesh::getTriangleCount()
     return indexData.size() / 3;
 }
 
-EXPORT Base::Plane::Plane(const Base::Size2Df& size, const Vec2f& textureRepeat)
+EXPORT Base::Plane::Plane(const Base::Size2Df& size, const Vec2f& texRepeat)
 {
     Vec3f normal = { 0, 1, 0 };
     vertexData = {
-        { { -size.width / 2.f, 0.f, -size.height / 2.f }, { 0, 0 },               normal },
-        { {  size.width / 2.f, 0.f, -size.height / 2.f }, { textureRepeat.x, 0 }, normal },
-        { {  size.width / 2.f, 0.f,  size.height / 2.f }, textureRepeat,          normal },
-        { { -size.width / 2.f, 0.f,  size.height / 2.f }, { 0, textureRepeat.y }, normal }
+        { { -size.width / 2.f, 0.f, -size.height / 2.f }, { 0.f, 0.f },                     normal },
+        { {  size.width / 2.f, 0.f, -size.height / 2.f }, { texRepeat.x, 0.f },           normal },
+        { {  size.width / 2.f, 0.f,  size.height / 2.f }, { texRepeat.x, texRepeat.y }, normal },
+        { { -size.width / 2.f, 0.f,  size.height / 2.f }, { 0.f, texRepeat.y },           normal }
     };
 
     indexData = {

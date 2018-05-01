@@ -8,7 +8,11 @@ namespace Base
     /* 2D vector */
     template<typename T> struct Vec2
     {
-        T x, y;
+        union
+        {
+            struct { T x, y; };
+            struct { T u, v; };
+        };
 
         // Constructors
 
@@ -31,7 +35,7 @@ namespace Base
             y = x[1];
         }
 
-        inline Vec2(const Vec2& other)
+        Vec2(const Vec2& other)
         {
             x = other.x;
             y = other.y;

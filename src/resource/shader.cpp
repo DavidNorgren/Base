@@ -38,8 +38,10 @@ EXPORT void Base::Shader::render2D(const Mat4f& matMVP, List<Vertex2Di> vertexDa
     glVertexAttribPointer(aPos,      2, GL_INT,   GL_FALSE, sizeof(Vertex2Di), 0);
     glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2Di), (void*)sizeof(Vec2f));
     
+    //Mat4f flip =  Mat4f::scale({ 1.f, -1.f, 1.f }) * Mat4f::translate({ 0, -getRenderTarget()->getSize().height, 0 }); //;
+    
     // Send in matrix
-    glUniformMatrix4fv(uMatMVP, 1, GL_FALSE, matMVP.e);
+    glUniformMatrix4fv(uMatMVP, 1, GL_FALSE, (matMVP).e);
 
     // Send in color
     glUniform4fv(uColor, 1, (float*)&color);

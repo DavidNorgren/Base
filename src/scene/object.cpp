@@ -2,12 +2,13 @@
 #include "scene/object.hpp"
 
 
-Base::Object::Object()
+Base::Object::Object(const string& name)
 {
+    this->name = name;
     resetTransform();
 }
 
-Base::Object::Object(Base::Model* model) : Object()
+Base::Object::Object(Base::Model* model, const string& name) : Object(name)
 {
     this->model = model;
 }

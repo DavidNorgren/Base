@@ -52,7 +52,9 @@ EXPORT void Base::drawText(const string& text, const ScreenPos& pos, const Color
 
 EXPORT void Base::drawText(const string& text, const ScreenPos& pos, Font* font, const Color& color)
 {
-    Mat4f mat = getRenderTarget()->getOrtho2D() * Mat4f::translate({ (float)pos.x, (float)pos.y, 0 });
+    Mat4f mat = getRenderTarget()->getOrtho2D() *
+                Mat4f::translate({ (float)pos.x, (float)pos.y, 0 });
+    
     appHandler->drawingShader->render2D(mat, font->getTextVertices(text), font, Color(color, appHandler->drawingAlpha));
 }
 
@@ -107,15 +109,15 @@ EXPORT void Base::drawImage(Image* image, const ScreenPos& pos, const Color& col
     Size2Di size = image->getSize();
     List<Vertex2Di> vertexData({
         { { 0, 0 },                    { 0, 0 } },
-        { { size.width, 0 },           { 1, 0 } },
         { { 0, size.height },          { 0, 1 } },
+        { { size.width, 0 },           { 1, 0 } },
         { { size.width, size.height }, { 1, 1 } }
     });
     
     Mat4f mat = getRenderTarget()->getOrtho2D() *
-                    Mat4f::translate({ (float)pos.x, (float)pos.y, 0 }) *
-                    Mat4f::rotate({ 0.f, 0.f, 1.f }, rotation) *
-                    Mat4f::scale({ scale.x, scale.y, 1.f });
+                Mat4f::translate({ (float)pos.x, (float)pos.y, 0 }) *
+                Mat4f::rotate({ 0.f, 0.f, 1.f }, rotation) *
+                Mat4f::scale({ scale.x, scale.y, 1.f });
 
     appHandler->drawingShader->render2D(mat, vertexData, image, Color(color, appHandler->drawingAlpha), GL_TRIANGLE_STRIP);
 }
@@ -129,13 +131,13 @@ EXPORT void Base::drawSubImage(Image* image, int subImage, const ScreenPos& pos,
 {
     Size2Di size    = image->getSize();
     int subImages   = size.width / size.height;
-    Vec2f texStart  = { (float)subImage / (float)subImages, 0.f };
-    Vec2f texEnd    = { texStart.x + (float)size.height / size.width, 1.f };
+    Tex2f texStart  = { (float)subImage / (float)subImages, 0.f };
+    Tex2f texEnd    = { texStart.x + (float)size.height / size.width, 1.f };
     
     List<Vertex2Di> vertexData({
         { { 0, 0 },                     texStart },
-        { { size.height, 0 },           { texEnd.x, texStart.y } },
         { { 0, size.height },           { texStart.x, texEnd.y } },
+        { { size.height, 0 },           { texEnd.x, texStart.y } },
         { { size.height, size.height }, texEnd }
     });
     
@@ -150,11 +152,11 @@ EXPORT void Base::drawSubImage(Image* image, int subImage, const ScreenPos& pos,
 EXPORT void Base::drawBox(const ScreenArea& box, const Color& color, bool outline, int outlineThickness)
 {
     List<Vertex2Di> vertexData({
-        { { box.x, box.y },                          { 0, 0 } },
         { { box.x + box.width, box.y },              { 0, 0 } },
-        { { box.x + box.width, box.y + box.height }, { 0, 0 } },
+        { { box.x, box.y },                          { 0, 0 } },
         { { box.x, box.y + box.height },             { 0, 0 } },
-        { { box.x, box.y },                          { 0, 0 } }
+        { { box.x + box.width, box.y + box.height }, { 0, 0 } },
+        { { box.x + box.width, box.y },              { 0, 0 } }
     });
 
     glLineWidth(outlineThickness);

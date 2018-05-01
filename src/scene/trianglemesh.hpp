@@ -67,7 +67,7 @@ namespace Base
     class Plane : public TriangleMesh
     {
       public:
-        EXPORT Plane(const Size2Df& size, const Vec2f& textureRepeat = { 1.f });
+        EXPORT Plane(const Size2Df& size, const Vec2f& texRepeat = { 1.f });
     };
 
     class Sphere : public TriangleMesh

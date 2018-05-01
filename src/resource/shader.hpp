@@ -6,7 +6,7 @@
 #include "util/data/vertex2d.hpp"
 #include "util/data/mat4.hpp"
 #include "render/color.hpp"
-#include "resource/image.hpp"
+#include "render/image.hpp"
 #include "resource/resource.hpp"
 #include "scene/trianglemesh.hpp"
 #include "scene/material.hpp"

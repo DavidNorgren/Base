@@ -1,7 +1,8 @@
 #pragma once
 
-#include "util/data/vec3.hpp"
+#include "util/data/tex2.hpp"
 #include "util/data/vec2.hpp"
+#include "util/data/vec3.hpp"
 
 
 namespace Base
@@ -9,12 +10,12 @@ namespace Base
     template<typename T> struct Vertex3D
     {
         Vec3<T> pos;
-        Vec2f texCoord;
+        Tex2f texCoord;
         Vec3f normal;
 
         Vertex3D() {}
         
-        Vertex3D(const Vec3<T>& pos, const Vec2f texCoord, const Vec3f& normal)
+        Vertex3D(const Vec3<T>& pos, const Tex2f texCoord, const Vec3f& normal)
         {
             this->pos = pos;
             this->texCoord = texCoord;

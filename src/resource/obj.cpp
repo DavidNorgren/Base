@@ -21,7 +21,7 @@ void Base::Obj::load(const FileData& data)
 void Base::Obj::load(const List<string>& lines)
 {
     List<Vec3f> objPositions, objNormals;
-    List<Vec2f> objTexCoords;
+    List<Tex2f> objTexCoords;
     List<Vec3i> objIndices;
     List<uint> objFaceNumVertices;
 
@@ -52,8 +52,8 @@ void Base::Obj::load(const List<string>& lines)
         // Texture coordinate (vt u v [w])
         else if (type == "vt")
         {
-			Vec2f texCoord;
-			lineStream >> texCoord.x >> texCoord.y;
+			Tex2f texCoord;
+			lineStream >> texCoord.u >> texCoord.v;
 			objTexCoords.add(texCoord);
 		}
 
@@ -144,7 +144,7 @@ void Base::Obj::load(const List<string>& lines)
                                 objPositions[vIndices[0]] : Vec3f(0.f);
                 
             vertex.texCoord = (vIndices[1] < objTexCoords.size()) ? 
-                                objTexCoords[vIndices[1]] : Vec2f(0.f);
+                                objTexCoords[vIndices[1]] : Tex2f(0.f);
                             
             vertex.normal   = Vec3f(0.f);
 

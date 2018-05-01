@@ -1,9 +1,10 @@
 #include "common.hpp"
 #include "resource/testscene.hpp"
-#include "scene/model.hpp"
-#include "resource/obj.hpp"
 #include "file/filefunc.hpp"
 #include "file/json.hpp"
+#include "scene/model.hpp"
+#include "resource/obj.hpp"
+#include "resource/sprite.hpp"
 #include "apphandler.hpp"
 
 
@@ -31,7 +32,7 @@ void Base::TestScene::load(const string& json)
         for (string name : jfMaterials->getKeys())
         {
             JsonObject* jfMat = jfMaterials->getObject(name);
-            Image* img = (Image*)appHandler->resHandler->get(jfMat->getString("image"));
+            Sprite* img = (Sprite*)appHandler->resHandler->get(jfMat->getString("image"));
             sceneMaterialMap[name] = new Material(img);
         }
     }
@@ -45,7 +46,7 @@ void Base::TestScene::load(const string& json)
 
         // Find material from name
         string modelName = jfObj->getString("model");
-        Material* material = 0;
+        Material* material = nullptr;
         if (jfObj->getKeyExists("material"))
             material = sceneMaterialMap[jfObj->getString("material")];
 
@@ -75,7 +76,12 @@ void Base::TestScene::load(const string& json)
             }
         }
 
-        Object* obj = new Object(model);
+        // Add object
+        string objName = "";
+        if (jfObj->getKeyExists("name"))
+            objName = jfObj->getString("name");
+
+        Object* obj = new Object(model, objName);
 
         // Apply transforms
         if (jfObj->getKeyExists("position"))
@@ -89,8 +95,9 @@ void Base::TestScene::load(const string& json)
             
         obj->buildMatrix();
 
-        // Finally add object to scene
         objects.add(obj);
+        if (objName != "")
+            objectNames[objName] = obj;
     }
 
     // Lights

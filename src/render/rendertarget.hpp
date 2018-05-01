@@ -3,23 +3,23 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
+#include "render/image.hpp"
 #include "util/data/mat4.hpp"
 #include "util/data/size2d.hpp"
 
 
 namespace Base
 {
-    class RenderTarget
+    /* A 2 dimensional image that can be rendered to. */
+    class RenderTarget : public Image
     {
       public:
-        Size2Di getSize() const          { return size; }
-        float   getRatio() const         { return (float)size.width / size.height; }
-        GLuint  getGlFramebuffer() const { return glFramebuffer; }
-        Mat4f   getOrtho2D() const       { return ortho2D; }
+        GLuint getGlFramebuffer() const { return glFramebuffer; }
+        Mat4f  getOrtho2D() const       { return ortho2D; }
     
       protected:
-        Size2Di size;
         GLuint glFramebuffer = 0;
-        Mat4f ortho2D;
+        GLuint glDepthRenderbuffer = 0;
+        Mat4f  ortho2D;
     };
 }

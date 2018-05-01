@@ -31,7 +31,7 @@ namespace Base
         Color color;
 
         GLuint glDepthTexture;
-        Size3Df orthoSize = { 200.f, 200.f, 200.f };
+        Size3Df orthoSize = { 200.f, 200.f, 1000.f };
         Mat4f matBiasPV;
     };
 }

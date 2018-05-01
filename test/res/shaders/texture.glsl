@@ -10,6 +10,7 @@ in vec3 aNormal;
 out vec2 vTexCoord;
 uniform mat4 uMatMVP;
 
+
 void main()
 {
     vTexCoord = aTexCoord;

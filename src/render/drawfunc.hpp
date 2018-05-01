@@ -4,7 +4,7 @@
 #include "util/data/region2d.hpp"
 #include "render/color.hpp"
 #include "render/colors.hpp"
-#include "resource/image.hpp"
+#include "render/image.hpp"
 #include "resource/font.hpp"
 
 

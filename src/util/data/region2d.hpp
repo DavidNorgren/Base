@@ -12,20 +12,20 @@ namespace Base
         union
         {
             Vec2<T> pos;
-            T x, y;
+            struct { T x, y; };
         };
         union
         {
             Size2D<T> size;
-            T width, height;
+            struct { T width, height; };
         };
 
         Region2D() {}
         
         Region2D(const Vec2<T>& pos, const Size2D<T>& size)
         {
-            this.pos = pos;
-            this.size = size;
+            this->pos = pos;
+            this->size = size;
         }
 
         Region2D(T x, T y, T width, T height)

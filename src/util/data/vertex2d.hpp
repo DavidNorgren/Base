@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/data/tex2.hpp"
 #include "util/data/vec2.hpp"
 
 
@@ -8,7 +9,7 @@ namespace Base
     template<typename T> struct Vertex2D
     {
         Vec2<T> pos;
-        Vec2f texCoord;
+        Tex2f texCoord;
 
         Vertex2Df() {}
 

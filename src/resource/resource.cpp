@@ -3,7 +3,7 @@
 #include "common.hpp"
 #include "resource/resource.hpp"
 #include "resource/font.hpp"
-#include "resource/image.hpp"
+#include "resource/sprite.hpp"
 #include "resource/shader.hpp"
 #include "resource/obj.hpp"
 #include "resource/testscene.hpp"
@@ -37,7 +37,7 @@ Base::Resource* Base::Resource::create(const string& fileExt)
         return new Shader();
     else if (fileExt == ".png" ||
              fileExt == ".jpg")
-        return new Image();
+        return new Sprite();
     else if (fileExt == ".obj")
         return new Obj();
     else if (fileExt == ".testscene")

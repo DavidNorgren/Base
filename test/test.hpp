@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base.hpp"
-#include "common.hpp"
 
 
 namespace Base
@@ -13,7 +12,6 @@ namespace Base
         {
             mainWindow->setTitle("BaseTest");
             mainWindow->setTargetFramerate(60);
-            //mainWindow->setBackgroundColor(Color(0.05f, 0.05f, 0.1f));
 
             //testJSON();
             testSceneInit();
@@ -46,6 +44,7 @@ namespace Base
         float camAngleXZ,     camAngleY,     camZoom;
         float camGoalAngleXZ, camGoalAngleY, camGoalZoom;
         bool camMove;
+        Surface* debugSurface;
 
         // testjson.cpp
         void testJSON();

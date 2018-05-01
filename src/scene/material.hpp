@@ -1,6 +1,6 @@
 #pragma once
 
-#include "resource/image.hpp"
+#include "render/image.hpp"
 #include "render/colors.hpp"
 
 

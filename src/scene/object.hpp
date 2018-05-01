@@ -11,8 +11,8 @@ namespace Base
     class Object
     {
       public:
-        Object();
-        Object(Model* model);
+        Object(const string& name = "");
+        Object(Model* model, const string& name = "");
         
         virtual void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const;
 
@@ -27,6 +27,7 @@ namespace Base
         void resetTransform();
 
       protected:
+        string name;
         Vec3f pos, rot, sca;
         Mat4f matrix;
         Model* model;

@@ -11,7 +11,9 @@ Base::Camera debugCamera;
 
 void Base::TestApp::testSceneInit()
 {
-    debugCamera.setPosition({ 300.f, 300.f, 300.f });
+    debugSurface = new Surface({ 350, 250 });
+    debugCamera.setPosition({ 50.f, 50.f, 50.f });
+
     // Setup camera
     camAngleXZ = camGoalAngleXZ = 90.f;
     camAngleY  = camGoalAngleY  = 20.f;
@@ -73,9 +75,9 @@ void Base::TestApp::testSceneRender()
     sceneLight = currentScene->lights[0];
 
     // Animate some objects
-    //float d = mainWindow->getFrameDelay();
-    //((Model*)resHandler->get("models/teapot/teapot.obj"))->rotateY(d)->buildMatrix();
-    //((Model*)resHandler->get("models/box.obj"))->rotateX(d)->rotateY(d)->rotateZ(d)->buildMatrix();
+    float d = mainWindow->getFrameDelay();
+    currentScene->findObject("teapot")->rotateY(d)->buildMatrix();
+    currentScene->findObject("box")->rotateX(d)->rotateY(d)->rotateZ(d)->buildMatrix();
 
     // Camera rotates in a circle around the scene origin
     currentScene->camera->setPosition({
@@ -88,6 +90,12 @@ void Base::TestApp::testSceneRender()
     camAngleXZ += (camGoalAngleXZ - camAngleXZ) / 5.f;
     camAngleY  += (camGoalAngleY  - camAngleY)  / 5.f;
     camZoom    += (camGoalZoom    - camZoom)    / 5.f;
+
+    resHandler->get("shaders/texture.glsl");
+
+    // Debug
+    setRenderTarget(debugSurface);
+    currentScene->render((Shader*)resHandler->get("shaders/normals.glsl"));
     
     // Render light depth
     setRenderTarget(sceneLight);
@@ -95,6 +103,5 @@ void Base::TestApp::testSceneRender()
 
     // Render some goodness
     setRenderTarget(mainWindow);
-    drawClear(currentScene->background);
     currentScene->render((Shader*)resHandler->get(testShader));
 }
