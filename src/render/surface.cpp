@@ -2,14 +2,6 @@
 #include "render/surface.hpp"
 
 
-Base::Surface::~Surface()
-{
-    if (glFramebuffer)
-        glDeleteFramebuffers(1, &glFramebuffer);
-    if (glDepthRenderbuffer)
-        glDeleteRenderbuffers(1, &glDepthRenderbuffer);
-}
-
 Base::Surface::Surface(Size2Di size)
 {
     this->size = size;
@@ -24,7 +16,6 @@ Base::Surface::Surface(Size2Di size)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width, size.height, 0, GL_RGBA, GL_FLOAT, 0);
     
     // Create depth render buffer
-    GLuint glDepthRenderbuffer;
     glGenRenderbuffers(1, &glDepthRenderbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, glDepthRenderbuffer);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, size.width, size.height);

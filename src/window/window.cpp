@@ -285,8 +285,6 @@ void Base::Window::glfwSizeCallback(int width, int height)
     // The window was resized!
     width  = max(1, width);
     height = max(1, height);
-
-    ortho2D = Mat4f::ortho(0.f, width, height, 0.f, 0.f, 1.f);
     size    = { width, height };
     
     if (resizeEventFunc)

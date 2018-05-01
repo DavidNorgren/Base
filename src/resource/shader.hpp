@@ -45,7 +45,6 @@ namespace Base
         void load(const string& code);
         void cleanUp() override;
 
-        string name;
         GLuint glProgram, glVbo;
         ShaderSetup setup;
     };

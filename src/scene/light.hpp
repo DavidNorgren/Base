@@ -9,29 +9,51 @@
 
 namespace Base
 {
-    class Light : public Camera, public RenderTarget
+    constexpr int   lightNumCascades = 1;
+    constexpr float lightCascadeStart[] = { 0.f, 0.2f, 0.3f };
+
+    /* The format of the shadow mapping for this light. */
+    enum class ShadowMapFormat
+    {
+        SINGLE,
+        CASCADE,
+        CUBE
+    };
+
+    /* A depth map for shadows. */
+    class ShadowMap : public RenderTarget
+    {
+      public:
+        ShadowMap(Size2Di size);
+    };
+
+    /* A light in the scene. */
+    class Light : public Camera
     {
       public:
         Light();
         ~Light();
 
+        /* Color */
         void setColor(const Color& color) { this->color = color; }
         const Color& getColor() const { return color; }
         
+        /* Position in the scene. */
         void setPosition(const Vec3f& position);
         Light* translate(const Vec3f& translate);
-        void buildMatrix(float ratio) override;
+        const Vec3f& getDir() const { return dir; }
 
-        const Vec3f& getDir() const                { return dir; }
-        GLuint getGlDepthTexture() const           { return glDepthTexture; }
-        const Mat4f& getBiasViewProjection() const { return matBiasPV; }
+        void buildMatrix(float ratio) override;
+        const Mat4f& getBiasViewProjection() const { return matBiasVP; }
+
+        const List<ShadowMap*>& getShadowMaps() const { return shadowMaps; }
 
       private:
         Vec3f dir;
         Color color;
 
-        GLuint glDepthTexture;
+        List<ShadowMap*> shadowMaps;
         Size3Df orthoSize = { 200.f, 200.f, 1000.f };
-        Mat4f matBiasPV;
+        Mat4f matBiasVP;
     };
 }

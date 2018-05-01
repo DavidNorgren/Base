@@ -20,7 +20,7 @@ namespace Base
         EXPORT Size2Di getSize() const     { return size; };
         EXPORT float   getRatio() const    { return (float)size.width / size.height; }
 
-        /* Get OpenGL texture used for rendering. */
+        /* Get OpenGL texture used in shaders. */
         EXPORT GLuint  getGlTexture() const { return glTexture; };
         
         /* Generates an image from a solid color. */

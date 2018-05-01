@@ -14,8 +14,12 @@ namespace Base
     class RenderTarget : public Image
     {
       public:
-        GLuint getGlFramebuffer() const { return glFramebuffer; }
-        Mat4f  getOrtho2D() const       { return ortho2D; }
+        RenderTarget() {};
+        ~RenderTarget();
+
+        virtual void set();
+        
+        inline Mat4f getOrtho2D() const { return ortho2D; }
     
       protected:
         GLuint glFramebuffer = 0;

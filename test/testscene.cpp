@@ -12,7 +12,7 @@ Base::Camera debugCamera;
 void Base::TestApp::testSceneInit()
 {
     debugSurface = new Surface({ 350, 250 });
-    debugCamera.setPosition({ 50.f, 50.f, 50.f });
+    debugCamera.setPosition({ -100.f, 100.f, 100.f });
 
     // Setup camera
     camAngleXZ = camGoalAngleXZ = 90.f;
@@ -31,7 +31,7 @@ void Base::TestApp::testSceneInit()
 
         // Send in depth
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, sceneLight->getGlDepthTexture());
+        glBindTexture(GL_TEXTURE_2D, sceneLight->getShadowMaps()[0]->getGlTexture());
         glUniform1i(uDepthSampler, 1);
         
         glUniform3fv(uLightDir, 1, (float*)&sceneLight->getDir());
@@ -93,13 +93,18 @@ void Base::TestApp::testSceneRender()
 
     resHandler->get("shaders/texture.glsl");
 
-    // Debug
+    // Debug window
     setRenderTarget(debugSurface);
-    currentScene->render((Shader*)resHandler->get("shaders/normals.glsl"));
-    
-    // Render light depth
-    setRenderTarget(sceneLight);
-    currentScene->render((Shader*)resHandler->get("shaders/depth.glsl"), sceneLight);
+    currentScene->render((Shader*)resHandler->get(testShader), &debugCamera);
+    if (currentScene->camera->frustumModel)
+        currentScene->camera->frustumModel->render(((Shader*)resHandler->get(testShader)), Mat4f::identity(), debugCamera.getViewProjection());
+
+    // Render to shadow maps
+    for (ShadowMap* map : sceneLight->getShadowMaps())
+    {
+        setRenderTarget(map);
+        currentScene->render((Shader*)resHandler->get("shaders/depth.glsl"), sceneLight);
+    }
 
     // Render some goodness
     setRenderTarget(mainWindow);

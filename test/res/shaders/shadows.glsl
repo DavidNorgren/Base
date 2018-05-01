@@ -56,4 +56,6 @@ void main()
     vec4 ambient = vec4(0.1, 0.1, 0.2, 1.0);
     vec4 baseColor = uColor * texture2D(uSampler, vTexCoord);
     out_FragColor = (ambient + light * dif) * baseColor;
+
+    //out_FragColor = vec4(vec3(texture2D(uDepthSampler, vShadowCoord.xy).z), 1.0);
 }

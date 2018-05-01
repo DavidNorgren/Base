@@ -76,6 +76,12 @@ EXPORT void Base::TriangleMesh::setNormals()
         vertexData[i].normal = vertexData[i].normal.normalize();
 }
 
+EXPORT void Base::TriangleMesh::clear()
+{
+    vertexData.clear();
+    indexData.clear();
+}
+
 EXPORT void Base::TriangleMesh::update()
 {
     // Update vertex buffer object

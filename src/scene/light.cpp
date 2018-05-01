@@ -2,38 +2,45 @@
 #include "scene/light.hpp"
 
 
-Base::Light::Light()
+Base::ShadowMap::ShadowMap(Size2Di size)
 {
-    size = { 2048, 2048 };
+    this->size = size;
     
-    // Depth texture. Slower than a depth buffer, but you can sample it later in your shader
-    glGenTextures(1, &glDepthTexture);
-    glBindTexture(GL_TEXTURE_2D, glDepthTexture);
+    // Create depth texture
+    Color borderColor(1.f);
+    glGenTextures(1, &glTexture);
+    glBindTexture(GL_TEXTURE_2D, glTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    Color borderColor(1.f);
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, (float*)&borderColor);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, size.width, size.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-
-    // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
+    
+    // Create framebuffer
     glGenFramebuffers(1, &glFramebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, glFramebuffer);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, glDepthTexture, 0);
-
-    // No color buffer is drawn to.
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, glTexture, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, glTexture, 0);
     glDrawBuffer(GL_NONE);
+    //glReadBuffer(GL_NONE);
 
     // Unbind
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+Base::Light::Light()
+{
+    // Create shadowmaps
+    for (int i = 0; i < lightNumCascades; i++)
+        shadowMaps.add(new ShadowMap({ 2048, 2048 }));
+}
+
 Base::Light::~Light()
 {
-    glDeleteFramebuffers(1, &glFramebuffer);
-    glDeleteTextures(1, &glDepthTexture);
+    for (ShadowMap* map : shadowMaps)
+        delete map;
 }
 
 void Base::Light::setPosition(const Vec3f& position)
@@ -64,6 +71,6 @@ void Base::Light::buildMatrix(float ratio)
         -orthoSize.z / 2.f, orthoSize.z / 2.f
     );
     matV = Mat4f::viewLookAt(pos, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f });
-    matPV = matP * matV;
-    matBiasPV = matBias * matPV;
+    matVP = matP * matV;
+    matBiasVP = matBias * matVP;
 }

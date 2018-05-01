@@ -47,6 +47,9 @@ namespace Base
         /* Returns the amount of triangles in the mesh. */
         EXPORT int getTriangleCount();
 
+        /* Clears all triangle data. */
+        EXPORT void clear();
+
         /* Finalizes the mesh for rendering. */
         EXPORT void update();
       

@@ -15,6 +15,13 @@ namespace Base
 
         Vertex3D() {}
         
+        Vertex3D(const Vec3<T>& pos)
+        {
+            this->pos = pos;
+            this->texCoord = Tex2f(0.f);
+            this->normal = Vec3f(0.f);
+        }
+
         Vertex3D(const Vec3<T>& pos, const Tex2f texCoord, const Vec3f& normal)
         {
             this->pos = pos;
