@@ -5,64 +5,89 @@
 #include "util/data/mat4.hpp"
 #include "util/data/region2d.hpp"
 #include "render/colors.hpp"
+#include "render/renderfunc.hpp"
 
 namespace Base
 {
+    enum class Cursor
+    {
+        ARROW,
+        HANDPOINT,
+        BEAM,
+        WERESIZE,
+        NSRESIZE
+    };
+
     /* Opens and manages a resizable window. */
-    class Window
+    class Window : public RenderTarget
     {
       public:
         EXPORT Window();
 
-        EXPORT void open(function<void()> loopEventFunc,
-                         function<void()> mouseEventFunc = nullptr,
-                         function<void()> keyEventFunc = nullptr,
-                         function<void()> resizeEventFunc = nullptr);
+        EXPORT void  open(function<void()> loopEventFunc,
+                          function<void()> mouseEventFunc = nullptr,
+                          function<void()> keyEventFunc = nullptr,
+                          function<void()> resizeEventFunc = nullptr);
 
-        EXPORT void maximize();
+        EXPORT void  maximize();
 
-        EXPORT void     setTargetFramerate(int fps);
-        EXPORT void     setTitle(const string& title);
-        EXPORT void     setCursor(GLFWcursor* cursor);
-        EXPORT void     setBackgroundColor(const Color& color);
+        /* Appearence */
+        EXPORT void  setTitle(const string& title);
+        EXPORT void  setCursor(Cursor cursor);
 
-        EXPORT float    getFrameDelay() const;
-        EXPORT Size2Di  getSize() const;
-        EXPORT float    getRatio() const;
-        
-        /* Window size. */
-        Size2Di size;
-        float ratio;
-
-        /* Background. */
-        Color backgroundColor = Colors::BLACK;
-
-        /* Window render framerate. */
-        int fps, targetFps = 60;
+        /* Framerate */
+        EXPORT void  setTargetFramerate(int fps) { targetFps = fps; }
+        EXPORT float getFrameDelay() const;
+        EXPORT int   getFps() const { return fps; }
 
         /* Mouse position and button status. */
-        ScreenPos mousePos, mousePosPrevious, mousePosClick;
-        Vec2i mouseMove;
-        bool mouseDown[GLFW_MOUSE_BUTTON_LAST], mousePressed[GLFW_MOUSE_BUTTON_LAST], mouseReleased[GLFW_MOUSE_BUTTON_LAST];
-        double mouselastClickTime = 0, mouseLastClickDuration = 0;
-        Vec2f mouseScroll;
+        EXPORT ScreenPos getMousePos() const                { return mousePos; }
+        EXPORT ScreenPos getMousePosPrevious() const        { return mousePosPrevious; }
+        EXPORT ScreenPos getMousePosClick() const           { return mousePosClick; }
+        EXPORT Vec2i     getMouseMove() const               { return mouseMove; }
+        EXPORT bool      getMouseDown(int button) const     { return mouseDown[button]; }
+        EXPORT bool      getMousePressed(int button) const  { return mousePressed[button]; }
+        EXPORT bool      getMouseReleased(int button) const { return mouseReleased[button]; }
+        EXPORT double    getMouseLastClickDuration() const  { return mouseLastClickDuration; }
+        EXPORT Vec2f     getMouseScroll() const             { return mouseScroll; }
+        EXPORT void      mouseClear();
 
         /* Keyboard status. */
+        EXPORT bool getKeyDown(int key) const     { return keyDown[key]; }
+        EXPORT bool getKeyPressed(int key) const  { return keyPressed[key]; }
+        EXPORT bool getKeyReleased(int key) const { return keyReleased[key]; }
+        EXPORT char getCharPressed() const        { return charPressed; }
+
+        /* GLFW */
+        void glfwMouseButtonCallback(int button, int action, int mods);
+        void glfwScrollCallback(double x, double y);
+        void glfwCursorPosCallback(double x, double y);
+        void glfwKeyCallback(int key, int scancode, int action, int mods);
+        void glfwCharModsCallback(uint codepoint, int mods);
+        void glfwSizeCallback(int width, int height);
+
+      private:
+        function<void()> loopEventFunc, resizeEventFunc, mouseEventFunc, keyEventFunc;
+        int fps = 0, targetFps = 60;
+
+        ScreenPos mousePos, mousePosPrevious, mousePosClick;
+        Vec2i mouseMove;
+        bool mouseDown[GLFW_MOUSE_BUTTON_LAST];
+        bool mousePressed[GLFW_MOUSE_BUTTON_LAST];
+        bool mouseReleased[GLFW_MOUSE_BUTTON_LAST];
+        double mouselastClickTime = 0;
+        double mouseLastClickDuration = 0;
+        Vec2f mouseScroll;
+
         bool keyDown[GLFW_KEY_LAST], keyPressed[GLFW_KEY_LAST], keyReleased[GLFW_KEY_LAST];
         char charPressed;
         
-        /* Cursors. */
+        GLFWwindow* handle;
         GLFWcursor* cursorArrow;
         GLFWcursor* cursorHandpoint;
         GLFWcursor* cursorBeam;
         GLFWcursor* cursorHResize;
         GLFWcursor* cursorVResize;
         GLFWcursor* currentCursor;
-
-        GLFWwindow* handle;
-        function<void()> loopEventFunc, resizeEventFunc;
-        function<void()> mouseEventFunc;
-        function<void()> keyEventFunc;
-        Mat4f ortho;
     };
 }

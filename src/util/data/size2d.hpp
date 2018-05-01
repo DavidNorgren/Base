@@ -5,25 +5,29 @@ namespace Base
 {
     template<typename T> struct Size2D
     {
-        T width, height;
-
+        union
+        {
+            struct { T width, height; };
+            struct { T x, y; };
+        };
+        
         Size2D() {}
 
         Size2D(T width, T height)
         {
-            this->width = width;
+            this->width  = width;
             this->height = height;
         }
         
         inline Size2D(const Size2D& other)
         {
-            width = other.width;
+            width  = other.width;
             height = other.height;
         }
 
         inline Size2D& operator = (const Size2D& other)
         {
-            width = other.width;
+            width  = other.width;
             height = other.height;
             return *this;
         }

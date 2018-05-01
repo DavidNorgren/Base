@@ -5,20 +5,20 @@
 
 EXPORT bool Base::keyDown(int key)
 {
-    return appHandler->mainWindow->keyDown[key];
+    return appHandler->mainWindow->getKeyDown(key);
 }
 
 EXPORT bool Base::keyPressed(int key)
 {
-    return appHandler->mainWindow->keyPressed[key];
+    return appHandler->mainWindow->getKeyPressed(key);
 }
 
 EXPORT bool Base::keyReleased(int key)
 {
-    return appHandler->mainWindow->keyReleased[key];
+    return appHandler->mainWindow->getKeyReleased(key);
 }
 
 EXPORT char Base::charPressed()
 {
-    return appHandler->mainWindow->charPressed;
+    return appHandler->mainWindow->getCharPressed();
 }

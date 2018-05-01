@@ -5,27 +5,31 @@ namespace Base
 {
     template<typename T> struct Size3D
     {
-        T width, length, height;
-        
+        union
+        {
+            struct { T width, length, height; };
+            struct { T x, y, z; };
+        };
+
         Size3D() {}
 
         Size3D(T width, T length, T height)
         {
-            this.width = width;
-            this.length = length;
-            this.height = height;
+            this->width  = width;
+            this->length = length;
+            this->height = height;
         }
         
         inline Size3D(const Size3D& other)
         {
-            width = other.width;
+            width  = other.width;
             length = other.length;
             height = other.height;
         }
 
         inline Size3D& operator = (const Size3D& other)
         {
-            width = other.width;
+            width  = other.width;
             length = other.length;
             height = other.height;
             return *this;

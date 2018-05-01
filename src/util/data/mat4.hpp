@@ -1,6 +1,7 @@
 #pragma once
 
 #include "util/data/vec3.hpp"
+#include "util/data/vec4.hpp"
 #include "util/mathfunc.hpp"
 
 
@@ -10,7 +11,7 @@ namespace Base
     template<typename T> struct Mat4
     {
         // Matrix elements
-        T elem[16];
+        T e[16];
 
         // Constructors
 
@@ -21,20 +22,67 @@ namespace Base
              T x3, T y3, T z3, T w3,
              T x4, T y4, T z4, T w4)
         {
-            elem[0] = x1; elem[4] = y1; elem[8] = z1; elem[12] = w1;
-            elem[1] = x2; elem[5] = y2; elem[9] = z2; elem[13] = w2;
-            elem[2] = x3; elem[6] = y3; elem[10] = z3; elem[14] = w3;
-            elem[3] = x4; elem[7] = y4; elem[11] = z4; elem[15] = w4;
+            e[0] = x1; e[4] = y1; e[8] = z1; e[12] = w1;
+            e[1] = x2; e[5] = y2; e[9] = z2; e[13] = w2;
+            e[2] = x3; e[6] = y3; e[10] = z3; e[14] = w3;
+            e[3] = x4; e[7] = y4; e[11] = z4; e[15] = w4;
         }
 
         inline Mat4(const Mat4& other)
         {
             for (int i = 0; i < 16; i++)
-                elem[i] = other[i];
+                e[i] = other[i];
         }
 
         // Methods
 
+        /* Returns the transpose of the matrix.*/
+        inline Mat4 transpose() const
+        {
+            Mat4 trans;
+            for (uint i = 0; i < 4; i++)
+                for (uint j = 0; j < 4; j++)
+                    trans[i * 4 + j] = e[j * 4 + i];
+            return trans;
+        }
+
+        /* Returns the inverse of the matrix. */
+        Mat4 inverse() const
+        {
+            Mat4 inv = {
+                 e[5] * e[10] * e[15] - e[5] * e[11] * e[14] - e[9] * e[6] * e[15] + e[9] * e[7] * e[14] + e[13] * e[6] * e[11] - e[13] * e[7] * e[10],
+                -e[4] * e[10] * e[15] + e[4] * e[11] * e[14] + e[8] * e[6] * e[15] - e[8] * e[7] * e[14] - e[12] * e[6] * e[11] + e[12] * e[7] * e[10],
+                 e[4] * e[9] * e[15]  - e[4] * e[11] * e[13] - e[8] * e[5] * e[15] + e[8] * e[7] * e[13] + e[12] * e[5] * e[11] - e[12] * e[7] * e[9],
+                -e[4] * e[9] * e[14]  + e[4] * e[10] * e[13] + e[8] * e[5] * e[14] - e[8] * e[6] * e[13] - e[12] * e[5] * e[10] + e[12] * e[6] * e[9],
+
+                -e[1] * e[10] * e[15] + e[1] * e[11] * e[14] + e[9] * e[2] * e[15] - e[9] * e[3] * e[14] - e[13] * e[2] * e[11] + e[13] * e[3] * e[10],
+                 e[0] * e[10] * e[15] - e[0] * e[11] * e[14] - e[8] * e[2] * e[15] + e[8] * e[3] * e[14] + e[12] * e[2] * e[11] - e[12] * e[3] * e[10],
+                -e[0] * e[9]  * e[15] + e[0] * e[11] * e[13] + e[8] * e[1] * e[15] - e[8] * e[3] * e[13] - e[12] * e[1] * e[11] + e[12] * e[3] * e[9],
+                 e[0] * e[9]  * e[14] - e[0] * e[10] * e[13] - e[8] * e[1] * e[14] + e[8] * e[2] * e[13] + e[12] * e[1] * e[10] - e[12] * e[2] * e[9],
+
+                 e[1] * e[6] * e[15] - e[1] * e[7] * e[14] - e[5] * e[2] * e[15] + e[5] * e[3] * e[14] + e[13] * e[2] * e[7] - e[13] * e[3] * e[6],
+                -e[0] * e[6] * e[15] + e[0] * e[7] * e[14] + e[4] * e[2] * e[15] - e[4] * e[3] * e[14] - e[12] * e[2] * e[7] + e[12] * e[3] * e[6],
+                 e[0] * e[5] * e[15] - e[0] * e[7] * e[13] - e[4] * e[1] * e[15] + e[4] * e[3] * e[13] + e[12] * e[1] * e[7] - e[12] * e[3] * e[5],
+                -e[0] * e[5] * e[14] + e[0] * e[6] * e[13] + e[4] * e[1] * e[14] - e[4] * e[2] * e[13] - e[12] * e[1] * e[6] + e[12] * e[2] * e[5],
+
+                -e[1] * e[6] * e[11] + e[1] * e[7] * e[10] + e[5] * e[2] * e[11] - e[5] * e[3] * e[10] - e[9] * e[2] * e[7] + e[9] * e[3] * e[6],
+                 e[0] * e[6] * e[11] - e[0] * e[7] * e[10] - e[4] * e[2] * e[11] + e[4] * e[3] * e[10] + e[8] * e[2] * e[7] - e[8] * e[3] * e[6],
+                -e[0] * e[5] * e[11] + e[0] * e[7] * e[9]  + e[4] * e[1] * e[11] - e[4] * e[3] * e[9]  - e[8] * e[1] * e[7] + e[8] * e[3] * e[5],
+                 e[0] * e[5] * e[10] - e[0] * e[6] * e[9]  - e[4] * e[1] * e[10] + e[4] * e[2] * e[9]  + e[8] * e[1] * e[6] - e[8] * e[2] * e[5]
+            };
+
+            T det = e[0] * inv[0] + e[1] * inv[4] + e[2] * inv[8] + e[3] * inv[12];
+            if (det == 0)
+                return identity();
+
+            T invDet = (T)1 / det;
+            for (uint i = 0; i < 4 * 4; i++)
+                inv[i] *= invDet;
+
+            return inv;
+        }
+
+        /* Returns an identity matrix. */
         static inline Mat4 identity()
         {
             return Mat4(
@@ -134,12 +182,12 @@ namespace Base
         
         inline T operator [] (int i) const
         {
-            return elem[i];
+            return e[i];
         }
 
         inline T &operator [] (int i)
         {
-            return elem[i];
+            return e[i];
         }
 
         // Binary operators
@@ -147,21 +195,21 @@ namespace Base
         Mat4& operator = (const Mat4& other)
         {
             for (int i = 0; i < 16; i++)
-                elem[i] = other[i];
+                e[i] = other[i];
             return *this;
         }
 
         Mat4 operator * (const Mat4& other) const
         {
             Mat4 product;
-            for (int i = 0; i < 4; i++)
+            for (uint i = 0; i < 4; i++)
             {
-                for (int j = 0; j < 4; j++)
+                for (uint j = 0; j < 4; j++)
                 {
                     product[j * 4 + i] = 0.f;
 
-                    for (int k = 0; k < 4; k++)
-                        product[j * 4 + i] += elem[k * 4 + i] * other[j * 4 + k];
+                    for (uint k = 0; k < 4; k++)
+                        product[j * 4 + i] += e[k * 4 + i] * other[j * 4 + k];
                 }
             }
             return product;
@@ -170,18 +218,28 @@ namespace Base
         inline Vec3<T> operator * (const Vec3<T>& other) const
         {
             return Vec3<T>(
-                elem[0] * other.x + elem[4] * other.y + elem[8] * other.z + elem[12] * 0.f,
-                elem[1] * other.x + elem[5] * other.y + elem[9] * other.z + elem[13] * 0.f,
-                elem[2] * other.x + elem[6] * other.y + elem[10] * other.z + elem[14] * 0.f
+                e[0] * other.x + e[4] * other.y + e[8] * other.z,
+                e[1] * other.x + e[5] * other.y + e[9] * other.z,
+                e[2] * other.x + e[6] * other.y + e[10] * other.z
+            );
+        }
+
+        inline Vec4<T> operator * (const Vec4<T>& other) const
+        {
+            return Vec4<T>(
+                e[0] * other.x + e[4] * other.y + e[8] * other.z + e[12] * other.w,
+                e[1] * other.x + e[5] * other.y + e[9] * other.z + e[13] * other.w,
+                e[2] * other.x + e[6] * other.y + e[10] * other.z + e[14] * other.w,
+                e[3] * other.x + e[7] * other.y + e[11] * other.z + e[15] * other.w
             );
         }
     };
 
     template<typename T> std::ostream& operator << (std::ostream& out, const Mat4<T>& mat)
     {
-        for (int i = 0; i < 4; i++)
+        for (uint i = 0; i < 4; i++)
         {
-            for (int j = 0; j < 4; j++)
+            for (uint j = 0; j < 4; j++)
                 out << mat[j * 4 + i] << (j < 3 ? "," : "");
             out << endl;
         }

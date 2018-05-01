@@ -18,13 +18,17 @@ namespace Base
         /* Generates an image from a solid color. */
         EXPORT Image(const Color& color);
 
-        EXPORT GLuint getGlTexture() { return glTexture; };
-        EXPORT Size2Di getSize()     { return size; };
+        /* Get the dimensions of the image. */
+        EXPORT Size2Di getSize() const     { return size; };
 
-      private:
+        /* Get OpenGL texture used for rendering. */
+        EXPORT GLuint getGlTexture() const { return glTexture; };
+
+      protected:
         GLuint glTexture;
         Size2Di size;
 
+      private:
         void load(const FilePath& file) override;
         void load(const FileData& data) override;
         void load(uchar* pixelData);

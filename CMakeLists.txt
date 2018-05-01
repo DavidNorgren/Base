@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-# Set C++ settings
+# C++ settings
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "-static-libgcc -static-libstdc++")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
@@ -131,11 +131,6 @@ include_directories(${SOIL_ROOT})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SOIL_ROOT})
 file(GLOB SOIL_SRCS "${SOIL_ROOT}/*.c")
 add_library(soil STATIC ${SOIL_SRCS})
-
-# Add tinyobjloader
-set(TINYOBJLOADER_ROOT "${LIBS_DIR}/tinyobjloader-1.1.1")
-include_directories(${TINYOBJLOADER_ROOT})
-target_include_directories(${PROJECT_NAME} PUBLIC ${TINYOBJLOADER_ROOT})
 
 # Add GLFW (CMake)
 set(GLFW_ROOT "${LIBS_DIR}/glfw-3.2.1")

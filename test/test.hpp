@@ -13,7 +13,7 @@ namespace Base
         {
             mainWindow->setTitle("BaseTest");
             mainWindow->setTargetFramerate(60);
-            mainWindow->setBackgroundColor(Color(0.05f, 0.05f, 0.1f));
+            //mainWindow->setBackgroundColor(Color(0.05f, 0.05f, 0.1f));
 
             //testJSON();
             testSceneInit();

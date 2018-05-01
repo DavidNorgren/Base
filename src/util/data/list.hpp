@@ -8,7 +8,17 @@ namespace Base
     {
       public:
         List() {}
+
+        List(uint size)
+        {
+            vec.reserve(size);
+        }
       
+        List(std::vector<T> vec)
+        {
+            this->vec = vec;
+        }
+
         // Methods
 
         void add(T value)
@@ -65,6 +75,16 @@ namespace Base
         void clear()
         {
             vec.clear();
+        }
+
+        void reserve(uint size)
+        {
+            vec.reserve(size);
+        }
+
+        void resize(uint size)
+        {
+            vec.resize(size);
         }
 
         void sort(bool descending = true)

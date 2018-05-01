@@ -3,6 +3,7 @@
 #include "util/data/vec3.hpp"
 #include "util/data/mat4.hpp"
 #include "resource/shader.hpp"
+#include "scene/model.hpp"
 
 namespace Base
 {
@@ -11,7 +12,9 @@ namespace Base
     {
       public:
         Object();
-        virtual void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const = 0;
+        Object(Model* model);
+        
+        virtual void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const;
 
         Object* translate(const Vec3f& translate);
         Object* scale(const Vec3f& scale);
@@ -26,5 +29,6 @@ namespace Base
       protected:
         Vec3f pos, rot, sca;
         Mat4f matrix;
+        Model* model;
     };
 }

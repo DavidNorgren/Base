@@ -3,78 +3,76 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
-#include "resource/image.hpp"
-#include "resource/shader.hpp"
-#include "scene/object.hpp"
-#include "scene/material.hpp"
 #include "util/data/list.hpp"
-#include "util/data/mat4.hpp"
-#include "util/data/size2d.hpp"
 #include "util/data/size3d.hpp"
-#include "util/data/vec2.hpp"
 #include "util/data/vec3.hpp"
 #include "util/data/vertex3d.hpp"
+#include "resource/shader.hpp"
 
 
 namespace Base
 {
-    class TriangleMesh : public Object
+    /* A container for 3D vertex data. */
+    class Shader;
+    class TriangleMesh
     {
+      friend class Shader;
+
       public:
-        TriangleMesh() : Object() {};
-        TriangleMesh(Material* material) : material(material), Object() {}
+        EXPORT TriangleMesh();
+        EXPORT TriangleMesh(List<Vertex3Df> vertexData, List<uint> indexData);
         EXPORT ~TriangleMesh();
 
-        void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const override;
-
         /* Adds a single vertex and returns its index. */
-        uint addVertex(Vertex3Df vertex);
+        EXPORT uint addVertex(Vertex3Df vertex);
 
-        /* Adds a set of three vertex indices to represent a triangle. */
-        void addTriangle(const Vec3ui& indices);
+        /* Adds a set of three indices to previously added vertices. */
+        EXPORT void addTriangle(const Vec3ui& indices);
 
         /* Adds a single index reference to a vertex. */
-        void addIndex(uint index);
+        EXPORT void addIndex(uint index);
 
         /* Adds a set of three vertices to represent a triangle.
            Indices are automatically generated and added. */
-        void addTriangle(Vertex3Df v1, Vertex3Df v2, Vertex3Df v3);
+        EXPORT void addTriangle(Vertex3Df v1, Vertex3Df v2, Vertex3Df v3);
 
-        /* Calculates the normals from the triangle data. */
-        void setNormals();
+        /* Calculates the normals from the triangle data.
+           This method assumes that all normals are set to { 0, 0, 0 }. */
+        EXPORT void setNormals();
 
         /* Returns the index of a vertex with the given values.
            Gives -1 if it could not be found. */
-        int getVertexIndex(const Vertex3Df& vertex);
+        EXPORT int getVertexIndex(const Vertex3Df& vertex);
 
-        int getTriangleCount();
+        /* Returns the amount of triangles in the mesh. */
+        EXPORT int getTriangleCount();
 
-        void update();
+        /* Finalizes the mesh for rendering. */
+        EXPORT void update();
       
       protected:
         List<Vertex3Df> vertexData;
         List<uint> indexData;
         GLuint glVbo, glIbo;
-        Material* material;
     };
 
-    // Basic shapes (origin in center)
-
+    /* Basic shapes (origin in center) */
+    
     class Cube : public TriangleMesh
     {
       public:
-        Cube(const Size3Df& size, Material* material);
+        EXPORT Cube(const Size3Df& size);
     };
 
     class Plane : public TriangleMesh
     {
       public:
-        Plane(const Size2Df& size, Material* material, const Vec2f& textureRepeat = { 1.f });
+        EXPORT Plane(const Size2Df& size, const Vec2f& textureRepeat = { 1.f });
     };
 
     class Sphere : public TriangleMesh
     {
       public:
-        Sphere(float radius, int detail, Material* material);
+        EXPORT Sphere(float radius, int detail);
     };
 }

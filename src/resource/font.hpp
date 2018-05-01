@@ -7,8 +7,11 @@
 #include FT_FREETYPE_H
 
 #include "resource/resource.hpp"
+#include "resource/image.hpp"
+#include "util/data/list.hpp"
 #include "util/data/size2d.hpp"
 #include "util/data/vec2.hpp"
+#include "util/data/vertex2d.hpp"
 
 
 namespace Base
@@ -19,13 +22,8 @@ namespace Base
     {
         FontException(string message) : runtime_error(message) {};
     };
-
-    enum class FontStyle
-    {
-        NORMAL,
-        BOLD
-    };
     
+    /* Info about a single character in a font. */
     struct CharInfo
     {
         Size2Di size;
@@ -33,25 +31,27 @@ namespace Base
         float mapX;
     };
 
-    class Font : public Resource
+    /* A texture sheet of characters and methods for calculating
+       string dimensions. */
+    class Font : public Image
     {
       public:
         Font() {};
 
+        /* Get a list of vertices to render for the given text. */
+        EXPORT List<Vertex2Di> getTextVertices(const string& text);
+
         /* Get text dimensions. */
-        EXPORT int stringGetWidth(const string& text);
-        EXPORT int stringGetHeight(const string& text);
-
-        uint start, end, size;
-        CharInfo* chars;
-
-        GLuint glTexture;
-        Size2Di glTextureSize;
+        EXPORT int getTextWidth(const string& text);
+        EXPORT int getTextHeight(const string& text);
 
       private:
         void load(const FilePath& file) override;
         void load(const FileData& data) override;
         void load(FT_Face& face);
         void cleanUp() override;
+        
+        uint charSize, charStart, charEnd;
+        List<CharInfo> chars;
     };
 }

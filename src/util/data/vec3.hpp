@@ -29,8 +29,8 @@ namespace Base
         Vec3(T x[3])
         {
             this->x = x[0];
-            this->y = x[1];
-            this->z = x[2];
+            y = x[1];
+            z = x[2];
         }
 
         inline Vec3(const Vec3& other)
@@ -42,20 +42,20 @@ namespace Base
 
         // Methods
 
-        inline T length()
+        inline T length() const
         {
             return sqrt(x * x + y * y + z * z);
         }
 
-        inline Vec3 normalize()
+        inline Vec3 normalize() const
         {
             T len = length();
-            if (len == (T)0)
+            if (len == 0)
                 return Vec3((T)0);
             return Vec3(x / len, y / len, z / len);
         }
 
-        inline Vec3 rotate(const Vec3&a, float angle)
+        inline Vec3 rotate(const Vec3&a, float angle) const
         {
             float d = dot(this, a);
             float c = dcos(angle);
@@ -170,7 +170,6 @@ namespace Base
             y += other.y;
             z += other.z;
         }
-
 
         inline Vec3 operator - (const Vec3& other) const
         {

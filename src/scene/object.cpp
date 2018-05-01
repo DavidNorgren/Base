@@ -1,9 +1,21 @@
 #include "common.hpp"
 #include "scene/object.hpp"
 
+
 Base::Object::Object()
 {
     resetTransform();
+}
+
+Base::Object::Object(Base::Model* model) : Object()
+{
+    this->model = model;
+}
+
+void Base::Object::render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const
+{
+    if (model)
+        model->render(shader, matM * matrix, matVP);
 }
 
 Base::Object* Base::Object::translate(const Vec3f& translate)

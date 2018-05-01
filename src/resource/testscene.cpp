@@ -1,6 +1,7 @@
 #include "common.hpp"
 #include "resource/testscene.hpp"
-#include "resource/model.hpp"
+#include "scene/model.hpp"
+#include "resource/obj.hpp"
 #include "file/filefunc.hpp"
 #include "file/json.hpp"
 #include "apphandler.hpp"
@@ -21,10 +22,9 @@ void Base::TestScene::load(const string& json)
     JsonFile jf(json);
 
     // Background color
-    appHandler->mainWindow->setBackgroundColor(jf.getString("backgroundColor"));
+    background = jf.getString("backgroundColor");
 
     // Define materials
-    sceneMaterialMap[""] = new Material();
     if (jf.getKeyExists("materials"))
     {
         JsonObject* jfMaterials = jf.getObject("materials");
@@ -41,23 +41,25 @@ void Base::TestScene::load(const string& json)
     for (JsonAny* jfAny : jfObjects->getValues())
     {
         JsonObject* jfObj = (JsonObject*)jfAny;
-        Object* obj;
+        Model* model = nullptr;
 
         // Find material from name
-        string model = jfObj->getString("model");
-        Material* material = sceneMaterialMap[""];
+        string modelName = jfObj->getString("model");
+        Material* material = 0;
         if (jfObj->getKeyExists("material"))
             material = sceneMaterialMap[jfObj->getString("material")];
 
         // Plane
-        if (model == "plane")
+        if (modelName == "plane")
         {
             Size2Df size = jfObj->getSize2D<float>("size");
             Vec2f repeat = { 1.f };
             if (jfObj->getKeyExists("repeat"))
                 repeat = jfObj->getVec2<float>("repeat");
-            obj = new Plane(size, material, repeat);
-            meshes.add((TriangleMesh*)obj);
+            
+            TriangleMesh* plane = new Plane(size, repeat);
+            model = new Model(plane, material);
+            meshes.add(plane);
         }
 
         // Model
@@ -65,14 +67,15 @@ void Base::TestScene::load(const string& json)
         {
             try
             {
-                obj = (Model*)appHandler->resHandler->get(model);
-                obj->resetTransform();
+                model = (Obj*)appHandler->resHandler->get(modelName);
             }
             catch (ResourceException e)
             {
                 continue; // Ignore missing resources
             }
         }
+
+        Object* obj = new Object(model);
 
         // Apply transforms
         if (jfObj->getKeyExists("position"))
@@ -98,9 +101,8 @@ void Base::TestScene::load(const string& json)
         {
             JsonObject* jfLight = (JsonObject*)jfAny;
             Light* light = new Light();
-            light->pos   = jfLight->getVec3<float>("position");
-            light->color = jfLight->getString("color");
-            light->dir   = light->pos.normalize();
+            light->setPosition(jfLight->getVec3<float>("position"));
+            light->setColor(jfLight->getString("color"));
             // TODO type
 
             lights.add(light);

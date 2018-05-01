@@ -103,7 +103,7 @@ namespace Base
     class JsonObject;
     class JsonArray : public JsonAny
     {
-      friend JsonFile;
+      friend class JsonFile;
 
       public:
         // Add
@@ -171,7 +171,7 @@ namespace Base
     /* An object in a JSON file with a name->value mapping. */
     class JsonObject : public JsonAny
     {
-      friend JsonFile;
+      friend class JsonFile;
 
       public:
         // Add

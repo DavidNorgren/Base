@@ -1,8 +1,8 @@
-
 #include "common.hpp"
 #include "resource/shader.hpp"
 #include "file/filefunc.hpp"
 #include "util/stringfunc.hpp"
+#include "apphandler.hpp"
 
 
 EXPORT void Base::Shader::setSetupFunc(ShaderSetup setup)
@@ -16,7 +16,7 @@ EXPORT void Base::Shader::select() const
         glUseProgram(glProgram);
 }
 
-EXPORT void Base::Shader::render2D(const Mat4f& matMVP, Vertex2Di* vertexData, int vertices, GLuint glTexture, const Color& color, GLenum mode) const
+EXPORT void Base::Shader::render2D(const Mat4f& matMVP, List<Vertex2Di> vertexData, Image* image, const Color& color, GLenum mode) const
 {
     if (!isLoaded)
         return;
@@ -30,7 +30,7 @@ EXPORT void Base::Shader::render2D(const Mat4f& matMVP, Vertex2Di* vertexData, i
 
     // Select shader's VBO to send into the shader
     glBindBuffer(GL_ARRAY_BUFFER, glVbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices * sizeof(Vertex2Di), &vertexData[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(Vertex2Di), &vertexData[0], GL_DYNAMIC_DRAW);
 
     // Pass buffers
     glEnableVertexAttribArray(aPos);
@@ -39,14 +39,14 @@ EXPORT void Base::Shader::render2D(const Mat4f& matMVP, Vertex2Di* vertexData, i
     glVertexAttribPointer(aTexCoord, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2Di), (void*)sizeof(Vec2f));
     
     // Send in matrix
-    glUniformMatrix4fv(uMatMVP, 1, GL_FALSE, matMVP.elem);
+    glUniformMatrix4fv(uMatMVP, 1, GL_FALSE, matMVP.e);
 
     // Send in color
     glUniform4fv(uColor, 1, (float*)&color);
 
     // Send in texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, glTexture);
+    glBindTexture(GL_TEXTURE_2D, (image ? image->getGlTexture() : appHandler->solidColor->getGlTexture()));
     glUniform1i(uSampler, 0);
 
     // Call setup
@@ -54,17 +54,15 @@ EXPORT void Base::Shader::render2D(const Mat4f& matMVP, Vertex2Di* vertexData, i
         setup(glProgram, Mat4f::identity());
 
     // Draw all triangles
-    glDrawArrays(mode, 0, vertices);
+    glDrawArrays(mode, 0, vertexData.size());
 
     // Reset
     glDisableVertexAttribArray(aPos);
     glDisableVertexAttribArray(aTexCoord);
     glBindTexture(GL_TEXTURE_2D, 0);
-
-    // TODO ERROR CHECK
 }
 
-EXPORT void Base::Shader::render3D(const Mat4f& matM, const Mat4f& matVP, GLuint vbo, int vertices, GLuint ibo, int indices, GLuint glTexture) const
+EXPORT void Base::Shader::render3D(const Mat4f& matM, const Mat4f& matVP, Base::TriangleMesh* mesh, Base::Material* material) const
 {
     if (!isLoaded)
         return;
@@ -79,8 +77,8 @@ EXPORT void Base::Shader::render3D(const Mat4f& matM, const Mat4f& matVP, GLuint
     GLint uColor    = glGetUniformLocation(glProgram, "uColor");
 
     // Select shader's VBO to send into the shader
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBindBuffer(GL_ARRAY_BUFFER, mesh->glVbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->glIbo);
 
     // Pass buffers
     glEnableVertexAttribArray(aPos);
@@ -91,8 +89,8 @@ EXPORT void Base::Shader::render3D(const Mat4f& matM, const Mat4f& matVP, GLuint
     glVertexAttribPointer(aNormal,   3, GL_FLOAT, GL_FALSE, sizeof(Vertex3Df), (void*)(sizeof(Vec2f) + sizeof(Vec3f)));
 
     // Send in matrices
-    glUniformMatrix4fv(uMatM,   1, GL_FALSE, matM.elem);
-    glUniformMatrix4fv(uMatMVP, 1, GL_FALSE, (matVP * matM).elem);
+    glUniformMatrix4fv(uMatM,   1, GL_FALSE, matM.e);
+    glUniformMatrix4fv(uMatMVP, 1, GL_FALSE, (matVP * matM).e);
 
     // Send in color
     Color color = { 1.f };
@@ -100,7 +98,7 @@ EXPORT void Base::Shader::render3D(const Mat4f& matM, const Mat4f& matVP, GLuint
 
     // Send in texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, glTexture);
+    glBindTexture(GL_TEXTURE_2D, (material ? material->getTexture()->getGlTexture() : appHandler->solidColor->getGlTexture()));
     glUniform1i(uSampler, 0);
 
     // Call setup
@@ -109,15 +107,13 @@ EXPORT void Base::Shader::render3D(const Mat4f& matM, const Mat4f& matVP, GLuint
 
     // Draw all triangles
     glEnable(GL_DEPTH_TEST);
-    glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, mesh->indexData.size(), GL_UNSIGNED_INT, 0);
     glDisable(GL_DEPTH_TEST);
 
     // Reset
     glDisableVertexAttribArray(aPos);
     glDisableVertexAttribArray(aTexCoord);
     glDisableVertexAttribArray(aNormal);
-    
-    // TODO ERROR CHECK
 }
 
 void Base::Shader::load(const FilePath& file)

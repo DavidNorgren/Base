@@ -1,32 +1,24 @@
 
-#include "tiny_obj_loader.hpp"
-
 #include "common.hpp"
-#include "resource/model.hpp"
+#include "resource/obj.hpp"
 #include "file/filefunc.hpp"
 #include "util/stringfunc.hpp"
 #include "util/timer.hpp"
 
 
-void Base::Model::render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const
-{
-    for (TriangleMesh* mesh : meshes)
-        mesh->render(shader, matM * matrix, matVP);
-}
-
-void Base::Model::load(const FilePath& file)
+void Base::Obj::load(const FilePath& file)
 {
     List<string> lines = fileGetLines(file);
     load(lines);
 }
 
-void Base::Model::load(const FileData& data)
+void Base::Obj::load(const FileData& data)
 {
     List<string> lines = stringGetLines(string(&data[0], data.size()));
     load(lines);
 }
 
-void Base::Model::load(const List<string>& lines)
+void Base::Obj::load(const List<string>& lines)
 {
     List<Vec3f> objPositions, objNormals;
     List<Vec2f> objTexCoords;
@@ -126,7 +118,7 @@ void Base::Model::load(const List<string>& lines)
     t1.stopAndPrint();
 
     Timer t2("Obj: Generate data");
-    TriangleMesh* mesh = new TriangleMesh(new Material()); // TODO material from mtlib
+    TriangleMesh* mesh = new TriangleMesh();
 
     // Go through each face
     uint index = 0;
@@ -180,10 +172,12 @@ void Base::Model::load(const List<string>& lines)
 
     mesh->setNormals();
     mesh->update();
+
     meshes.add(mesh);
+    materials.add(nullptr); // TODO material from mtlib
 }
 
-void Base::Model::cleanUp()
+void Base::Obj::cleanUp()
 {
     for (TriangleMesh* mesh : meshes)
         delete mesh;

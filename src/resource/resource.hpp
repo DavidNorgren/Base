@@ -14,16 +14,8 @@ namespace Base
     class ResourceHandler;
     class Resource
     {
-      friend ResourceHandler;
-
       public:
         ~Resource() { cleanUp(); }
-
-      protected:
-        /* Loads the resource from an external file or
-           internal memory. */
-        virtual void load(const FilePath& file) = 0;
-        virtual void load(const FileData& file) = 0;
 
         /* Checks whether the file data should be loaded. */
         bool checkLoad();
@@ -32,13 +24,17 @@ namespace Base
         static Base::Resource* createDynamic(const string& name, FilePath file);
         static Base::Resource* createInternal(const string& name, FileData data);
 
+      protected:
+        virtual void load(const FilePath& file) = 0;
+        virtual void load(const FileData& file) = 0;
+
         bool isLoaded = false;
 
       private:
         virtual void cleanUp() {};
         static Base::Resource* create(const string& fileExt);
-        FileData data;
 
+        FileData data;
         bool     isDynamic;
         FilePath dynamicFile;
         uint     dynamicLastChange;

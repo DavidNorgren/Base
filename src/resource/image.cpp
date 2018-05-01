@@ -10,7 +10,6 @@
 constexpr bool genMipmap = true;
 constexpr uint genMipmapLevels = 8;
 
-
 EXPORT Base::Image::Image(const Color& color)
 {
     size = { 1, 1 };
@@ -60,7 +59,6 @@ void Base::Image::load(uchar* pixelData)
 
     glBindTexture(GL_TEXTURE_2D, 0);
     SOIL_free_image_data(pixelData);
-    isLoaded = true;
 }
 
 void Base::Image::cleanUp()

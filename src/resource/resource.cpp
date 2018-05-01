@@ -5,7 +5,7 @@
 #include "resource/font.hpp"
 #include "resource/image.hpp"
 #include "resource/shader.hpp"
-#include "resource/model.hpp"
+#include "resource/obj.hpp"
 #include "resource/testscene.hpp"
 #include "file/filefunc.hpp"
 
@@ -39,7 +39,7 @@ Base::Resource* Base::Resource::create(const string& fileExt)
              fileExt == ".jpg")
         return new Image();
     else if (fileExt == ".obj")
-        return new Model();
+        return new Obj();
     else if (fileExt == ".testscene")
         return new TestScene();
     else

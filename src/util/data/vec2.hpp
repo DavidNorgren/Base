@@ -28,7 +28,7 @@ namespace Base
         Vec2(T x[2])
         {
             this->x = x[0];
-            this->y = x[1];
+            y = x[1];
         }
 
         inline Vec2(const Vec2& other)

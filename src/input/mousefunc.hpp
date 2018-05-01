@@ -6,15 +6,6 @@
 
 namespace Base
 {
-    enum class Cursor
-    {
-        ARROW,
-        HANDPOINT,
-        BEAM,
-        WERESIZE,
-        NSRESIZE
-    };
-
     /* Returns the mouse position. */
     EXPORT ScreenPos mousePos();
     EXPORT ScreenPos mousePosPrevious();
@@ -40,7 +31,4 @@ namespace Base
 
     /* Clears the mouse state. */
     EXPORT void mouseClear();
-    
-    /* Sets the mouse cursor. */
-    EXPORT void mouseSetCursor(Cursor cursor);
 }

@@ -30,7 +30,7 @@ namespace Base
     EXPORT void resetDrawingArea();
 
     /* Set alpha (opacity) to use in subsequent drawing. */
-    EXPORT void setDrawingAlpha(float alpha);
+    EXPORT void  setDrawingAlpha(float alpha);
     EXPORT float getDrawingAlpha();
 
     /* Draws a piece of text using the drawing font. */
@@ -47,7 +47,6 @@ namespace Base
 
     /* Draws a colored box. */
     EXPORT void drawBox(const ScreenArea& box, const Color& color, bool outline = false, int outlineThickness = 1);
-    EXPORT void drawBoxEdges(const ScreenArea& box, const Color& color, const string& edgeImage, bool edgeTopLeft = true, bool edgeTopRight = true, bool edgeBottomRight = true, bool edgeBottomLeft = true);
     
     /* Draws a line */
     EXPORT void drawLine(const ScreenPos& start, const ScreenPos& end, const Color& color, int thickness = 1);
