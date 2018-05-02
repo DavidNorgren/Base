@@ -13,8 +13,6 @@ EXPORT void Base::Scene::render(Shader* shader, Camera* camera)
     if (!camera)
         camera = this->camera;
     
-    camera->buildMatrix(getRenderTarget()->getRatio());
-
     for (Object* obj : objects)
         obj->render(shader, Mat4f::identity(), camera->getViewProjection());
 }

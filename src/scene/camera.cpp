@@ -5,12 +5,13 @@
 
 void Base::Camera::buildMatrix(float ratio)
 {
-    float zNear = 1.f, zFar = 1000.f;
-    float tanHfov = dtan(fov / 2.f);
-    float tanVfov = dtan((fov / ratio) / 2.f);
+    this->ratio = ratio;
+
+    float tanVfov = dtan(fov / 2.f);
+    float tanHfov = dtan((fov * ratio) / 2.f);
 
     matV = Mat4f::viewLookAt(pos, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f }) * Mat4f::translate(-pos);
-    matP = Mat4f::perspective(tanHfov, ratio, zNear, zFar);
+    matP = Mat4f::perspective(tanVfov, ratio, zNear, zFar);
     matVP = matP * matV;
 
     float xn = zNear * tanHfov;

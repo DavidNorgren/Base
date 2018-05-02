@@ -103,8 +103,6 @@ namespace Base
     class JsonObject;
     class JsonArray : public JsonAny
     {
-      friend class JsonFile;
-
       public:
         // Add
         EXPORT JsonObject*  addObject();
@@ -162,6 +160,7 @@ namespace Base
 
         JsonType            getType() { return JsonType::ARRAY; }
 
+      friend class JsonFile;
       private:
         List<JsonAny*> values;
         JsonAny* add(JsonAny* any);
@@ -171,8 +170,6 @@ namespace Base
     /* An object in a JSON file with a name->value mapping. */
     class JsonObject : public JsonAny
     {
-      friend class JsonFile;
-
       public:
         // Add
         EXPORT JsonObject*  addObject(const string& name);
@@ -231,6 +228,7 @@ namespace Base
 
         JsonType            getType() { return JsonType::OBJECT; }
     
+      friend class JsonFile;
       protected:
         List<string> keys;
         Map<string, JsonAny*> values;

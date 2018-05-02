@@ -11,7 +11,6 @@ namespace Base
     };
 
     /* A processed item in the "res" folder of the project. */
-    class ResourceHandler;
     class Resource
     {
       public:

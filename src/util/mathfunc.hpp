@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
-
+#include <limits> // numeric_limits
 
 using std::abs;
 using std::sqrt;
@@ -19,6 +19,16 @@ namespace Base
     template<typename T> inline T max(const T& a, const T& b)
     {
         return a > b ? a : b;
+    }
+
+    template<typename T> inline T minLimit()
+    {
+        return std::numeric_limits<T>::min();
+    }
+    
+    template<typename T> inline T maxLimit()
+    {
+        return std::numeric_limits<T>::max();
     }
 
     template<typename T> inline T mod(const T& a, const T& b)

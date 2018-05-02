@@ -13,6 +13,7 @@ void Base::TestApp::testSceneInit()
 {
     debugSurface = new Surface({ 350, 250 });
     debugCamera.setPosition({ -100.f, 100.f, 100.f });
+    debugCamera.buildMatrix(debugSurface->getRatio());
 
     // Setup camera
     camAngleXZ = camGoalAngleXZ = 90.f;
@@ -26,14 +27,23 @@ void Base::TestApp::testSceneInit()
         GLint uLightDir = glGetUniformLocation(glProgram, "uLightDir");
         GLint uMatDepthBiasMVP = glGetUniformLocation(glProgram, "uMatDepthBiasMVP");
 
-        // Send in depth matrix
-        glUniformMatrix4fv(uMatDepthBiasMVP, 1, GL_FALSE, (sceneLight->getBiasViewProjection() * matM).e);
-
         // Send in depth
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, sceneLight->getShadowMaps()[0]->getGlTexture());
-        glUniform1i(uDepthSampler, 1);
+        const List<ShadowMap*>& maps = sceneLight->getShadowMaps();
+        List<Mat4f> mats;
         
+        for (uint i = 0; i < maps.size(); i++)
+        {
+            glActiveTexture(GL_TEXTURE1 + i);
+            glBindTexture(GL_TEXTURE_2D, maps[i]->getGlTexture());
+            glUniform1i(uDepthSampler, 1 + i);
+
+            mats.add(maps[i]->getMatrix() * matM);
+        }
+
+        // Send in depth matrices
+        glUniformMatrix4fv(uMatDepthBiasMVP, 1, GL_FALSE, mats[0].e);
+
+        // Light direction for shading
         glUniform3fv(uLightDir, 1, (float*)&sceneLight->getDir());
     });
 }
@@ -79,19 +89,18 @@ void Base::TestApp::testSceneRender()
     currentScene->findObject("teapot")->rotateY(d)->buildMatrix();
     currentScene->findObject("box")->rotateX(d)->rotateY(d)->rotateZ(d)->buildMatrix();
 
+    // Smoothen the camera motion
+    camAngleXZ += (camGoalAngleXZ - camAngleXZ) / 5.f;
+    camAngleY  += (camGoalAngleY  - camAngleY)  / 5.f;
+    camZoom    += (camGoalZoom    - camZoom)    / 5.f;
+
     // Camera rotates in a circle around the scene origin
     currentScene->camera->setPosition({
         dcos(camAngleXZ) * dcos(camAngleY) * camZoom,
         dsin(camAngleY) * camZoom,
         dsin(camAngleXZ) * dcos(camAngleY) * camZoom
     });
-
-    // Smoothen the motion
-    camAngleXZ += (camGoalAngleXZ - camAngleXZ) / 5.f;
-    camAngleY  += (camGoalAngleY  - camAngleY)  / 5.f;
-    camZoom    += (camGoalZoom    - camZoom)    / 5.f;
-
-    resHandler->get("shaders/texture.glsl");
+    currentScene->camera->buildMatrix(mainWindow->getRatio());
 
     // Debug window
     setRenderTarget(debugSurface);
@@ -100,6 +109,7 @@ void Base::TestApp::testSceneRender()
         currentScene->camera->frustumModel->render(((Shader*)resHandler->get(testShader)), Mat4f::identity(), debugCamera.getViewProjection());
 
     // Render to shadow maps
+    sceneLight->startShadowMapPass(currentScene->camera);
     for (ShadowMap* map : sceneLight->getShadowMaps())
     {
         setRenderTarget(map);

@@ -4,6 +4,8 @@
 
 #version 420 core
 
+const int NUM_CASCADES = 4;
+
 in vec3 aPos;
 in vec2 aTexCoord;
 in vec3 aNormal;
@@ -11,7 +13,7 @@ out vec2 vTexCoord;
 out vec3 vNormal;
 out vec4 vShadowCoord;
 uniform mat4 uMatM;
-uniform mat4 uMatMVP[1];
+uniform mat4 uMatMVP[NUM_CASCADES];
 uniform mat4 uMatDepthBiasMVP;
 
 void main()
@@ -26,12 +28,15 @@ void main()
 
 #version 420 core
 
+const int NUM_CASCADES = 4;
+
+
 in vec2 vTexCoord; 
 in vec3 vNormal;
 in vec4 vShadowCoord;
 layout(location = 0) out vec4 out_FragColor;
 uniform sampler2D uSampler;
-uniform sampler2D uDepthSampler[1];
+uniform sampler2D uDepthSampler[NUM_CASCADES];
 uniform vec4 uColor;
 uniform vec3 uLightDir;
 

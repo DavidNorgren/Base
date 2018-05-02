@@ -16,8 +16,6 @@ namespace Base
     class Shader;
     class TriangleMesh
     {
-      friend class Shader;
-
       public:
         EXPORT TriangleMesh();
         EXPORT TriangleMesh(List<Vertex3Df> vertexData, List<uint> indexData);
@@ -53,6 +51,7 @@ namespace Base
         /* Finalizes the mesh for rendering. */
         EXPORT void update();
       
+      friend class Shader;
       protected:
         List<Vertex3Df> vertexData;
         List<uint> indexData;

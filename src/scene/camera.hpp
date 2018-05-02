@@ -12,20 +12,28 @@ namespace Base
     class Camera
     {
       public:
-        
+        void setFov(float angle)                { fov = angle; }
         void setPosition(const Vec3f& position) { pos = position; }
         Camera* translate(const Vec3f& vec)     { pos += vec; }
-        virtual void buildMatrix(float ratio);
 
+        float getFovH() const  { return fov; }
+        float getFovV() const  { return fov / ratio; }
+        float getZNear() const { return zNear; }
+        float getZFar() const  { return zFar; }
+
+        virtual void buildMatrix(float ratio);
         const Mat4f& getViewProjection() const { return matVP; }
 
+        // DEBUG
         TriangleMesh* frustumMesh = nullptr;
         Material* frustumMaterial = nullptr;
         Model* frustumModel = nullptr;
 
       protected:
-        Vec3f xaxis, yaxis, zaxis, pos;
+        Vec3f pos;
         float fov = 90.f;
+        float ratio = 1.f;
+        float zNear = 1.f, zFar = 1000.f;
         Mat4f matV, matP, matVP;
     };
 }

@@ -1,11 +1,16 @@
 #include "common.hpp"
 #include "scene/light.hpp"
+#include "util/mathfunc.hpp"
 
+
+constexpr int LIGHT_NUM_CASCADES = 1;
+constexpr int LIGHT_SHADOW_MAP_SIZE = 1024;
+constexpr int LIGHT_FRUSTUM_CORNERS = 8;
 
 Base::ShadowMap::ShadowMap(Size2Di size)
 {
     this->size = size;
-    
+
     // Create depth texture
     Color borderColor(1.f);
     glGenTextures(1, &glTexture);
@@ -20,21 +25,21 @@ Base::ShadowMap::ShadowMap(Size2Di size)
     // Create framebuffer
     glGenFramebuffers(1, &glFramebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, glFramebuffer);
-    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, glTexture, 0);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, glTexture, 0);
     glDrawBuffer(GL_NONE);
-    //glReadBuffer(GL_NONE);
 
     // Unbind
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    matBiasVP = Mat4f::identity();
 }
 
 Base::Light::Light()
 {
     // Create shadowmaps
-    for (int i = 0; i < lightNumCascades; i++)
-        shadowMaps.add(new ShadowMap({ 2048, 2048 }));
+    for (uint i = 0; i < LIGHT_NUM_CASCADES; i++)
+        shadowMaps.add(new ShadowMap({ LIGHT_SHADOW_MAP_SIZE, LIGHT_SHADOW_MAP_SIZE }));
 }
 
 Base::Light::~Light()
@@ -72,5 +77,65 @@ void Base::Light::buildMatrix(float ratio)
     );
     matV = Mat4f::viewLookAt(pos, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f });
     matVP = matP * matV;
-    matBiasVP = matBias * matVP;
+    
+    for (uint i = 0; i < shadowMaps.size(); i++)
+        shadowMaps[i]->matBiasVP = matBias * matVP;
+}
+
+void Base::Light::startShadowMapPass(const Camera* sceneCamera)
+{
+    buildMatrix(1.f);
+
+    return;
+    Mat4f camMatInv = sceneCamera->getViewProjection().inverse();
+    float tanHfov   = dtan(sceneCamera->getFovH() / 2.f);
+    float tanVfov   = dtan(sceneCamera->getFovV() / 2.f);
+    float zNear     = sceneCamera->getZNear();
+    float zFar      = sceneCamera->getZFar();
+    float zDis      = zFar - zNear;
+
+    for (uint i = 0; i < shadowMaps.size(); i++)
+    {
+        float xn = (zNear + LIGHT_CASCADES[i]     * zDis) * tanHfov;
+        float yn = (zNear + LIGHT_CASCADES[i]     * zDis) * tanVfov;
+        float xf = (zNear + LIGHT_CASCADES[i + 1] * zDis) * tanHfov;
+        float yf = (zNear + LIGHT_CASCADES[i + 1] * zDis) * tanVfov;
+
+        // Calculate the 8 points (4 + 4 for the near and far planes) that
+        // make up this sub-section of the camera frustum.
+
+        Vec4f frustumCorners[LIGHT_FRUSTUM_CORNERS] = {
+            Vec4f( xn,  yn, (zNear + LIGHT_CASCADES[i]     * zDis), 1.0),
+            Vec4f(-xn,  yn, (zNear + LIGHT_CASCADES[i]     * zDis), 1.0),
+            Vec4f( xn, -yn, (zNear + LIGHT_CASCADES[i]     * zDis), 1.0),
+            Vec4f(-xn, -yn, (zNear + LIGHT_CASCADES[i]     * zDis), 1.0),
+            Vec4f( xf,  yf, (zNear + LIGHT_CASCADES[i + 1] * zDis), 1.0),
+            Vec4f(-xf,  yf, (zNear + LIGHT_CASCADES[i + 1] * zDis), 1.0),
+            Vec4f( xf, -yf, (zNear + LIGHT_CASCADES[i + 1] * zDis), 1.0),
+            Vec4f(-xf, -yf, (zNear + LIGHT_CASCADES[i + 1] * zDis), 1.0) 
+        };
+
+        // Calculate ortho matrix from the boundaries of the sub-frustum
+
+        float minX = minLimit<float>();
+        float maxX = maxLimit<float>();
+        float minY = minLimit<float>();
+        float maxY = maxLimit<float>();
+        float minZ = minLimit<float>();
+        float maxZ = maxLimit<float>();
+
+        for (uint j = 0; j < LIGHT_FRUSTUM_CORNERS; j++)
+        {
+            Vec4f cornerLightSpace = matV * (camMatInv * frustumCorners[j]);
+            minX = min(minX, cornerLightSpace.x);
+            maxX = max(maxX, cornerLightSpace.x);
+            minY = min(minY, cornerLightSpace.y);
+            maxY = max(maxY, cornerLightSpace.y);
+            minZ = min(minZ, cornerLightSpace.z);
+            maxZ = max(maxZ, cornerLightSpace.z);
+        }
+
+        // Create ortho matrix for this shadow map
+        shadowMaps[i]->matBiasVP = Mat4f::ortho(minX, maxX, minY, maxY, minZ, maxZ);
+    }
 }
