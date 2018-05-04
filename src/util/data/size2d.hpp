@@ -35,7 +35,7 @@ namespace Base
 
     template<typename T> inline std::ostream& operator << (std::ostream& out, const Size2D<T>& size)
     {
-        return out << "(" << size.width << "," << size.height << ")" << endl;
+        return out << "(" << size.width << "," << size.height << ")";
     }
 
     // Define shorthands

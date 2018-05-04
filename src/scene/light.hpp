@@ -10,7 +10,7 @@
 
 namespace Base
 {
-    constexpr float LIGHT_CASCADES[] = { 0.f, 0.2f, 0.5f, 1.f };
+    constexpr float LIGHT_CASCADES[] = { 0.f, 1.f }; //, 0.2f, 0.5f
 
     /* The format of the shadow mapping for this light. */
     enum class ShadowMapFormat

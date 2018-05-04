@@ -4,7 +4,7 @@
 
 #version 420 core
 
-const int NUM_CASCADES = 4;
+const int NUM_CASCADES = 1;
 
 in vec3 aPos;
 in vec2 aTexCoord;
@@ -13,22 +13,22 @@ out vec2 vTexCoord;
 out vec3 vNormal;
 out vec4 vShadowCoord;
 uniform mat4 uMatM;
-uniform mat4 uMatMVP[NUM_CASCADES];
-uniform mat4 uMatDepthBiasMVP;
+uniform mat4 uMatMVP;
+uniform mat4 uMatDepthBiasMVP[NUM_CASCADES];
 
 void main()
 {
     vTexCoord = aTexCoord;
     vNormal = normalize((uMatM * vec4(aNormal, 0.0)).xyz);
-    vShadowCoord = uMatDepthBiasMVP * vec4(aPos, 1.0);
-    gl_Position = uMatMVP[0] * vec4(aPos, 1.0);
+    vShadowCoord = uMatDepthBiasMVP[0] * vec4(aPos, 1.0);
+    gl_Position = uMatMVP * vec4(aPos, 1.0);
 }
 
 // Fragment
 
 #version 420 core
 
-const int NUM_CASCADES = 4;
+const int NUM_CASCADES = 1;
 
 
 in vec2 vTexCoord; 
@@ -47,8 +47,8 @@ void main()
     
     if (dif > 0.0)
     {
-        float bias = 0.001 * tan(acos(dif));
-        bias = clamp(bias, 0.0, 0.001);
+        float bias = 0.002 * tan(acos(dif));
+        bias = clamp(bias, 0.0, 0.002);
 
         if (vShadowCoord.x > 0.0 && vShadowCoord.y > 0.0 && vShadowCoord.z > 0.0 &&
             vShadowCoord.x < 1.0 && vShadowCoord.y < 1.0 && vShadowCoord.z < 1.0)
@@ -61,6 +61,4 @@ void main()
     vec4 ambient = vec4(0.1, 0.1, 0.2, 1.0);
     vec4 baseColor = uColor * texture2D(uSampler, vTexCoord);
     out_FragColor = (ambient + light * dif) * baseColor;
-
-    //out_FragColor = vec4(vec3(texture2D(uDepthSampler, vShadowCoord.xy).z), 1.0);
 }

@@ -11,15 +11,15 @@ out vec2 vTexCoord;
 out vec3 vNormal;
 out vec4 vShadowCoord;
 uniform mat4 uMatM;
-uniform mat4 uMatMVP[1];
-uniform mat4 uMatDepthBiasMVP;
+uniform mat4 uMatMVP;
+uniform mat4 uMatDepthBiasMVP[1];
 
 void main()
 {
     vTexCoord = aTexCoord;
     vNormal = normalize((uMatM * vec4(aNormal, 0.0)).xyz);
-    vShadowCoord = uMatDepthBiasMVP * vec4(aPos, 1.0);
-    gl_Position = uMatMVP[0] * vec4(aPos, 1.0);
+    vShadowCoord = uMatDepthBiasMVP[0] * vec4(aPos, 1.0);
+    gl_Position = uMatMVP * vec4(aPos, 1.0);
 }
 
 // Fragment

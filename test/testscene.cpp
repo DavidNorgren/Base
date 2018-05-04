@@ -5,7 +5,7 @@
 
 
 const string testScene  = "scenes/checker.testscene";
-const string testShader = "shaders/shadows.glsl";
+const string testShader = "shaders/csm.glsl";
 Base::Light* sceneLight;
 Base::Camera debugCamera;
 
@@ -21,7 +21,7 @@ void Base::TestApp::testSceneInit()
     camZoom    = camGoalZoom    = 100.f;
     camMove    = false;
 
-    ((Shader*)resHandler->get("shaders/shadows.glsl"))->setSetupFunc([&](GLuint glProgram, const Mat4f& matM)
+    ((Shader*)resHandler->get("shaders/csm.glsl"))->setSetupFunc([&](GLuint glProgram, const Mat4f& matM)
     {
         GLint uDepthSampler = glGetUniformLocation(glProgram, "uDepthSampler");
         GLint uLightDir = glGetUniformLocation(glProgram, "uLightDir");
@@ -104,9 +104,9 @@ void Base::TestApp::testSceneRender()
 
     // Debug window
     setRenderTarget(debugSurface);
-    currentScene->render((Shader*)resHandler->get(testShader), &debugCamera);
+    currentScene->render((Shader*)resHandler->get("shaders/texture.glsl"), &debugCamera);
     if (currentScene->camera->frustumModel)
-        currentScene->camera->frustumModel->render(((Shader*)resHandler->get(testShader)), Mat4f::identity(), debugCamera.getViewProjection());
+        currentScene->camera->frustumModel->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), debugCamera.getViewProjection());
 
     // Render to shadow maps
     sceneLight->startShadowMapPass(currentScene->camera);

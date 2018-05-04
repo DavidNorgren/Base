@@ -16,12 +16,13 @@ namespace Base
         void setPosition(const Vec3f& position) { pos = position; }
         Camera* translate(const Vec3f& vec)     { pos += vec; }
 
-        float getFovH() const  { return fov; }
-        float getFovV() const  { return fov / ratio; }
+        float getFovV() const  { return fov; }
+        float getFovH() const  { return fov * ratio; }
         float getZNear() const { return zNear; }
         float getZFar() const  { return zFar; }
 
         virtual void buildMatrix(float ratio);
+        const Mat4f& getView() const { return matV; }
         const Mat4f& getViewProjection() const { return matVP; }
 
         // DEBUG
