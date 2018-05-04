@@ -40,6 +40,21 @@
             "model": "models/teddy.obj",
             "position": [ -20, 19, -30 ],
             "rotation": [ 0, -20, 0 ]
+        },
+        {
+            "model": "models/box.obj", 
+            "scale": [ 10, 80, 10 ],
+            "position": [ 205, 80, 30 ]
+        },
+        {
+            "model": "models/box.obj", 
+            "scale": [ 10, 80, 10 ],
+            "position": [ 185, 80, 60 ]
+        },
+        {
+            "model": "models/box.obj", 
+            "scale": [ 100, 100, 100 ],
+            "position": [ -305, 100, -330 ]
         }
     ],
     "lights": [

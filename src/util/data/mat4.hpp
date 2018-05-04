@@ -175,7 +175,7 @@ namespace Base
                 newUp.x, newUp.y, newUp.z, 0.f,
                 -look.x, -look.y, -look.z, 0.f,
                 0.f, 0.f, 0.f, 1.f
-            );
+            ) * translate(-eye);
         }
         
         // Get/Set via [] operator

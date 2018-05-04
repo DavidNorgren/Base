@@ -10,7 +10,7 @@
 
 namespace Base
 {
-    constexpr float LIGHT_CASCADES[] = { 0.f, 1.f }; //, 0.2f, 0.5f
+    constexpr float LIGHT_CASCADES[] = { 0.f, 0.1f, 0.3f, 1.f };
 
     /* The format of the shadow mapping for this light. */
     enum class ShadowMapFormat
@@ -22,7 +22,7 @@ namespace Base
 
     /* A light in the scene. */
     class ShadowMap;
-    class Light : public Camera
+    class Light
     {
       public:
         Light();
@@ -37,33 +37,29 @@ namespace Base
         Light* translate(const Vec3f& translate);
         const Vec3f& getDir() const { return dir; }
 
-        /* Builds matrix for rendering. */
-        void buildMatrix(float ratio) override;
-
-        /* Starts a pass for shading mapping. */
-        void startShadowMapPass(const Camera* sceneCamera);
+        /* Prepares a pass for shading mapping. */
+        void prepareShadowMaps(const Camera* sceneCamera);
 
         /* Returns references to the generated shadowmaps. */
         const List<ShadowMap*>& getShadowMaps() const { return shadowMaps; }
 
       private:
-        Vec3f dir;
+        Vec3f pos, dir;
         Color color;
-
         List<ShadowMap*> shadowMaps;
-        Size3Df orthoSize = { 200.f, 200.f, 1000.f };
-        Mat4f matBiasVP;
     };
 
     /* A depth map for shadows. */
-    class ShadowMap : public RenderTarget
+    class ShadowMap : public RenderTarget, public Camera
     {
       public:
         ShadowMap(Size2Di size);
-        const Mat4f& getMatrix() const { return matBiasVP; };
+        const Mat4f& getBiasViewProjection() const { return matBiasVP; };
+        float getCascadeEndClipSpaceDepth() const  { return cascadeEndClipSpaceDepth; }
 
       friend class Light;
       protected:
         Mat4f matBiasVP;
+        float cascadeEndClipSpaceDepth;
     };
 }

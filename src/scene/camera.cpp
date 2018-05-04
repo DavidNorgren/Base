@@ -10,7 +10,7 @@ void Base::Camera::buildMatrix(float ratio)
     float tanVfov = dtan(fov / 2.f);
     float tanHfov = dtan((fov * ratio) / 2.f);
 
-    matV = Mat4f::viewLookAt(pos, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f }) * Mat4f::translate(-pos);
+    matV = Mat4f::viewLookAt(pos, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f });
     matP = Mat4f::perspective(tanVfov, ratio, zNear, zFar);
     matVP = matP * matV;
 

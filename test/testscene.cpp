@@ -23,25 +23,35 @@ void Base::TestApp::testSceneInit()
 
     ((Shader*)resHandler->get("shaders/csm.glsl"))->setSetupFunc([&](GLuint glProgram, const Mat4f& matM)
     {
-        GLint uDepthSampler = glGetUniformLocation(glProgram, "uDepthSampler");
         GLint uLightDir = glGetUniformLocation(glProgram, "uLightDir");
-        GLint uMatDepthBiasMVP = glGetUniformLocation(glProgram, "uMatDepthBiasMVP");
+        GLint uMatLightMVP = glGetUniformLocation(glProgram, "uMatLightMVP");
+        GLint uMatLightBiasMVP = glGetUniformLocation(glProgram, "uMatLightBiasMVP");
+        GLint uCascadeEndClipSpace = glGetUniformLocation(glProgram, "uCascadeEndClipSpace");
 
         // Send in depth
         const List<ShadowMap*>& maps = sceneLight->getShadowMaps();
-        List<Mat4f> mats;
+        List<Mat4f> matsLightMVP, matsLightBiasMVP;
+        List<float> cascadeEndClipSpaceDepth;
         
         for (uint i = 0; i < maps.size(); i++)
         {
+            string name = "uDepthSampler[" + toString(i) + "]";
+        GLint uDepthSampler = glGetUniformLocation(glProgram, &name[0]);
             glActiveTexture(GL_TEXTURE1 + i);
             glBindTexture(GL_TEXTURE_2D, maps[i]->getGlTexture());
             glUniform1i(uDepthSampler, 1 + i);
 
-            mats.add(maps[i]->getMatrix() * matM);
+            matsLightMVP.add(maps[i]->getViewProjection() * matM);
+            matsLightBiasMVP.add(maps[i]->getBiasViewProjection() * matM);
+            cascadeEndClipSpaceDepth.add(maps[i]->getCascadeEndClipSpaceDepth());
         }
 
-        // Send in depth matrices
-        glUniformMatrix4fv(uMatDepthBiasMVP, 1, GL_FALSE, mats[0].e);
+        // Send in light matrices
+        glUniformMatrix4fv(uMatLightMVP,     maps.size(), GL_FALSE, matsLightMVP[0].e);
+        glUniformMatrix4fv(uMatLightBiasMVP, maps.size(), GL_FALSE, matsLightBiasMVP[0].e);
+
+        // Send in cascade splits
+        glUniform1fv(uCascadeEndClipSpace, maps.size(), &cascadeEndClipSpaceDepth[0]);
 
         // Light direction for shading
         glUniform3fv(uLightDir, 1, (float*)&sceneLight->getDir());
@@ -109,11 +119,11 @@ void Base::TestApp::testSceneRender()
         currentScene->camera->frustumModel->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), debugCamera.getViewProjection());
 
     // Render to shadow maps
-    sceneLight->startShadowMapPass(currentScene->camera);
+    sceneLight->prepareShadowMaps(currentScene->camera);
     for (ShadowMap* map : sceneLight->getShadowMaps())
     {
         setRenderTarget(map);
-        currentScene->render((Shader*)resHandler->get("shaders/depth.glsl"), sceneLight);
+        currentScene->render((Shader*)resHandler->get("shaders/depth.glsl"), map);
     }
 
     // Render some goodness

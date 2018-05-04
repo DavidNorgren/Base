@@ -40,7 +40,8 @@ void windowSizeCallback(GLFWwindow* handle, int width, int height)
 EXPORT Base::Window::Window()
 {
     // Initialize window
-    handle = glfwCreateWindow(640, 480, "", NULL, NULL);
+    size = { 640, 480 };
+    handle = glfwCreateWindow(size.width, size.height, "", NULL, NULL);
     glfwMakeContextCurrent(handle);
     glfwMap[handle] = this;
     
@@ -87,7 +88,9 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
     this->keyEventFunc    = keyEventFunc;
     this->resizeEventFunc = resizeEventFunc;
     
-    maximize();
+    ///maximize();
+    if (resizeEventFunc)
+        resizeEventFunc();
 
     // Init FPS counter
     double lastTime = glfwGetTime();
