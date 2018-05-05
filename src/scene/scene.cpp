@@ -13,9 +13,12 @@ EXPORT void Base::Scene::render(Shader* shader, Camera* camera, Camera* cullCame
     if (!camera)
         camera = this->camera;
 
+    if (!cullCamera)
+        cullCamera = camera;
+
     for (Object* obj : objects) 
     {
-        if (!cullCamera || cullCamera->boxVisible(obj->getBoundingBox()))
+        if (cullCamera->boxVisible(obj->getBoundingBox()))
             obj->render(shader, Mat4f::identity(), camera->getViewProjection());
     }
 }

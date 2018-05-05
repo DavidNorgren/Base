@@ -139,7 +139,7 @@ void Base::TestApp::testSceneRender()
 
     // Debug window
     static bool showCamFrustum = true;
-    static bool showOrthoBox = true;
+    static bool showOrthoBox = false;
     
     if (keyPressed(GLFW_KEY_2))
         showCamFrustum = !showCamFrustum;
@@ -147,16 +147,16 @@ void Base::TestApp::testSceneRender()
         showOrthoBox = !showOrthoBox;
 
     setRenderTarget(&surfaces[1]);
-    debugShowLines = true;
     currentScene->render((Shader*)resHandler->get("shaders/texture.glsl"), &cameras[1], &cameras[0]);
     for (ShadowMap* map : sceneLight->getShadowMaps())
     {
+        debugShowLines = true;
         if (showCamFrustum)
             map->debugCamFrustum->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), cameras[1].getViewProjection());
         if (showOrthoBox)
             map->debugOrthoBox->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), cameras[1].getViewProjection());
+        debugShowLines = false;
     }
-    debugShowLines = false;
 
     // Light position
     drawBegin();

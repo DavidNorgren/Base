@@ -50,7 +50,7 @@ namespace Base
     /* Transformed bounding box in the world space. */
     struct BoundingBox
     {
-        Vec3f points[8];
+        Vec4f points[8];
 
         BoundingBox() {}
 
@@ -58,18 +58,18 @@ namespace Base
         {
             const Vec3f& minP = axisAlignedBox.minPos;
             const Vec3f& maxP = axisAlignedBox.maxPos;
-            points[0] = M * Vec3f(minP.x, minP.y, minP.z);
-            points[1] = M * Vec3f(maxP.x, minP.y, minP.z);
-            points[2] = M * Vec3f(minP.x, maxP.y, minP.z);
-            points[3] = M * Vec3f(maxP.x, maxP.y, minP.z);
-            points[4] = M * Vec3f(minP.x, minP.y, maxP.z);
-            points[5] = M * Vec3f(maxP.x, minP.y, maxP.z);
-            points[6] = M * Vec3f(minP.x, maxP.y, maxP.z);
-            points[7] = M * Vec3f(maxP.x, maxP.y, maxP.z);
+            points[0] = M * Vec4f(minP.x, minP.y, minP.z, 1.f);
+            points[1] = M * Vec4f(maxP.x, minP.y, minP.z, 1.f);
+            points[2] = M * Vec4f(minP.x, maxP.y, minP.z, 1.f);
+            points[3] = M * Vec4f(maxP.x, maxP.y, minP.z, 1.f);
+            points[4] = M * Vec4f(minP.x, minP.y, maxP.z, 1.f);
+            points[5] = M * Vec4f(maxP.x, minP.y, maxP.z, 1.f);
+            points[6] = M * Vec4f(minP.x, maxP.y, maxP.z, 1.f);
+            points[7] = M * Vec4f(maxP.x, maxP.y, maxP.z, 1.f);
         }
 
-        inline Vec3f  operator [] (int i) const { return points[i]; }
-        inline Vec3f& operator [] (int i)       { return points[i]; }
+        inline Vec4f  operator [] (int i) const { return points[i]; }
+        inline Vec4f& operator [] (int i)       { return points[i]; }
     };
 
     // TODO?

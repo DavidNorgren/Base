@@ -37,19 +37,32 @@ void Base::Camera::buildFrustum()
 
 bool Base::Camera::boxVisible(const BoundingBox& box) const
 {
-    // If one of the 8 points is visible, the box counts as visible
-    for (uint i = 0; i < 8; i++)
-        if (pointVisible(box[i]))
-            return true;
+    for (uint i = 0; i < 6; i++)
+    {
+        // If one point is completely outside the frustum,
+        // the box is not rendered.
+        bool pointInside = false;
+        for (uint j = 0; j < 8; j++)
+        {
+            if (Vec4f::dot(frustum[i], box[j]) > 0.f)
+            {
+                pointInside = true;
+                break;
+            }
+        }
 
-    return false;
+        if (!pointInside)
+            return false;
+    }
+
+    return true;
 }
 
-bool Base::Camera::pointVisible(const Base::Vec3f& point) const
+bool Base::Camera::pointVisible(const Base::Vec4f& point) const
 {
     // The point must lie within all six planes of the frustum
     for (uint i = 0; i < 6; i++)
-        if (Vec4f::dot(frustum[i], Vec4f(point)) < 0.f)
+        if (Vec4f::dot(frustum[i], point) < 0.f)
             return false;
 
     return true;

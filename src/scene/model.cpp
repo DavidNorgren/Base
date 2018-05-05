@@ -16,7 +16,6 @@ void Base::Model::render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) 
     for (uint i = 0; i < meshes.size(); i++)
     {
         shader->render3D(matM, matVP, meshes[i], materials[i]);
-        Size3Df hsize = axisAlignedBox.getSize() /2;
-        shader->render3D(matM * Mat4f::translate((axisAlignedBox.maxPos + axisAlignedBox.minPos) / 2)* Mat4f::scale({ 1.05 }), matVP, debugAABB, debugAABBmaterial);
+        //shader->render3D(matM * Mat4f::translate((axisAlignedBox.maxPos + axisAlignedBox.minPos) / 2)* Mat4f::scale({ 1.05 }), matVP, debugAABB, debugAABBmaterial);
     }
 }

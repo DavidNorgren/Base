@@ -2,6 +2,7 @@
 
 #include "util/data/mat4.hpp"
 #include "util/data/vec3.hpp"
+#include "util/data/vec4.hpp"
 #include "scene/volume.hpp"
 
 
@@ -26,7 +27,7 @@ namespace Base
         const Mat4f& getViewProjection() const { return matVP; }
         
         bool boxVisible(const BoundingBox& box) const;
-        bool pointVisible(const Vec3f& point) const;
+        bool pointVisible(const Vec4f& point) const;
 
       protected:
         void buildFrustum();
