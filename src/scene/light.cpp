@@ -127,10 +127,12 @@ void Base::Light::prepareShadowMaps(const Camera* sceneCamera)
             maxZ = max(maxZ, cornerLightSpace.z);
         }
 
+        Size3Df sz = { maxX-minX, maxY-minY, maxZ-minZ };
+
         // Use the box as the orthographic projection of this shadow map
-        Mat4f mapMatP = Mat4f::ortho(minX, maxX, minY, maxY, minZ, maxZ);
-        //Vec3f frusCentre = { (maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2};
-        //Mat4f mapMatV = lightMatV * Mat4f::translate(-frusCentre);
+        Mat4f mapMatP = Mat4f::ortho(-sz.x / 2, sz.x / 2, -sz.y / 2, sz.y / 2, -sz.z / 2, sz.z / 2);
+        Vec3f frusCentre = { (maxX + minX) / 2, (maxY + minY) / 2, (maxZ + minZ) / 2};
+        Mat4f mapMatV = Mat4f::viewLookAt(frusCentre + dir, frusCentre, { 0, 1, 0 });
 
         // Create matrices to use in the shaders
         shadowMaps[i]->matVP  = mapMatP * lightMatV;

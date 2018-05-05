@@ -9,6 +9,9 @@
 #include "resource/testscene.hpp"
 #include "file/filefunc.hpp"
 
+#ifdef DYNAMIC_RESOURCES
+#include "windows.h" // Sleep()
+#endif
 
 namespace bfs = boost::filesystem;
 
@@ -51,7 +54,7 @@ bool Base::Resource::checkLoad()
     // Dynamic resources are updated as soon as their disk counterpart is modified.
     if (isDynamic)
     {
-        if (!fileExists(dynamicFile))
+        if (!fileExists(dynamicFile) || fileGetSize(dynamicFile) == 0)
             return false;
 
         if (!isLoaded)
@@ -62,21 +65,39 @@ bool Base::Resource::checkLoad()
         }
         else
         {
-            // Check if file has been changed since last time
-            if (uint lastChange = fileGetLastChange(dynamicFile))
+            // Wait in a loop until successfully loaded and the method returns true
+            bool isError = false;
+            do
             {
-                if (lastChange > dynamicLastChange && dynamicLastChange > 0)
+                try
                 {
-                    dynamicLastChange = lastChange;
-                    cleanUp();
-                    isLoaded = false;
-                    load(dynamicFile);
-                    isLoaded = true;
-                    return true;
-                }
+                    // Check if file has been changed since last time (add 10ms delay)
+                    if (uint lastChange = fileGetLastChange(dynamicFile))
+                    {
+                        if (lastChange > dynamicLastChange && dynamicLastChange > 0)
+                        {
+                            #ifdef DYNAMIC_RESOURCES
+                            Sleep(10);
+                            #endif
+                            dynamicLastChange = lastChange;
+                            cleanUp();
+                            isLoaded = false;
+                            load(dynamicFile);
+                            isLoaded = true;
+                            return true;
+                        }
 
-                dynamicLastChange = lastChange;
+                        dynamicLastChange = lastChange;
+                    }
+                }
+                catch (const ResourceLoadException& ex)
+                {
+                    cout << "ResourceLoadException: " << ex.what() << endl;
+                    isError = true;
+                }
             }
+            while (isError);
+            
             return false;
         }
     }

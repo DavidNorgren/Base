@@ -53,6 +53,9 @@ EXPORT Base::JsonFile::JsonFile(const string& json)
 
 void Base::JsonFile::readRoot()
 {
+    if (size == 0)
+        throw JsonException("No JSON submitted");
+    
     position = 0;
     column = 0;
     line = 1;
@@ -64,7 +67,7 @@ void Base::JsonFile::readRoot()
         
         readJsonObject(true);
     }
-    catch (JsonException& ex)
+    catch (const JsonException& ex)
     {
         throw JsonException("JSON parse error: " + toString(ex.what()) + " at line " + toString(line) + ", column " + toString(column));
     }
@@ -528,7 +531,7 @@ Base::JsonAny* Base::JsonArray::get(uint index, JsonType type)
 
         return values[index];
     }
-    catch (JsonException& ex)
+    catch (const JsonException& ex)
     {
         throw JsonException("JSON get error: " + toString(ex.what()));
     }
@@ -582,7 +585,7 @@ Base::JsonAny* Base::JsonObject::get(const string& name, JsonType type)
 
         return values[name];
     }
-    catch (JsonException& ex)
+    catch (const JsonException& ex)
     {
         throw JsonException("JSON get error: " + toString(ex.what()));
     }

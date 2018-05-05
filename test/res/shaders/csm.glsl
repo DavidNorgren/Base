@@ -10,7 +10,7 @@ in vec3 aPos;
 in vec2 aTexCoord;
 in vec3 aNormal;
 out vec2 vTexCoord;
-out vec3 vNormal;
+out vec3 vNormal;   
 out float vClipSpaceDepth;
 out vec4 vShadowCoord[NUM_CASCADES];
 uniform mat4 uMatM;
@@ -45,30 +45,30 @@ uniform vec4 uColor;
 uniform vec3 uLightDir;
 uniform sampler2D uSampler;
 uniform sampler2D uDepthSampler[NUM_CASCADES];
-uniform float uCascadeEndClipSpace[NUM_CASCADES];
+uniform float uCascadeEndClipSpace[NUM_CASCADES]; 
 
 void main()
 {
+    // Find the cascade to use
     int i;
-    if (vClipSpaceDepth < uCascadeEndClipSpace[0])
-        i = 0;
-    else if (vClipSpaceDepth < uCascadeEndClipSpace[1])
-        i = 1;
-    else if (vClipSpaceDepth < uCascadeEndClipSpace[2])
-        i = 2;
-    else
+    for (i = 0; i < NUM_CASCADES; i++)
+        if (vClipSpaceDepth < uCascadeEndClipSpace[i])
+            break;
+    
+    // Outside the frustum somehow, ignore pixel
+    if (i == NUM_CASCADES)
         discard;
 
     float light = 1.0;
     float dif = max(0.00, dot(vNormal, uLightDir));
   
     if (dif > 0.0)
-    {
+    { 
         float bias = 0.003 * tan(acos(dif));
         bias = clamp(bias, 0.0, 0.003);
 
-          if (vShadowCoord[i].x > 0.0 && vShadowCoord[i].y > 0.0 && vShadowCoord[i].z > 0.0 &&
-              vShadowCoord[i].x < 1.0 && vShadowCoord[i].y < 1.0 && vShadowCoord[i].z < 1.0)
+        if (vShadowCoord[i].x > 0.0 && vShadowCoord[i].y > 0.0 && vShadowCoord[i].z > 0.0 &&
+            vShadowCoord[i].x < 1.0 && vShadowCoord[i].y < 1.0 && vShadowCoord[i].z < 1.0)
         {
             float sampleDepth = texture2D(uDepthSampler[i], vShadowCoord[i].xy).z;
             if (sampleDepth < vShadowCoord[i].z - bias)
@@ -79,6 +79,6 @@ void main()
     vec4 baseColor = uColor * texture2D(uSampler, vTexCoord);
     out_FragColor = (ambient + light * dif) * baseColor;
         
-   // float debug = texture2D(uDepthSampler[i], vShadowCoord[i].xy).z;
-    //out_FragColor = vec4(vec3(debug), 1.0);
+    float debug = texture2D(uDepthSampler[i], vShadowCoord[i].xy).z;
+    //out_FragColor = vec4(vec3(debug), 1);
 }

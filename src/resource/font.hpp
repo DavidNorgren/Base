@@ -18,9 +18,9 @@ namespace Base
 {
     constexpr float LINE_SPACE = 1.25f;
 
-    struct FontException : public runtime_error
+    struct FontException : public ResourceLoadException
     {
-        FontException(string message) : runtime_error(message) {};
+        FontException(string message) : ResourceLoadException(message) {};
     };
     
     /* Info about a single character in a font. */

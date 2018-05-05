@@ -20,100 +20,107 @@ void Base::TestScene::load(const FileData& data)
 
 void Base::TestScene::load(const string& json)
 {
-    JsonFile jf(json);
-
-    // Background color
-    background = jf.getString("backgroundColor");
-
-    // Define materials
-    if (jf.getKeyExists("materials"))
+    try
     {
-        JsonObject* jfMaterials = jf.getObject("materials");
-        for (string name : jfMaterials->getKeys())
+        JsonFile jf(json);
+
+        // Background color
+        background = jf.getString("backgroundColor");
+
+        // Define materials
+        if (jf.getKeyExists("materials"))
         {
-            JsonObject* jfMat = jfMaterials->getObject(name);
-            Sprite* img = (Sprite*)appHandler->resHandler->get(jfMat->getString("image"));
-            sceneMaterialMap[name] = new Material(img);
-        }
-    }
-
-    // Objects
-    JsonArray* jfObjects = jf.getArray("objects");
-    for (JsonAny* jfAny : jfObjects->getValues())
-    {
-        JsonObject* jfObj = (JsonObject*)jfAny;
-        Model* model = nullptr;
-
-        // Find material from name
-        string modelName = jfObj->getString("model");
-        Material* material = nullptr;
-        if (jfObj->getKeyExists("material"))
-            material = sceneMaterialMap[jfObj->getString("material")];
-
-        // Plane
-        if (modelName == "plane")
-        {
-            Size2Df size = jfObj->getSize2D<float>("size");
-            Vec2f repeat = { 1.f };
-            if (jfObj->getKeyExists("repeat"))
-                repeat = jfObj->getVec2<float>("repeat");
-            
-            TriangleMesh* plane = new Plane(size, repeat);
-            model = new Model(plane, material);
-            meshes.add(plane);
-        }
-
-        // Model
-        else
-        {
-            try
+            JsonObject* jfMaterials = jf.getObject("materials");
+            for (string name : jfMaterials->getKeys())
             {
-                model = (Obj*)appHandler->resHandler->get(modelName);
-            }
-            catch (ResourceException e)
-            {
-                continue; // Ignore missing resources
+                JsonObject* jfMat = jfMaterials->getObject(name);
+                Sprite* img = (Sprite*)appHandler->resHandler->get(jfMat->getString("image"));
+                sceneMaterialMap[name] = new Material(img);
             }
         }
 
-        // Add object
-        string objName = "";
-        if (jfObj->getKeyExists("name"))
-            objName = jfObj->getString("name");
-
-        Object* obj = new Object(model, objName);
-
-        // Apply transforms
-        if (jfObj->getKeyExists("position"))
-            obj->translate(jfObj->getVec3<float>("position"));
-            
-        if (jfObj->getKeyExists("rotation"))
-            obj->rotate(jfObj->getVec3<float>("rotation"));
-            
-        if (jfObj->getKeyExists("scale"))
-            obj->scale(jfObj->getVec3<float>("scale"));
-            
-        obj->buildMatrix();
-
-        objects.add(obj);
-        if (objName != "")
-            objectNames[objName] = obj;
-    }
-
-    // Lights
-    if (jf.getKeyExists("lights"))
-    {
-        JsonArray* jfLights = jf.getArray("lights");
-        for (JsonAny* jfAny : jfLights->getValues())
+        // Objects
+        JsonArray* jfObjects = jf.getArray("objects");
+        for (JsonAny* jfAny : jfObjects->getValues())
         {
-            JsonObject* jfLight = (JsonObject*)jfAny;
-            Light* light = new Light();
-            light->setPosition(jfLight->getVec3<float>("position"));
-            light->setColor(jfLight->getString("color"));
-            // TODO type
+            JsonObject* jfObj = (JsonObject*)jfAny;
+            Model* model = nullptr;
 
-            lights.add(light);
+            // Find material from name
+            string modelName = jfObj->getString("model");
+            Material* material = nullptr;
+            if (jfObj->getKeyExists("material"))
+                material = sceneMaterialMap[jfObj->getString("material")];
+
+            // Plane
+            if (modelName == "plane")
+            {
+                Size2Df size = jfObj->getSize2D<float>("size");
+                Vec2f repeat = { 1.f };
+                if (jfObj->getKeyExists("repeat"))
+                    repeat = jfObj->getVec2<float>("repeat");
+                
+                TriangleMesh* plane = new Plane(size, repeat);
+                model = new Model(plane, material);
+                meshes.add(plane);
+            }
+
+            // Model
+            else
+            {
+                try
+                {
+                    model = (Obj*)appHandler->resHandler->get(modelName);
+                }
+                catch (const ResourceException& e)
+                {
+                    continue; // Ignore missing resources
+                }
+            }
+
+            // Add object
+            string objName = "";
+            if (jfObj->getKeyExists("name"))
+                objName = jfObj->getString("name");
+
+            Object* obj = new Object(model, objName);
+
+            // Apply transforms
+            if (jfObj->getKeyExists("position"))
+                obj->translate(jfObj->getVec3<float>("position"));
+                
+            if (jfObj->getKeyExists("rotation"))
+                obj->rotate(jfObj->getVec3<float>("rotation"));
+                
+            if (jfObj->getKeyExists("scale"))
+                obj->scale(jfObj->getVec3<float>("scale"));
+                
+            obj->buildMatrix();
+
+            objects.add(obj);
+            if (objName != "")
+                objectNames[objName] = obj;
         }
+
+        // Lights
+        if (jf.getKeyExists("lights"))
+        {
+            JsonArray* jfLights = jf.getArray("lights");
+            for (JsonAny* jfAny : jfLights->getValues())
+            {
+                JsonObject* jfLight = (JsonObject*)jfAny;
+                Light* light = new Light();
+                light->setPosition(jfLight->getVec3<float>("position"));
+                light->setColor(jfLight->getString("color"));
+                // TODO type
+
+                lights.add(light);
+            }
+        }
+    }
+    catch (const JsonException& jsEx)
+    {
+        throw TestSceneException(jsEx.what());
     }
 }
 

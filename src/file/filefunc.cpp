@@ -19,20 +19,13 @@ EXPORT int Base::fileGetSize(const Base::FilePath& file)
 
 EXPORT uint Base::fileGetLastChange(const Base::FilePath& file)
 {
-    try
-    {
-        return (uint)boost::filesystem::last_write_time(file.getFullPath());
-    }
-    catch (std::exception e)
-    {
-        return 0;
-    }
+    return (uint)boost::filesystem::last_write_time(file.getFullPath());
 }
 
 EXPORT FileData Base::fileGetData(const Base::FilePath& file)
 {
-    std::ifstream ifs(file.getFullPath(), std::ios::binary | std::ios::ate);
-    std::ifstream::pos_type pos = ifs.tellg();
+    bfs::ifstream ifs(file.getFullPath(), std::ios::binary | std::ios::ate);
+    bfs::ifstream::pos_type pos = ifs.tellg();
 
     FileData data(pos);
     ifs.seekg(0, std::ios::beg);
@@ -43,26 +36,25 @@ EXPORT FileData Base::fileGetData(const Base::FilePath& file)
 
 EXPORT string Base::fileGetText(const Base::FilePath& file)
 {
-    std::ifstream ifs(file.getFullPath());
-    string line, contents = "";
-    
-    while (getline(ifs, line))
-        contents += line + '\n';
-    
-    ifs.close();
-    return contents;
+    bfs::ifstream ifs(file.getFullPath());
+    ifs.seekg(0, std::ios::beg);
+    return string(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
 }
 
 EXPORT Base::List<string> Base::fileGetLines(const Base::FilePath& file)
 {
-    std::ifstream ifs(file.getFullPath());
+    bfs::ifstream ifs(file.getFullPath());
     List<string> lines;
-    string line;
-    
-    while (getline(ifs, line))
-        lines.add(line);
-    
-    ifs.close();
+
+    if (ifs && ifs.is_open())
+    {
+        string line;
+        
+        while (getline(ifs, line))
+            lines.add(line);
+        
+        ifs.close();
+    }
     
     return lines;
 }

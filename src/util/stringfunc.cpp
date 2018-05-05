@@ -88,7 +88,7 @@ EXPORT int Base::stringGetCount(const string& str, const string& sub, int index)
     int count = 0;
     size_t pos = str.find(sub, index);
     
-    while(pos != string::npos)
+    while (pos != string::npos)
     {
         count++;
         pos = str.find(sub, pos + 1);

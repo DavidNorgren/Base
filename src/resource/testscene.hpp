@@ -8,6 +8,11 @@
 
 namespace Base
 {
+    struct TestSceneException : public ResourceLoadException
+    {
+        TestSceneException(string message) : ResourceLoadException(message) {};
+    };
+
     /* A JSON-generated scene, used for testing. */
     class TestScene : public Scene, public Resource
     {

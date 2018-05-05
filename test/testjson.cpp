@@ -40,7 +40,7 @@ void Base::TestApp::testJSON()
 
         jf.save(FilePath("C:/Dev/Builds/base/out1.json"));
     }
-    catch (JsonException& ex)
+    catch (const JsonException& ex)
     {
         cout << ex.what() << endl;
     }
@@ -65,7 +65,7 @@ void Base::TestApp::testJSON()
         jf.save(FilePath("C:/Dev/Builds/base/out2.json"));
         t2.stopAndPrint();
     }
-    catch (JsonException& ex)
+    catch (const JsonException& ex)
     {
         cout << ex.what() << endl;
     }

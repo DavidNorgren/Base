@@ -109,9 +109,9 @@ EXPORT Base::Resource* Base::ResourceHandler::get(const string& name)
         if (res->checkLoad())
             cout << "[ResourceHandler] LOADED " << name << endl << std::flush;
     }
-    catch (runtime_error e)
+    catch (const ResourceLoadException& ex)
     {
-        cout << "Resource load exception for " << name << ":\n" << e.what() << endl << std::flush;
+        cout << "Resource load exception for " << name << ":\n" << ex.what() << endl << std::flush;
     }
 
     return res;

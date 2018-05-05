@@ -39,17 +39,22 @@
         {
             "model": "models/teddy.obj",
             "position": [ -20, 19, -30 ],
-            "rotation": [ 0, -20, 0 ]
+            "rotation": [ 0, -30, 0 ]
         },
-        {
+        { 
             "model": "models/box.obj", 
             "scale": [ 10, 80, 10 ],
             "position": [ 205, 80, 30 ]
         },
         {
             "model": "models/box.obj", 
-            "scale": [ 10, 80, 10 ],
-            "position": [ 185, 80, 60 ]
+            "scale": [ 10, 130, 10 ],
+            "position": [ 185, 120, 60 ]
+        }, 
+        {
+            "model": "models/box.obj", 
+            "scale": [ 5, 80, 5 ],
+            "position": [ 85, 80, 160 ]
         },
         {
             "model": "models/box.obj", 

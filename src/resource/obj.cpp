@@ -29,41 +29,41 @@ void Base::Obj::load(const List<string>& lines)
     Timer t1("Obj: Parse");
     for (const string& line : lines)
     {
-		std::stringstream lineStream(line);
+        std::stringstream lineStream(line);
         string type;
         lineStream >> type;
 
          // Position (v x y z [w])
-		if (type == "v")
+        if (type == "v")
         {
-			Vec3f pos;
-			lineStream >> pos.x >> pos.y >> pos.z;
-			objPositions.add(pos);
-		}
+            Vec3f pos;
+            lineStream >> pos.x >> pos.y >> pos.z;
+            objPositions.add(pos);
+        }
 
          // Normal (vn x y z)
         else if (type == "vn")
         {
-			Vec3f norm;
-			lineStream >> norm.x >> norm.y >> norm.z;
-			objNormals.add(norm);
-		}
+            Vec3f norm;
+            lineStream >> norm.x >> norm.y >> norm.z;
+            objNormals.add(norm);
+        }
 
         // Texture coordinate (vt u v [w])
         else if (type == "vt")
         {
-			Tex2f texCoord;
-			lineStream >> texCoord.u >> texCoord.v;
-			objTexCoords.add(texCoord);
-		}
+            Tex2f texCoord;
+            lineStream >> texCoord.u >> texCoord.v;
+            objTexCoords.add(texCoord);
+        }
 
         // Index (f v1 v2 v3 ... vN for a N-sided polygon)
         // The indices are 1-based for now, with 0 representing left-out values
         else if (type == "f")
         {
-			string vertexStr;
+            string vertexStr;
             uint v = 0;
-			while (lineStream >> vertexStr)
+            while (lineStream >> vertexStr)
             {
                 Vec3i vertex;
                 List<string> vertexSplit = stringSplit(vertexStr, "/");
@@ -110,10 +110,10 @@ void Base::Obj::load(const List<string>& lines)
 
                 objIndices.add(vertex);
                 v++;
-			}
+            }
 
             objFaceNumVertices.add(v);
-		}
+        }
     }
     t1.stopAndPrint();
 

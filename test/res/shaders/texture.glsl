@@ -11,7 +11,7 @@ out vec2 vTexCoord;
 uniform mat4 uMatMVP;
 
 
-void main()
+void main() 
 {
     vTexCoord = aTexCoord;
     gl_Position = uMatMVP * vec4(aPos, 1.0);

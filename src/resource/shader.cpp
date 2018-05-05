@@ -130,6 +130,9 @@ void Base::Shader::load(const FileData& data)
 
 void Base::Shader::load(const string& code)
 {
+    if (code.length() == 0)
+        throw ShaderException("No shader code submitted.");
+    
     glProgram = glCreateProgram();
     isLoaded = false;
 
@@ -137,6 +140,9 @@ void Base::Shader::load(const string& code)
     List<string> sourceSplit = stringSplit(stringReplace(code, "\r\n", "\n"), "// Fragment\n");
     string vertexSource = sourceSplit[0];
     string fragmentSource = sourceSplit[1];
+
+    // Show the correct line number in fragment error messages
+    fragmentSource = stringRepeat("\n", stringGetCount(vertexSource, "\n")) + fragmentSource;
     
     // Vertex shader setup
     GLint isCompiled;
@@ -157,7 +163,8 @@ void Base::Shader::load(const string& code)
         glGetShaderInfoLog(vs, errorLength, 0, &error[0]);
         glDeleteShader(vs);
         glDeleteProgram(glProgram);
-        throw ShaderException("Vertex shader compilation error:\n\t" + error);
+        glProgram = 0;
+        throw ShaderException("Vertex shader compilation error:\n\t" + stringReplace(error, "\n", "\n\t"));
     }
     
     // Fragment shader setup
@@ -179,7 +186,8 @@ void Base::Shader::load(const string& code)
         glDeleteShader(vs);
         glDeleteShader(fs);
         glDeleteProgram(glProgram);
-        throw ShaderException("Fragment shader compilation error:\n\t" + error);
+        glProgram = 0;
+        throw ShaderException("Fragment shader compilation error:\n\t" + stringReplace(error, "\n", "\n\t"));
     }
 
     // Link shader program
@@ -192,5 +200,8 @@ void Base::Shader::load(const string& code)
 
 void Base::Shader::cleanUp()
 {
-    glDeleteProgram(glProgram);
+    if (glVbo)
+        glDeleteBuffers(1, &glVbo);
+    if (glProgram)
+        glDeleteProgram(glProgram);
 }

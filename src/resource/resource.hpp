@@ -1,13 +1,18 @@
 #pragma once
 
 #include "file/filepath.hpp"
+#include "util/timer.hpp"
 
 
 namespace Base
 {
-    struct ResourceLoadException : public runtime_error
+    struct ResourceLoadException
     {
-        ResourceLoadException(const string& message) : runtime_error(message) {};
+        ResourceLoadException(const string& message) : message(message) {};
+        const string& what() const { return message; }
+
+      private:
+        string message;
     };
 
     /* A processed item in the "res" folder of the project. */

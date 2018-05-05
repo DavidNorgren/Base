@@ -36,7 +36,7 @@ void Base::TestApp::testSceneInit()
         for (uint i = 0; i < maps.size(); i++)
         {
             string name = "uDepthSampler[" + toString(i) + "]";
-        GLint uDepthSampler = glGetUniformLocation(glProgram, &name[0]);
+            GLint uDepthSampler = glGetUniformLocation(glProgram, &name[0]);
             glActiveTexture(GL_TEXTURE1 + i);
             glBindTexture(GL_TEXTURE_2D, maps[i]->getGlTexture());
             glUniform1i(uDepthSampler, 1 + i);
