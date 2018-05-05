@@ -44,6 +44,8 @@ namespace Base
 
         // Scene
         Scene* currentScene;
+
+        bool debugShowLines = false;
     };
 }
 

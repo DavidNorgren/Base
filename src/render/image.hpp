@@ -27,7 +27,7 @@ namespace Base
         EXPORT static Image* createSingleColor(const Color& color);
 
       protected:
-        Size2Di size;
+        Size2Di size = { 0, 0 };
         GLuint glTexture = 0;
     };
 }

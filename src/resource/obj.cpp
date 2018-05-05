@@ -175,6 +175,10 @@ void Base::Obj::load(const List<string>& lines)
 
     meshes.add(mesh);
     materials.add(nullptr); // TODO material from mtlib
+
+    axisAlignedBox = mesh->getAxisAlignedBox();
+    debugAABB = new Cube(axisAlignedBox.getSize());
+    debugAABBmaterial = new Material(Image::createSingleColor(Color(255, 255, 0, 20)));
 }
 
 void Base::Obj::cleanUp()

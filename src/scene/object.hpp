@@ -4,6 +4,8 @@
 #include "util/data/mat4.hpp"
 #include "resource/shader.hpp"
 #include "scene/model.hpp"
+#include "scene/volume.hpp"
+
 
 namespace Base
 {
@@ -26,10 +28,13 @@ namespace Base
         void buildMatrix();
         void resetTransform();
 
+        const BoundingBox& getBoundingBox() const { return box; }
+
       protected:
         string name;
         Vec3f pos, rot, sca;
         Mat4f matrix;
         Model* model;
+        BoundingBox box;
     };
 }

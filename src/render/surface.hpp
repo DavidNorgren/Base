@@ -10,9 +10,8 @@ namespace Base
     class Surface : public RenderTarget
     {
       public:
-        Surface() {};
+        Surface();
         Surface(Size2Di size);
-        ~Surface();
 
         void resize(Size2Di size);
         void clear();

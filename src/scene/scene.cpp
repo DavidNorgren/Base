@@ -5,16 +5,19 @@
 #include "apphandler.hpp"
 
 
-EXPORT void Base::Scene::render(Shader* shader, Camera* camera)
+EXPORT void Base::Scene::render(Shader* shader, Camera* camera, Camera* cullCamera)
 {
     shader->select();
     drawClear(background);
 
     if (!camera)
         camera = this->camera;
-    
-    for (Object* obj : objects)
-        obj->render(shader, Mat4f::identity(), camera->getViewProjection());
+
+    for (Object* obj : objects) 
+    {
+        if (!cullCamera || cullCamera->boxVisible(obj->getBoundingBox()))
+            obj->render(shader, Mat4f::identity(), camera->getViewProjection());
+    }
 }
 
 

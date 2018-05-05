@@ -126,7 +126,7 @@ namespace Base
 
         inline Vec2 operator * (const T& mul) const
         {
-            return Vec2(mul * x, mul * y);
+            return Vec2(x * mul, y * mul);
         }
 
         inline void operator *= (const T& mul)
@@ -139,6 +139,17 @@ namespace Base
         {
             x *= other.x;
             y *= other.y;
+        }
+
+        inline Vec2 operator / (const T& mul) const
+        {
+            return Vec2(x / mul, y / mul);
+        }
+
+        inline void operator /= (const T& mul)
+        {
+            x /= mul;
+            y /= mul;
         }
 
         // Comparison operators

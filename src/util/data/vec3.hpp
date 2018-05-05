@@ -91,35 +91,6 @@ namespace Base
                 a.x * b.y - a.y * b.x
             );
         }
-
-        /* TODO
-        static inline Vec3 reflect(const Vec3& incidence, const Vec3& normal)
-        {
-            return embree::reflect(incidence.eVec, normal.eVec);
-        }
-
-        static inline Vec3 refract(const Vec3& incidence, const Vec3& normal, const T& ior)
-        {
-            Vec3 nn = normal;
-            T negNdotV = dot(incidence, nn), eta;
-
-            if (negNdotV > 0.0f) {
-                eta = ior;
-                nn = -normal.eVec;
-                negNdotV = -negNdotV;
-            } else {
-                eta = 1.f / ior;
-            }
-
-            const T k = 1.f - eta*eta * (1.f - negNdotV * negNdotV);
-
-            if (k < 0.0f) {
-                return incidence;
-            } else {
-                return normalize(eta * incidence.eVec - (eta*negNdotV + sqrtf(k)) * nn.eVec);
-            }
-
-        }*/
         
         // Get/Set via [] operator
         
@@ -185,7 +156,7 @@ namespace Base
 
         inline Vec3 operator * (const T& mul) const
         {
-            return Vec3(mul * x, mul * y, mul * z);
+            return Vec3(x * mul, y * mul, z * mul);
         }
 
         inline void operator *= (const T& mul)
@@ -200,6 +171,18 @@ namespace Base
             x *= other.x;
             y *= other.y;
             z *= other.z;
+        }
+
+        inline Vec3 operator / (const T& mul) const
+        {
+            return Vec3(x / mul, y / mul, z / mul);
+        }
+
+        inline void operator /= (const T& mul)
+        {
+            x /= mul;
+            y /= mul;
+            z /= mul;
         }
 
         // Comparison operators

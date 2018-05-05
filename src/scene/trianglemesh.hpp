@@ -8,11 +8,12 @@
 #include "util/data/vec3.hpp"
 #include "util/data/vertex3d.hpp"
 #include "resource/shader.hpp"
+#include "scene/volume.hpp"
 
 
 namespace Base
 {
-    /* A container for 3D vertex data. */
+    /* A container for 3D triangle data. */
     class Shader;
     class TriangleMesh
     {
@@ -24,11 +25,15 @@ namespace Base
         /* Adds a single vertex and returns its index. */
         EXPORT uint addVertex(Vertex3Df vertex);
 
-        /* Adds a set of three indices to previously added vertices. */
-        EXPORT void addTriangle(const Vec3ui& indices);
+        /* Adds a set of three indices to previously added vertices.
+           If negative numbers are supplied, they will be relative to the
+           indices of the last added vertices. */
+        EXPORT void addTriangle(const Vec3i& indices);
 
-        /* Adds a single index reference to a vertex. */
-        EXPORT void addIndex(uint index);
+        /* Adds a single index reference to a vertex.
+           If a negative number is supplied, it will be relative to the
+           indices of the last added vertices. */
+        EXPORT void addIndex(int index);
 
         /* Adds a set of three vertices to represent a triangle.
            Indices are automatically generated and added. */
@@ -48,14 +53,18 @@ namespace Base
         /* Clears all triangle data. */
         EXPORT void clear();
 
-        /* Finalizes the mesh for rendering. */
+        /* Finalizes the mesh for rendering and sets the bounding box. */
         EXPORT void update();
+
+        /* Returns the axis aligned bounding box. */
+        EXPORT const AABB& getAxisAlignedBox() const { return axisAlignedBox; }
       
       friend class Shader;
       protected:
         List<Vertex3Df> vertexData;
         List<uint> indexData;
         GLuint glVbo, glIbo;
+        AABB axisAlignedBox;
     };
 
     /* Basic shapes (origin in center) */
@@ -63,7 +72,7 @@ namespace Base
     class Cube : public TriangleMesh
     {
       public:
-        EXPORT Cube(const Size3Df& size);
+        EXPORT Cube(const Size3Df& size, const Vec2f& texRepeat = { 1.f });
     };
 
     class Plane : public TriangleMesh

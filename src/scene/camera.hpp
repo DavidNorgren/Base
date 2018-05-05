@@ -2,9 +2,7 @@
 
 #include "util/data/mat4.hpp"
 #include "util/data/vec3.hpp"
-#include "util/data/size3d.hpp"
-
-#include "scene/model.hpp"
+#include "scene/volume.hpp"
 
 
 namespace Base
@@ -26,17 +24,18 @@ namespace Base
         const Mat4f& getView() const { return matV; }
         const Mat4f& getProjection() const { return matP; }
         const Mat4f& getViewProjection() const { return matVP; }
-
-        // DEBUG
-        TriangleMesh* frustumMesh = nullptr;
-        Material* frustumMaterial = nullptr;
-        Model* frustumModel = nullptr;
+        
+        bool boxVisible(const BoundingBox& box) const;
+        bool pointVisible(const Vec3f& point) const;
 
       protected:
+        void buildFrustum();
+        
         Vec3f pos;
         float fov = 90.f;
         float ratio = 1.f;
-        float zNear = 1.f, zFar = 10000.f;
+        float zNear = 1.f, zFar = 4000.f;
+        Vec4f frustum[6];
         Mat4f matV, matP, matVP;
     };
 }

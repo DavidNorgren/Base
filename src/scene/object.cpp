@@ -70,4 +70,6 @@ void Base::Object::buildMatrix()
              Mat4f::rotate({ 0.f, 1.f, 0.f }, rot.y) *
              Mat4f::rotate({ 0.f, 0.f, 1.f }, rot.z) *
              Mat4f::scale(sca);
+
+    box = BoundingBox(model->getAxisAlignedBox(), matrix);
 }

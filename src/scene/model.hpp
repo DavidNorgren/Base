@@ -3,6 +3,7 @@
 #include "util/data/mat4.hpp"
 #include "scene/trianglemesh.hpp"
 #include "scene/material.hpp"
+#include "scene/volume.hpp"
 #include "resource/shader.hpp"
 
 
@@ -17,8 +18,13 @@ namespace Base
         
         void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const;
 
+        const AABB& getAxisAlignedBox() const { return axisAlignedBox; }
+
       protected:
         List<TriangleMesh*> meshes;
         List<Material*> materials;
+        AABB axisAlignedBox;
+        TriangleMesh* debugAABB;
+        Material* debugAABBmaterial;
     };
 }

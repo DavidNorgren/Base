@@ -6,11 +6,11 @@
 #include "util/data/vec3.hpp"
 #include "util/data/mat4.hpp"
 #include "util/data/size2d.hpp"
-
+#include "scene/model.hpp"
 
 namespace Base
 {
-    constexpr float LIGHT_CASCADES[] = { 0.f, 0.1f, 0.3f, 1.f };
+    constexpr float LIGHT_CASCADES[] = { 0.f, 0.05f, 0.2f, 1.f };
 
     /* The format of the shadow mapping for this light. */
     enum class ShadowMapFormat
@@ -35,7 +35,8 @@ namespace Base
         /* Position in the scene. */
         void setPosition(const Vec3f& position);
         Light* translate(const Vec3f& translate);
-        const Vec3f& getDir() const { return dir; }
+        const Vec3f& getPosition() const { return pos; };
+        const Vec3f& getDir() const      { return dir; }
 
         /* Prepares a pass for shading mapping. */
         void prepareShadowMaps(const Camera* sceneCamera);
@@ -56,10 +57,15 @@ namespace Base
         ShadowMap(Size2Di size);
         const Mat4f& getBiasViewProjection() const { return matBiasVP; };
         float getCascadeEndClipSpaceDepth() const  { return cascadeEndClipSpaceDepth; }
+        Model* debugCamFrustum;
+        Model* debugOrthoBox;
 
       friend class Light;
       protected:
         Mat4f matBiasVP;
         float cascadeEndClipSpaceDepth;
+        Material* debugMaterial;
+        TriangleMesh* debugCamFrustumMesh;
+        TriangleMesh* debugOrthoBoxMesh;
     };
 }

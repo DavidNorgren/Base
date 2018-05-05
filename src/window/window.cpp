@@ -40,7 +40,7 @@ void windowSizeCallback(GLFWwindow* handle, int width, int height)
 EXPORT Base::Window::Window()
 {
     // Initialize window
-    size = { 640, 480 };
+    size = { 1080, 800 };
     handle = glfwCreateWindow(size.width, size.height, "", NULL, NULL);
     glfwMakeContextCurrent(handle);
     glfwMap[handle] = this;

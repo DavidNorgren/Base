@@ -166,7 +166,7 @@ namespace Base
 
         inline Vec4 operator * (const T& mul) const
         {
-            return Vec4(mul * x, mul * y, mul * z, mul * w);
+            return Vec4(x * mul, y * mul, z * mul, w * mul);
         }
 
         inline void operator *= (const T& mul)
@@ -183,6 +183,19 @@ namespace Base
             y *= other.y;
             z *= other.z;
             w *= other.w;
+        }
+
+        inline Vec4 operator / (const T& mul) const
+        {
+            return Vec4(x / mul, y / mul, z / mul, w / mul);
+        }
+
+        inline void operator /= (const T& mul)
+        {
+            x /= mul;
+            y /= mul;
+            z /= mul;
+            w /= mul;
         }
 
         // Comparison operators

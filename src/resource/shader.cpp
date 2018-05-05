@@ -108,6 +108,16 @@ EXPORT void Base::Shader::render3D(const Mat4f& matM, const Mat4f& matVP, Base::
     // Draw all triangles
     glEnable(GL_DEPTH_TEST);
     glDrawElements(GL_TRIANGLES, mesh->indexData.size(), GL_UNSIGNED_INT, 0);
+
+    if (appHandler->debugShowLines)
+    {
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+        glLineWidth(4);
+        glUniform4fv(uColor, 1, (float*)&Colors::BLACK);
+        glDrawElements(GL_TRIANGLES, mesh->indexData.size(), GL_UNSIGNED_INT, 0);
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    }
+
     glDisable(GL_DEPTH_TEST);
 
     // Reset

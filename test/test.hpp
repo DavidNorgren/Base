@@ -41,10 +41,11 @@ namespace Base
         void testSceneInit();
         void testSceneInput();
         void testSceneRender();
-        float camAngleXZ,     camAngleY,     camZoom;
-        float camGoalAngleXZ, camGoalAngleY, camGoalZoom;
-        bool camMove;
-        Surface* debugSurface;
+        float camAngleXZ[2],     camAngleY[2],     camZoom[2];
+        float camGoalAngleXZ[2], camGoalAngleY[2], camGoalZoom[2];
+        int camMove;
+        Camera cameras[2];
+        Surface surfaces[2];
 
         // testjson.cpp
         void testJSON();

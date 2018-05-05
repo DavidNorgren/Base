@@ -1,7 +1,9 @@
 #pragma once
 
+#include "util/data/vec2.hpp"
 #include "util/data/vec3.hpp"
 #include "util/data/vec4.hpp"
+#include "util/data/size2d.hpp"
 #include "util/mathfunc.hpp"
 
 
@@ -176,6 +178,21 @@ namespace Base
                 -look.x, -look.y, -look.z, 0.f,
                 0.f, 0.f, 0.f, 1.f
             ) * translate(-eye);
+        }
+
+        /* Projects a 3D point onto device space. Returns whether successful. */
+        inline bool project(const Vec3<T>& point, Vec2<int>& result, const Size2Di& screenSize) const
+        {
+            Vec4<T> clipSpace = *this * Vec4<T>(point);
+            if (clipSpace.w <= (T)0)
+                return false;
+
+            Vec3<T> device = clipSpace.homogenize();
+            result = {
+                (int)(((device.x + 1) / 2.f) * screenSize.width),
+                (int)(((1 - device.y) / 2.f) * screenSize.height)
+            };
+            return true;
         }
         
         // Get/Set via [] operator

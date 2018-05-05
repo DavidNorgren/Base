@@ -31,9 +31,10 @@
         },
         {
             "name": "box",
-            "model": "models/box.obj", 
+            "model": "cube",
+            "size": [ 10, 10, 10 ],
+            "material": "checkerBoard",
             "rotation": [ 0, 45, 45 ],
-            "scale": [ 10, 10, 10 ],
             "position": [ 15, 30, 30 ]
         },
         {

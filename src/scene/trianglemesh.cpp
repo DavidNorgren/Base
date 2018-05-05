@@ -30,16 +30,19 @@ EXPORT uint Base::TriangleMesh::addVertex(Vertex3Df vertex)
     return vertexData.size() - 1;
 }
 
-EXPORT void Base::TriangleMesh::addTriangle(const Vec3ui& indices)
+EXPORT void Base::TriangleMesh::addTriangle(const Vec3i& indices)
 {
-    indexData.add(indices[0]);
-    indexData.add(indices[1]);
-    indexData.add(indices[2]);
+    addIndex(indices[0]);
+    addIndex(indices[1]);
+    addIndex(indices[2]);
 }
 
-EXPORT void Base::TriangleMesh::addIndex(uint index)
+EXPORT void Base::TriangleMesh::addIndex(int index)
 {
-    indexData.add(index);
+    if (index >= 0)
+        indexData.add(index);
+    else 
+        indexData.add(vertexData.size() + index);
 }
 
 EXPORT void Base::TriangleMesh::addTriangle(Vertex3Df v1, Vertex3Df v2, Vertex3Df v3)
@@ -91,6 +94,16 @@ EXPORT void Base::TriangleMesh::update()
     // Update index buffer object
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glIbo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexData.size() * sizeof(uint), &indexData[0], GL_STATIC_DRAW);
+
+    // Set bounding box
+    if (vertexData.size() > 0)
+    {
+        axisAlignedBox = AABB(vertexData[0].pos);
+        for (int i = 1; i < vertexData.size(); i++)
+            axisAlignedBox.add(vertexData[i].pos);
+    }
+    else
+        axisAlignedBox = AABB({ 0, 0, 0 });
 }
 
 EXPORT int Base::TriangleMesh::getVertexIndex(const Vertex3Df& vertex)
@@ -108,14 +121,66 @@ EXPORT int Base::TriangleMesh::getTriangleCount()
     return indexData.size() / 3;
 }
 
+EXPORT Base::Cube::Cube(const Base::Size3Df& size, const Vec2f& texRepeat)
+{
+    Size3Df rad = size / 2.f;
+    Vec3f points[] = {
+        { -rad.x,  rad.y,  rad.z },
+        {  rad.x,  rad.y,  rad.z },
+        { -rad.x, -rad.y,  rad.z },
+        {  rad.x, -rad.y,  rad.z },
+        { -rad.x,  rad.y, -rad.z },
+        {  rad.x,  rad.y, -rad.z },
+        { -rad.x, -rad.y, -rad.z },
+        {  rad.x, -rad.y, -rad.z },
+    };
+
+    Tex2f texCoords[] = {
+        { 0, 0 },
+        { 0, texRepeat.y },
+        { texRepeat.x, texRepeat.y },
+        { texRepeat.x, 0 }
+    };
+
+    Vec3f normals[] = {
+        {  1,  0,  0 },
+        { -1,  0,  0 },
+        {  0,  1,  0 },
+        {  0, -1,  0 },
+        {  0,  0,  1 },
+        {  0,  0, -1 }
+    };
+
+    Vec4i indices[] = {
+        { 1, 3, 7, 5 }, // X+ face
+        { 4, 6, 2, 0 }, // X- face
+        { 4, 0, 1, 5 }, // Y+ face
+        { 2, 6, 7, 3 }, // Y- face
+        { 0, 2, 3, 1 }, // Z+ face
+        { 5, 7, 6, 4 }  // Z- face
+    };
+
+    for (uint i = 0; i < 6; i++)
+    {
+        addVertex({ points[indices[i][0]], texCoords[0], normals[i] });
+        addVertex({ points[indices[i][1]], texCoords[1], normals[i] });
+        addVertex({ points[indices[i][2]], texCoords[2], normals[i] });
+        addVertex({ points[indices[i][3]], texCoords[3], normals[i] });
+        addTriangle({ -4, -3, -2 });
+        addTriangle({ -2, -1, -4 });
+    }
+
+    update();
+}
+
 EXPORT Base::Plane::Plane(const Base::Size2Df& size, const Vec2f& texRepeat)
 {
     Vec3f normal = { 0, 1, 0 };
     vertexData = {
-        { { -size.width / 2.f, 0.f, -size.height / 2.f }, { 0.f, 0.f },                     normal },
-        { {  size.width / 2.f, 0.f, -size.height / 2.f }, { texRepeat.x, 0.f },           normal },
+        { { -size.width / 2.f, 0.f, -size.height / 2.f }, { 0.f, 0.f },                 normal },
+        { {  size.width / 2.f, 0.f, -size.height / 2.f }, { texRepeat.x, 0.f },         normal },
         { {  size.width / 2.f, 0.f,  size.height / 2.f }, { texRepeat.x, texRepeat.y }, normal },
-        { { -size.width / 2.f, 0.f,  size.height / 2.f }, { 0.f, texRepeat.y },           normal }
+        { { -size.width / 2.f, 0.f,  size.height / 2.f }, { 0.f, texRepeat.y },         normal }
     };
 
     indexData = {

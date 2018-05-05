@@ -52,8 +52,21 @@ void Base::TestScene::load(const string& json)
             if (jfObj->getKeyExists("material"))
                 material = sceneMaterialMap[jfObj->getString("material")];
 
+            // Cube
+            if (modelName == "cube")
+            {
+                Size3Df size = jfObj->getSize3D<float>("size");
+                Vec2f repeat = { 1.f };
+                if (jfObj->getKeyExists("repeat"))
+                    repeat = jfObj->getVec2<float>("repeat");
+                
+                TriangleMesh* cube = new Cube(size, repeat);
+                model = new Model(cube, material);
+                meshes.add(cube);
+            }
+            
             // Plane
-            if (modelName == "plane")
+            else if (modelName == "plane")
             {
                 Size2Df size = jfObj->getSize2D<float>("size");
                 Vec2f repeat = { 1.f };

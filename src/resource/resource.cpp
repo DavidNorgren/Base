@@ -71,14 +71,16 @@ bool Base::Resource::checkLoad()
             {
                 try
                 {
-                    // Check if file has been changed since last time (add 10ms delay)
+                    // Check if file has been changed since last time
                     if (uint lastChange = fileGetLastChange(dynamicFile))
                     {
                         if (lastChange > dynamicLastChange && dynamicLastChange > 0)
                         {
+                            // Add 10ms delay to allow file saving
                             #ifdef DYNAMIC_RESOURCES
                             Sleep(10);
                             #endif
+
                             dynamicLastChange = lastChange;
                             cleanUp();
                             isLoaded = false;

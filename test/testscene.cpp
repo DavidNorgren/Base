@@ -7,19 +7,17 @@
 const string testScene  = "scenes/checker.testscene";
 const string testShader = "shaders/csm.glsl";
 Base::Light* sceneLight;
-Base::Camera debugCamera;
 
 void Base::TestApp::testSceneInit()
 {
-    debugSurface = new Surface({ 350, 250 });
-    debugCamera.setPosition({ -100.f, 100.f, 100.f });
-    debugCamera.buildMatrix(debugSurface->getRatio());
-
-    // Setup camera
-    camAngleXZ = camGoalAngleXZ = 90.f;
-    camAngleY  = camGoalAngleY  = 20.f;
-    camZoom    = camGoalZoom    = 100.f;
-    camMove    = false;
+    // Setup cameras
+    camAngleXZ[0] = camGoalAngleXZ[0] = 90.f;
+    camAngleY[0]  = camGoalAngleY[0]  = 20.f;
+    camZoom[0]    = camGoalZoom[0]    = 100.f;
+    camAngleXZ[1] = camGoalAngleXZ[1] = 45.f;
+    camAngleY[1]  = camGoalAngleY[1]  = 45.f;
+    camZoom[1]    = camGoalZoom[1]    = 200.f;
+    camMove = -1;
 
     ((Shader*)resHandler->get("shaders/csm.glsl"))->setSetupFunc([&](GLuint glProgram, const Mat4f& matM)
     {
@@ -60,31 +58,39 @@ void Base::TestApp::testSceneInit()
 
 void Base::TestApp::testSceneInput()
 {
-    // Left click rotates
-    if (camMove)
+    for (int i = 0; i < 2; i++)
     {
-        if (mouseLeftDown())
+        bool mouseInCamera = (mousePos().y > (mainWindow->getSize().height / 2) * i && mousePos().y < (mainWindow->getSize().height / 2) * (i + 1));
+
+        // Left click rotates
+        if (camMove == i)
         {
-            camGoalAngleXZ += mouseMove().x * 0.25f;
-            camGoalAngleY  += mouseMove().y * 0.25f;
-            camGoalAngleY   = clamp(camGoalAngleY, -89.f, 89.f);
+            if (mouseLeftDown())
+            {
+                camGoalAngleXZ[i] += mouseMove().x * 0.25f;
+                camGoalAngleY[i]  += mouseMove().y * 0.25f;
+                camGoalAngleY[i]   = clamp(camGoalAngleY[i], -89.f, 89.f);
+            }
+            else
+                camMove = -1;
         }
-        else
-            camMove = false;
+        else if (mouseLeftPressed() && mouseInCamera)
+            camMove = i;
+        
+        if (mouseInCamera)
+        {
+            // Scroll zooms (sideways scroll will also rotate)
+            camGoalAngleXZ[i] += mouseScroll().x * 5.f;
+            camGoalZoom[i]    *= 1.f - 0.1f * mouseScroll().y;
+            camGoalZoom[i]     = clamp(camGoalZoom[i], 10.f, 2000.f);
+        }
     }
-    else if (mouseLeftPressed())
-        camMove = true;
-    
-    // Scroll zooms (sideways scroll will also rotate)
-    camGoalAngleXZ += mouseScroll().x * 5.f;
-    camGoalZoom    *= 1.f - 0.1f * mouseScroll().y;
-    camGoalZoom     = clamp(camGoalZoom, 10.f, 2000.f);
 
     // Move light
     sceneLight->translate({
-        (keyDown(GLFW_KEY_D) - keyDown(GLFW_KEY_A)) * 10.f,
-        (keyDown(GLFW_KEY_Q) - keyDown(GLFW_KEY_E)) * 10.f,
-        (keyDown(GLFW_KEY_S) - keyDown(GLFW_KEY_W)) * 10.f
+        (keyDown(GLFW_KEY_D) - keyDown(GLFW_KEY_A)) * 4.f,
+        (keyDown(GLFW_KEY_Q) - keyDown(GLFW_KEY_E)) * 4.f,
+        (keyDown(GLFW_KEY_S) - keyDown(GLFW_KEY_W)) * 4.f
     });
 }
 
@@ -94,32 +100,33 @@ void Base::TestApp::testSceneRender()
     currentScene = (TestScene*)resHandler->get(testScene);
     sceneLight = currentScene->lights[0];
 
+    // Resize
+    surfaces[0].resize({ mainWindow->getSize().width, mainWindow->getSize().height / 2});
+    surfaces[1].resize({ mainWindow->getSize().width, mainWindow->getSize().height / 2});
+
     // Animate some objects
     float d = mainWindow->getFrameDelay();
     currentScene->findObject("teapot")->rotateY(d)->buildMatrix();
     currentScene->findObject("box")->rotateX(d)->rotateY(d)->rotateZ(d)->buildMatrix();
 
     // Smoothen the camera motion
-    camAngleXZ += (camGoalAngleXZ - camAngleXZ) / 5.f;
-    camAngleY  += (camGoalAngleY  - camAngleY)  / 5.f;
-    camZoom    += (camGoalZoom    - camZoom)    / 5.f;
+    for (int i = 0; i < 2; i++)
+    {
+        camAngleXZ[i] += (camGoalAngleXZ[i] - camAngleXZ[i]) / 5.f;
+        camAngleY[i]  += (camGoalAngleY[i]  - camAngleY[i])  / 5.f;
+        camZoom[i]    += (camGoalZoom[i]    - camZoom[i])    / 5.f;
 
-    // Camera rotates in a circle around the scene origin
-    currentScene->camera->setPosition({
-        dcos(camAngleXZ) * dcos(camAngleY) * camZoom,
-        dsin(camAngleY) * camZoom,
-        dsin(camAngleXZ) * dcos(camAngleY) * camZoom
-    });
-    currentScene->camera->buildMatrix(mainWindow->getRatio());
-
-    // Debug window
-    setRenderTarget(debugSurface);
-    currentScene->render((Shader*)resHandler->get("shaders/texture.glsl"), &debugCamera);
-    if (currentScene->camera->frustumModel)
-        currentScene->camera->frustumModel->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), debugCamera.getViewProjection());
+        // Camera rotates in a circle around the scene origin
+        cameras[i].setPosition({
+            dcos(camAngleXZ[i]) * dcos(camAngleY[i]) * camZoom[i],
+            dsin(camAngleY[i]) * camZoom[i],
+            dsin(camAngleXZ[i]) * dcos(camAngleY[i]) * camZoom[i]
+        });
+        cameras[i].buildMatrix(surfaces[i].getRatio());
+    }
 
     // Render to shadow maps
-    sceneLight->prepareShadowMaps(currentScene->camera);
+    sceneLight->prepareShadowMaps(&cameras[0]);
     for (ShadowMap* map : sceneLight->getShadowMaps())
     {
         setRenderTarget(map);
@@ -127,6 +134,33 @@ void Base::TestApp::testSceneRender()
     }
 
     // Render some goodness
-    setRenderTarget(mainWindow);
-    currentScene->render((Shader*)resHandler->get(testShader));
+    setRenderTarget(&surfaces[0]);
+    currentScene->render((Shader*)resHandler->get(testShader), &cameras[0]);
+
+    // Debug window
+    static bool showCamFrustum = true;
+    static bool showOrthoBox = true;
+    
+    if (keyPressed(GLFW_KEY_2))
+        showCamFrustum = !showCamFrustum;
+    if (keyPressed(GLFW_KEY_3))
+        showOrthoBox = !showOrthoBox;
+
+    setRenderTarget(&surfaces[1]);
+    debugShowLines = true;
+    currentScene->render((Shader*)resHandler->get("shaders/texture.glsl"), &cameras[1], &cameras[0]);
+    for (ShadowMap* map : sceneLight->getShadowMaps())
+    {
+        if (showCamFrustum)
+            map->debugCamFrustum->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), cameras[1].getViewProjection());
+        if (showOrthoBox)
+            map->debugOrthoBox->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), cameras[1].getViewProjection());
+    }
+    debugShowLines = false;
+
+    // Light position
+    drawBegin();
+    ScreenPos lightPos;
+    if (cameras[1].getViewProjection().project(sceneLight->getPosition(), lightPos, surfaces[1].getSize()))
+        drawImage((Sprite*)resHandler->get("images/bulb.png"), lightPos - Vec2i(32, 32), Colors::WHITE, 0.f, { 0.5f });
 }
