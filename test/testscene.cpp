@@ -98,6 +98,7 @@ void Base::TestApp::testSceneRender()
 {
     // Load the scene from JSON during start or when modified
     currentScene = (TestScene*)resHandler->get(testScene);
+    currentScene->camera = &cameras[0];
     sceneLight = currentScene->lights[0];
 
     // Resize
@@ -126,11 +127,11 @@ void Base::TestApp::testSceneRender()
     }
 
     // Render to shadow maps
-    sceneLight->prepareShadowMaps(&cameras[0]);
+    sceneLight->prepareShadowMaps(currentScene);
     for (ShadowMap* map : sceneLight->getShadowMaps())
     {
         setRenderTarget(map);
-        currentScene->render((Shader*)resHandler->get("shaders/depth.glsl"), map);
+        currentScene->render((Shader*)resHandler->get("shaders/depth.glsl"), map, true);
     }
 
     // Render some goodness
@@ -147,7 +148,7 @@ void Base::TestApp::testSceneRender()
         showOrthoBox = !showOrthoBox;
 
     setRenderTarget(&surfaces[1]);
-    currentScene->render((Shader*)resHandler->get("shaders/texture.glsl"), &cameras[1], &cameras[0]);
+    currentScene->render((Shader*)resHandler->get("shaders/texture.glsl"), &cameras[1]);
     for (ShadowMap* map : sceneLight->getShadowMaps())
     {
         debugShowLines = true;

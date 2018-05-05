@@ -76,7 +76,7 @@ Base::Light* Base::Light::translate(const Vec3f& translate)
     return this;
 }
 
-void Base::Light::prepareShadowMaps(const Camera* sceneCamera)
+void Base::Light::prepareShadowMaps(const Scene* scene)
 {
     // Matrix for converting from -1->1 to 0->1 in the shader
     static Mat4f matBias = Mat4f(
@@ -90,12 +90,13 @@ void Base::Light::prepareShadowMaps(const Camera* sceneCamera)
     Mat4f lightMatV = Mat4f::viewLookAt(dir, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f });
     
     // Get camera properties
-    Mat4f camView = sceneCamera->getView();
-    float tanHfov   = dtan(sceneCamera->getFovH() / 2.f);
-    float tanVfov   = dtan(sceneCamera->getFovV() / 2.f);
-    float zNear     = 5.f;
-    float zFar      = 1000.f;
-    float zDis      = zFar - zNear;
+    Camera* sceneCamera = scene->camera;
+    Mat4f camView       = sceneCamera->getView();
+    float tanHfov       = dtan(sceneCamera->getFovH() / 2.f);
+    float tanVfov       = dtan(sceneCamera->getFovV() / 2.f);
+    float zNear         = 5.f;
+    float zFar          = 1000.f;
+    float zDis          = zFar - zNear;
 
     for (uint i = 0; i < shadowMaps.size(); i++)
     {
@@ -122,12 +123,12 @@ void Base::Light::prepareShadowMaps(const Camera* sceneCamera)
         };
 
         // Calculate box for the boundaries of the sub-frustum
-        float minX =  10000000.f; //maxLimit<float>();
-        float maxX = -10000000.f; //minLimit<float>();
-        float minY =  10000000.f; //maxLimit<float>();
-        float maxY = -10000000.f; //minLimit<float>();
-        float minZ =  10000000.f; //maxLimit<float>();
-        float maxZ = 400.f; //minLimit<float>();
+        float minX =  10000000.f;
+        float maxX = -10000000.f;
+        float minY =  10000000.f;
+        float maxY = -10000000.f;
+        float minZ =  10000000.f;
+        float maxZ = -10000000.f;
 
         frustumMesh->clear();
         orthoMesh->clear();
@@ -145,6 +146,7 @@ void Base::Light::prepareShadowMaps(const Camera* sceneCamera)
             frustumMesh->addVertex(Vertex3Df(cornerWorldSpace));
         }
         
+        // Debug frustum
         frustumMesh->addTriangle({0, 4, 5}); frustumMesh->addTriangle({5, 1, 0}); // X-
         frustumMesh->addTriangle({7, 3, 2}); frustumMesh->addTriangle({2, 6, 7}); // X+
         frustumMesh->addTriangle({2, 1, 5}); frustumMesh->addTriangle({5, 6, 2}); // Y-
@@ -152,7 +154,32 @@ void Base::Light::prepareShadowMaps(const Camera* sceneCamera)
         frustumMesh->addTriangle({0, 1, 2}); frustumMesh->addTriangle({2, 3, 0}); // Z-
         frustumMesh->addTriangle({4, 7, 6}); frustumMesh->addTriangle({6, 5, 4}); // Z+
         frustumMesh->update();
+        
+        // Build frustum for culling occluders
+        map->matP = Mat4f::ortho(minX, maxX, minY, maxY, -zFar, -minZ);
+        map->matVP = map->matP * lightMatV;
+        map->buildFrustum();
 
+        // Extend Z to include occluders
+        for (Object* obj : scene->objects)
+        {
+            if (!obj->getOcclude())
+                continue;
+            
+            const BoundingBox& box = obj->getBoundingBox();
+            if (!map->boxVisible(box))
+                continue;
+
+            for (uint i = 0; i < 8; i++)
+            {
+                // Convert bounding box from world space to
+                // light space and shift the ortho box to include the object.
+                Vec4f boxCornerLightSpace = lightMatV * box[i];
+                maxZ = max(maxZ, boxCornerLightSpace.z);
+            }
+        }
+
+        // Debug ortho box
         Mat4f lightMatVinv = lightMatV.inverse();
         Vec3f lightPoints[] = {
             { minX, maxY, maxZ },
@@ -178,16 +205,14 @@ void Base::Light::prepareShadowMaps(const Camera* sceneCamera)
         orthoMesh->update();
 
         // Use the box as the orthographic projection of this shadow map
-        Mat4f mapMatP = Mat4f::ortho(minX, maxX, minY, maxY, -maxZ, -minZ);
-
-        // Create matrices to use in the shaders
-        map->matVP  = mapMatP * lightMatV;
+        map->matP = Mat4f::ortho(minX, maxX, minY, maxY, -maxZ, -minZ);
+        map->matVP  = map->matP * lightMatV;
         map->matBiasVP = matBias * shadowMaps[i]->matVP;
+        map->buildFrustum();
 
         // End depth in clipspace
         Vec4f vView = { 0.f, 0.f, -(zNear + (LIGHT_CASCADES[i + 1] * zDis)), 1.f };
         Vec4f vClip = sceneCamera->getProjection() * vView;
         map->cascadeEndClipSpaceDepth = vClip.z;
-        map->buildFrustum();
     }
 }

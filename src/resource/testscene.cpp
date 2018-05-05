@@ -108,6 +108,10 @@ void Base::TestScene::load(const string& json)
             if (jfObj->getKeyExists("scale"))
                 obj->scale(jfObj->getVec3<float>("scale"));
                 
+            // Toggle occlude
+            if (jfObj->getKeyExists("occlude"))
+                obj->setOcclude(jfObj->getBool("occlude"));
+            
             obj->buildMatrix();
 
             objects.add(obj);

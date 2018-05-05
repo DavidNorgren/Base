@@ -29,6 +29,8 @@ namespace Base
         void resetTransform();
 
         const BoundingBox& getBoundingBox() const { return box; }
+        bool getOcclude() const { return occlude; }
+        void setOcclude(bool occlude) { this->occlude = occlude; }
 
       protected:
         string name;
@@ -36,5 +38,6 @@ namespace Base
         Mat4f matrix;
         Model* model;
         BoundingBox box;
+        bool occlude = true;
     };
 }

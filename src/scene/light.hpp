@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/camera.hpp"
+#include "scene/scene.hpp"
 #include "render/color.hpp"
 #include "render/rendertarget.hpp"
 #include "util/data/vec3.hpp"
@@ -21,6 +22,7 @@ namespace Base
     };
 
     /* A light in the scene. */
+    class Scene;
     class ShadowMap;
     class Light
     {
@@ -39,7 +41,7 @@ namespace Base
         const Vec3f& getDir() const      { return dir; }
 
         /* Prepares a pass for shading mapping. */
-        void prepareShadowMaps(const Camera* sceneCamera);
+        void prepareShadowMaps(const Scene* scene);
 
         /* Returns references to the generated shadowmaps. */
         const List<ShadowMap*>& getShadowMaps() const { return shadowMaps; }

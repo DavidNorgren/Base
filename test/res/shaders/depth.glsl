@@ -4,13 +4,15 @@
 
 #version 420 core
 
+uniform mat4 uMatMVP;
 in vec3 aPos;
 in vec2 aTexCoord;
 in vec3 aNormal;
-uniform mat4 uMatMVP;
+out vec2 vTexCoord;
 
 void main()
 {
+    vTexCoord = aTexCoord;
     gl_Position = uMatMVP * vec4(aPos, 1.0);
 }
 
@@ -18,9 +20,13 @@ void main()
 
 #version 420 core
 
+uniform sampler2D uSampler;
+in vec2 vTexCoord;
 layout(location = 0) out float out_FragDepth;
 
 void main()
 {
+    if (texture2D(uSampler, vTexCoord).a < 1.0)
+        discard;
     out_FragDepth = gl_FragCoord.z;
 }

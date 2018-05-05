@@ -3,11 +3,15 @@
     "materials": {
         "checkerBoard": {
             "image": "images/checker.png"
+        },
+        "woot": {
+            "image": "images/woot.png"
         }
     },
     "objects": [
         {
             "model": "plane",
+            "occlude": false,
             "size": [ 2000, 2000 ],
             "repeat": [ 40, 40 ],
             "material": "checkerBoard"
@@ -16,7 +20,8 @@
             "model": "plane",
             "size": [ 30, 30 ],
             "position": [ 40, 13, -50 ],
-            "rotation": [ 0, 45, 60 ]
+            "rotation": [ 0, 45, 60 ],
+            "material": "woot"
         },
         {
             "name": "teapot",
@@ -32,7 +37,7 @@
         {
             "name": "box",
             "model": "cube",
-            "size": [ 10, 10, 10 ],
+            "size": [ 20, 20, 20 ],
             "material": "checkerBoard",
             "rotation": [ 0, 45, 45 ],
             "position": [ 15, 30, 30 ]
@@ -43,23 +48,23 @@
             "rotation": [ 0, -30, 0 ]
         },
         { 
-            "model": "models/box.obj", 
-            "scale": [ 10, 80, 10 ],
+            "model": "cube",
+            "size": [ 20, 160, 20 ],
             "position": [ 205, 80, 30 ]
         },
         {
-            "model": "models/box.obj", 
-            "scale": [ 10, 130, 10 ],
+            "model": "cube",
+            "size": [ 30, 460, 20 ],
             "position": [ 185, 120, 60 ]
         }, 
         {
-            "model": "models/box.obj", 
-            "scale": [ 5, 80, 5 ],
+            "model": "cube",
+            "size": [ 10, 190, 10 ],
             "position": [ 85, 80, 160 ]
         },
         {
-            "model": "models/box.obj", 
-            "scale": [ 100, 100, 100 ],
+            "model": "cube",
+            "size": [ 200, 200, 200 ],
             "position": [ -305, 100, -330 ]
         }
     ],

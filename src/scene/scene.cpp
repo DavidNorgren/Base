@@ -5,7 +5,7 @@
 #include "apphandler.hpp"
 
 
-EXPORT void Base::Scene::render(Shader* shader, Camera* camera, Camera* cullCamera)
+EXPORT void Base::Scene::render(Shader* shader, Camera* camera, bool occludersOnly)
 {
     shader->select();
     drawClear(background);
@@ -13,12 +13,12 @@ EXPORT void Base::Scene::render(Shader* shader, Camera* camera, Camera* cullCame
     if (!camera)
         camera = this->camera;
 
-    if (!cullCamera)
-        cullCamera = camera;
-
     for (Object* obj : objects) 
     {
-        if (cullCamera->boxVisible(obj->getBoundingBox()))
+        if (occludersOnly && !obj->getOcclude())
+            continue;
+
+        if (camera->boxVisible(obj->getBoundingBox()))
             obj->render(shader, Mat4f::identity(), camera->getViewProjection());
     }
 }
