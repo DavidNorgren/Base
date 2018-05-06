@@ -7,11 +7,14 @@ namespace Base
 {
     template<typename T> struct Size2D
     {
+        // Size elements
         union
         {
             struct { T width, height; };
             struct { T x, y; };
         };
+
+        // Constructors
         
         Size2D() {}
 
@@ -21,19 +24,21 @@ namespace Base
             this->height = height;
         }
         
-        inline Size2D(const Size2D& other)
+        Size2D(const Size2D& other)
         {
             width  = other.width;
             height = other.height;
         }
         
-        inline Size2D(const Vec2<T>& other)
+        Size2D(const Vec2<T>& other)
         {
             width  = other.x;
             height = other.y;
         }
 
-        inline Size2D& operator = (const Size2D& other)
+        // Binary operators
+
+        Size2D& operator = (const Size2D& other)
         {
             width  = other.width;
             height = other.height;
@@ -63,10 +68,14 @@ namespace Base
         }
     };
 
+    // Convert to string
+
     template<typename T> inline std::ostream& operator << (std::ostream& out, const Size2D<T>& size)
     {
         return out << "(" << size.width << "," << size.height << ")";
     }
+
+    // Multiply by factor (reversed)
 
     template<typename T> inline Size2D<T> operator * (const T& mul, const Size2D<T>& size)
     {
@@ -74,6 +83,7 @@ namespace Base
     }
 
     // Define shorthands
+    
     using Size2Di = Size2D<int>;
     using Size2Df = Size2D<float>;
     using Size2Dd = Size2D<double>;

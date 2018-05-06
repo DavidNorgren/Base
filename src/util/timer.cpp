@@ -2,8 +2,8 @@
 #include "util/timer.hpp"
 #include "util/stringfunc.hpp"
 
-
 using namespace std::chrono;
+
 
 Base::Timer::Timer(const string& name)
 {
@@ -27,9 +27,4 @@ void Base::Timer::stopAndPrint()
 {
     stop();
     print();
-}
-
-double Base::Timer::getDuration() const
-{
-    return time;
 }

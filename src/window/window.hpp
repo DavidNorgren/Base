@@ -7,9 +7,11 @@
 #include "render/colors.hpp"
 #include "render/renderfunc.hpp"
 
+
 namespace Base
 {
-    enum class Cursor
+    /* The a cursor style. */
+    enum class CursorStyle
     {
         ARROW,
         HANDPOINT,
@@ -33,7 +35,7 @@ namespace Base
 
         /* Appearence */
         EXPORT void  setTitle(const string& title);
-        EXPORT void  setCursor(Cursor cursor);
+        EXPORT void  setCursor(CursorStyle cursor);
 
         /* Framerate */
         EXPORT void  setTargetFramerate(int fps) { targetFps = fps; }
@@ -67,8 +69,12 @@ namespace Base
         void glfwSizeCallback(int width, int height);
 
       private:
-        function<void()> loopEventFunc, resizeEventFunc, mouseEventFunc, keyEventFunc;
-        int fps = 0, targetFps = 60;
+        function<void()> loopEventFunc;
+        function<void()> resizeEventFunc;
+        function<void()> mouseEventFunc;
+        function<void()> keyEventFunc;
+        int fps = 0;
+        int targetFps = 60;
 
         ScreenPos mousePos, mousePosPrevious, mousePosClick;
         Vec2i mouseMove;
@@ -79,7 +85,9 @@ namespace Base
         double mouseLastClickDuration = 0;
         Vec2f mouseScroll;
 
-        bool keyDown[GLFW_KEY_LAST], keyPressed[GLFW_KEY_LAST], keyReleased[GLFW_KEY_LAST];
+        bool keyDown[GLFW_KEY_LAST];
+        bool keyPressed[GLFW_KEY_LAST];
+        bool keyReleased[GLFW_KEY_LAST];
         char charPressed;
         
         GLFWwindow* handle;

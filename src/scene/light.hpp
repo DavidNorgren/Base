@@ -9,6 +9,7 @@
 #include "util/data/size2d.hpp"
 #include "scene/model.hpp"
 
+
 namespace Base
 {
     constexpr float LIGHT_CASCADES[] = { 0.f, 0.05f, 0.2f, 1.f };

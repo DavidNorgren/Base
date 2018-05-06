@@ -5,15 +5,6 @@
 
 namespace Base
 {
-    struct ResourceException
-    {
-        ResourceException(const string& message) : message(message) {};
-        const string& what() const { return message; }
-
-      private:
-        string message;
-    };
-
     class ResourceHandler
     {
       public:

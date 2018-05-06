@@ -32,6 +32,8 @@ namespace Base
         }
     };
 
+    // Define shorthands
+    
     using Tex2f = Tex2<float>;
     using Tex2d = Tex2<double>;
 }

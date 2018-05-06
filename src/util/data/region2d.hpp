@@ -9,6 +9,7 @@ namespace Base
 {
     template<typename T> struct Region2D
     {
+        // Region elements
         union
         {
             Vec2<T> pos;
@@ -19,6 +20,8 @@ namespace Base
             Size2D<T> size;
             struct { T width, height; };
         };
+
+        // Constructors
 
         Region2D() {}
         
@@ -36,11 +39,13 @@ namespace Base
             size.height = height;
         }
         
-        inline Region2D(const Region2D& other)
+        Region2D(const Region2D& other)
         {
             pos = other.pos;
             size = other.size;
         }
+
+        // Methods
         
         static inline Region2D intersection(const Region2D& a, const Region2D& b)
         {
@@ -59,7 +64,9 @@ namespace Base
             };
         }
 
-        inline Region2D& operator = (const Region2D& other)
+        // Binary operators
+
+        Region2D& operator = (const Region2D& other)
         {
             pos = other.pos;
             size = other.size;
@@ -67,12 +74,15 @@ namespace Base
         }
     };
     
+    // Convert to string
+
     template<typename T> inline std::ostream& operator << (std::ostream& out, const Region2D<T>& region)
     {
         return out << "(Position: " << region.pos << ", Size:" << region.size << ")";
     }
 
     // Define shorthands
+    
     using Region2Di = Region2D<int>;
     using Region2Df = Region2D<float>;
     using Region2Dd = Region2D<double>;

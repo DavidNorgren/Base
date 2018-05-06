@@ -1,5 +1,3 @@
-#include <wchar.h>
-
 #include "common.hpp"
 #include "util/stringfunc.hpp"
 

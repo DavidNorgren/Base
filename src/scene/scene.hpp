@@ -6,6 +6,7 @@
 #include "scene/light.hpp"
 #include "util/data/list.hpp"
 
+
 namespace Base
 {
     /* A 3D scene. */

@@ -44,7 +44,7 @@ namespace Base
     class JsonAny
     {
       public:
-        virtual JsonType getType() = 0;
+        virtual JsonType getType() const = 0;
     };
 
     /* A string of text in a JSON file. */
@@ -55,7 +55,7 @@ namespace Base
       friend JsonArray;
       
       public:
-        JsonType getType() { return JsonType::STRING; }
+        JsonType getType() const { return JsonType::STRING; }
 
       protected:
         JsonString(const string& value) : value(value) {};
@@ -70,7 +70,7 @@ namespace Base
       friend JsonArray;
 
       public:
-        JsonType getType() { return JsonType::NUMBER; }
+        JsonType getType() const { return JsonType::NUMBER; }
 
       protected:
         JsonNumber(float value) : value(value) {};
@@ -85,7 +85,7 @@ namespace Base
       friend JsonArray;
 
       public:
-        JsonType getType() { return JsonType::BOOL; }
+        JsonType getType() const { return JsonType::BOOL; }
     
       protected:
         JsonBool(bool value) : value(value) {};
@@ -96,7 +96,7 @@ namespace Base
     class JsonNull : public JsonAny
     {
       public:
-        JsonType getType() { return JsonType::NULLVALUE; }
+        JsonType getType() const { return JsonType::NULLVALUE; }
     };
 
     /* An array in a JSON file with a list of values. */
@@ -113,14 +113,15 @@ namespace Base
         EXPORT JsonNull*    addNull();
         
         // Getters
-        EXPORT JsonType     getType(uint index);
-        EXPORT JsonObject*  getObject(uint index);
-        EXPORT JsonArray*   getArray(uint index);
-        EXPORT string       getString(uint index);
-        EXPORT float        getNumber(uint index);
-        EXPORT bool         getBool(uint index);
+        EXPORT JsonType     getType(uint index)   const;
+        EXPORT JsonObject*  getObject(uint index) const;
+        EXPORT JsonArray*   getArray(uint index)  const;
+        EXPORT string       getString(uint index) const;
+        EXPORT float        getNumber(uint index) const;
+        EXPORT bool         getBool(uint index)   const;
+        EXPORT bool         isNull(uint index)    const;
 
-        template <typename T> inline Vec2<T> getVec2(uint index)
+        template <typename T> inline Vec2<T> getVec2(uint index) const
         {
             return Vec2<T>(
                 getArray(index)->getNumber(0),
@@ -128,7 +129,7 @@ namespace Base
             );
         };
 
-        template <typename T> inline Vec3<T> getVec3(uint index)
+        template <typename T> inline Vec3<T> getVec3(uint index) const
         {
             return Vec3<T>(
                 getArray(index)->getNumber(0),
@@ -137,7 +138,7 @@ namespace Base
             );
         };
 
-        template <typename T> Size2D<T> getSize2D(uint index)
+        template <typename T> Size2D<T> getSize2D(uint index) const
         {
             return Size2D<T>(
                 getArray(index)->getNumber(0),
@@ -145,7 +146,7 @@ namespace Base
             );
         };
 
-        template <typename T> Size3D<T> getSize3D(uint index)
+        template <typename T> Size3D<T> getSize3D(uint index) const
         {
             return Size2D<T>(
                 getArray(index)->getNumber(0),
@@ -154,17 +155,17 @@ namespace Base
             );
         };
 
-        EXPORT bool         isNull(uint index);
-        EXPORT uint         getCount() { return values.size(); }
-        EXPORT const List<JsonAny*>&  getValues() { return values; }
 
-        JsonType            getType() { return JsonType::ARRAY; }
+        EXPORT uint getCount() const { return values.size(); }
+        EXPORT const List<JsonAny*>& getValues() const { return values; }
+
+        JsonType getType() const { return JsonType::ARRAY; }
 
       friend class JsonFile;
       private:
         List<JsonAny*> values;
         JsonAny* add(JsonAny* any);
-        JsonAny* get(uint index, JsonType type);
+        JsonAny* get(uint index, JsonType type) const;
     };
 
     /* An object in a JSON file with a name->value mapping. */
@@ -180,14 +181,15 @@ namespace Base
         EXPORT JsonNull*    addNull(const string& name);
 
         // Getters
-        EXPORT JsonType     getType(const string& name);
-        EXPORT JsonObject*  getObject(const string& name);
-        EXPORT JsonArray*   getArray(const string& name);
-        EXPORT string       getString(const string& name);
-        EXPORT float        getNumber(const string& name);
-        EXPORT bool         getBool(const string& name);
+        EXPORT JsonType     getType(const string& name)   const;
+        EXPORT JsonObject*  getObject(const string& name) const;
+        EXPORT JsonArray*   getArray(const string& name)  const;
+        EXPORT string       getString(const string& name) const;
+        EXPORT float        getNumber(const string& name) const;
+        EXPORT bool         getBool(const string& name)   const;
+        EXPORT bool         isNull(const string& name)    const;
 
-        template <typename T> Vec2<T> getVec2(const string& name)
+        template <typename T> Vec2<T> getVec2(const string& name) const
         {
             return Vec2<T>(
                 getArray(name)->getNumber(0),
@@ -195,7 +197,7 @@ namespace Base
             );
         }
 
-        template <typename T> Vec3<T> getVec3(const string& name)
+        template <typename T> Vec3<T> getVec3(const string& name) const
         {
             return Vec3<T>(
                 getArray(name)->getNumber(0),
@@ -204,7 +206,7 @@ namespace Base
             );
         }
 
-        template <typename T> Size2D<T> getSize2D(const string& name)
+        template <typename T> Size2D<T> getSize2D(const string& name) const
         {
             return Size2D<T>(
                 getArray(name)->getNumber(0),
@@ -212,7 +214,7 @@ namespace Base
             );
         }
 
-        template <typename T> Size3D<T> getSize3D(const string& name)
+        template <typename T> Size3D<T> getSize3D(const string& name) const
         {
             return Size3D<T>(
                 getArray(name)->getNumber(0),
@@ -221,12 +223,11 @@ namespace Base
             );
         }
 
-        EXPORT bool         isNull(const string& name);
-        EXPORT bool         getKeyExists(const string& name) { return values.find(name) != values.end(); }
-        EXPORT uint         getCount() { return values.size(); }
-        EXPORT const List<string>&  getKeys() { return keys; }
+        EXPORT uint getCount() const { return values.size(); }
+        EXPORT const List<string>& getKeys() const { return keys; }
+        EXPORT bool getKeyExists(const string& name) const { return values.find(name) != values.end(); }
 
-        JsonType            getType() { return JsonType::OBJECT; }
+        JsonType getType() const { return JsonType::OBJECT; }
     
       friend class JsonFile;
       protected:
@@ -235,7 +236,7 @@ namespace Base
     
       private:
         JsonAny* add(const string& name, JsonAny* any);
-        JsonAny* get(const string& name, JsonType type);
+        JsonAny* get(const string& name, JsonType type) const;
     };
 
     /* An opened JSON file with a root object. Includes methods for parsing and generating a text file. */

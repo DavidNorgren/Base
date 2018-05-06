@@ -9,6 +9,7 @@ namespace Base
     /* 3D homogenous vector */
     template<typename T> struct Vec4 
     {
+        // Vector elements
         T x, y, z, w;
 
         // Constructors
@@ -45,7 +46,7 @@ namespace Base
             w = x[3];
         }
 
-        inline Vec4(const Vec3<T>& other)
+        Vec4(const Vec3<T>& other)
         {
             x = other.x;
             y = other.y;
@@ -53,7 +54,7 @@ namespace Base
             w = 1;
         }
         
-        inline Vec4(const Vec4& other)
+        Vec4(const Vec4& other)
         {
             x = other.x;
             y = other.y;
@@ -150,7 +151,6 @@ namespace Base
             w += other.w;
         }
 
-
         inline Vec4 operator - (const Vec4& other) const
         {
             return Vec4(x - other.x, y - other.y, z - other.z, w - other.w); 
@@ -211,17 +211,22 @@ namespace Base
         }
     };
 
+    // Convert to string
+
     template<typename T> inline std::ostream& operator << (std::ostream& out, const Vec4<T>& vec)
     {
         return out << "(" << vec.x << "," << vec.y << "," << vec.z << "," << vec.w << ")";
     }
 
+    // Multiply by factor (reversed)
+
     template<typename T> inline Vec4<T> operator * (const T& mul, const Vec4<T>& vec)
     {
-        return Vec4<T>(mul * vec.x, mul * vec.y, mul * vec.z, mul * vec.w);
+        return vec * mul;
     }
 
     // Define shorthands
+    
     using Vec4i  = Vec4<int>;
     using Vec4ui = Vec4<uint>;
     using Vec4f  = Vec4<float>;

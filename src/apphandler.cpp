@@ -3,7 +3,7 @@
 #include "render/colors.hpp"
 
 
-// Reference to appHandler instance, used by drawfunc
+// Reference to appHandler instance
 Base::AppHandler* appHandler;
 
 EXPORT Base::AppHandler::AppHandler()
@@ -18,10 +18,10 @@ EXPORT Base::AppHandler::AppHandler()
     glewExperimental = true;
     glewInit();
 
-    cout << "GLEW version: "        << glewGetString(GLEW_VERSION)              << endl;
-    cout << "OpenGL version: "      << glGetString(GL_VERSION)                  << endl;
-    cout << "OpenGL SL version: "   << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
-    cout << "OpenGL vendor: "       << glGetString(GL_VENDOR)                   << endl;
+    cout << "GLEW version: "      << glewGetString(GLEW_VERSION)              << endl;
+    cout << "OpenGL version: "    << glGetString(GL_VERSION)                  << endl;
+    cout << "OpenGL SL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
+    cout << "OpenGL vendor: "     << glGetString(GL_VENDOR)                   << endl;
     cout << endl;
     
     // Culling

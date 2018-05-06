@@ -10,8 +10,9 @@
 #include "file/filefunc.hpp"
 
 #ifdef DYNAMIC_RESOURCES
-#include "windows.h" // Sleep()
+#include "windows.h" // Sleep
 #endif
+
 
 namespace bfs = boost::filesystem;
 

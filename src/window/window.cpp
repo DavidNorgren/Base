@@ -162,15 +162,15 @@ EXPORT void Base::Window::setTitle(const string& title)
     glfwSetWindowTitle(handle, &title[0]);
 }
 
-EXPORT void Base::Window::setCursor(Cursor cursor)
+EXPORT void Base::Window::setCursor(CursorStyle cursor)
 {
     switch (cursor)
     {
-        case Cursor::ARROW:     currentCursor = cursorArrow;     break;
-        case Cursor::HANDPOINT: currentCursor = cursorHandpoint; break;
-        case Cursor::BEAM:      currentCursor = cursorBeam;      break;
-        case Cursor::WERESIZE:  currentCursor = cursorHResize;   break;
-        case Cursor::NSRESIZE:  currentCursor = cursorVResize;   break;
+        case CursorStyle::ARROW:     currentCursor = cursorArrow;     break;
+        case CursorStyle::HANDPOINT: currentCursor = cursorHandpoint; break;
+        case CursorStyle::BEAM:      currentCursor = cursorBeam;      break;
+        case CursorStyle::WERESIZE:  currentCursor = cursorHResize;   break;
+        case CursorStyle::NSRESIZE:  currentCursor = cursorVResize;   break;
     }
 }
 

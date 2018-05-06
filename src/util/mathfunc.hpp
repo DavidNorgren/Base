@@ -1,11 +1,11 @@
 #pragma once
 
-#include <algorithm>
-#include <cmath>
+#include <cmath> // abs, fabs, sqrt, sin, cos, tan
 #include <limits> // numeric_limits
 
 using std::abs;
 using std::sqrt;
+
 
 namespace Base
 {

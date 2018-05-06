@@ -1,6 +1,3 @@
-#define GLEW_STATIC
-#include "GL/glew.h"
-
 #include "common.hpp"
 #include "scene/trianglemesh.hpp"
 

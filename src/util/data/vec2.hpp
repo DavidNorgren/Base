@@ -8,6 +8,7 @@ namespace Base
     /* 2D vector */
     template<typename T> struct Vec2
     {
+        // Vector elements
         union
         {
             struct { T x, y; };
@@ -70,14 +71,8 @@ namespace Base
         {
             return (approxEq(a.x, b.x) && approxEq(a.y, b.y));
         }
-
-        // Unary operators
-
-        inline Vec2 operator - () const
-        {
-            return Vec2(-x, -y);
-
-        }
+        
+        // Get/Set via [] operator
 
         inline T operator [] (int i) const
         {
@@ -92,10 +87,17 @@ namespace Base
                 return x;
             return y;
         }
+
+        // Unary operators
+
+        inline Vec2 operator - () const
+        {
+            return Vec2(-x, -y);
+        }
         
         // Binary operators
 
-        inline Vec2& operator = (const Vec2& other)
+        Vec2& operator = (const Vec2& other)
         {
             x = other.x;
             y = other.y;
@@ -165,17 +167,22 @@ namespace Base
         }
     };
 
+    // Convert to string
+
     template<typename T> inline std::ostream& operator << (std::ostream& out, const Vec2<T>& vec)
     {
         return out << "(" << vec.x << "," << vec.y << ")";
     }
 
+    // Multiply by factor (reversed)
+
     template<typename T> inline Vec2<T> operator * (const T& mul, const Vec2<T>& vec)
     {
-        return Vec2<T>(mul * vec.x, mul * vec.y);
+        return vec * mul;
     }
 
     // Define shorthands
+    
     using Vec2i     = Vec2<int>;
     using Vec2ui    = Vec2<uint>;
     using Vec2f     = Vec2<float>;

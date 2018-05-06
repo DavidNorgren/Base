@@ -6,8 +6,10 @@
 
 namespace Base
 {
+    /* A vertex in 2D space, containing a position and texture coordinate. */
     template<typename T> struct Vertex2D
     {
+        // Vertex elements
         Vec2<T> pos;
         Tex2f texCoord;
 
@@ -25,6 +27,8 @@ namespace Base
             return !(this == other);
         }
     };
+
+    // Define shorthands
 
     using Vertex2Di = Vertex2D<int>;
     using Vertex2Df = Vertex2D<float>;

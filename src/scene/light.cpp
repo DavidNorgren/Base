@@ -108,7 +108,6 @@ void Base::Light::prepareShadowMaps(const Scene* scene)
 
         // Calculate the 8 points (4 + 4 for the near and far planes) that
         // make up this sub-section of the camera frustum.
-
         Mat4f camProj = Mat4f::perspective(tanVfov, sceneCamera->getRatio(), zn, zf);
         Mat4f camViewProjInv = (camProj * camView).inverse();
         Vec4f frustumCorners[LIGHT_FRUSTUM_CORNERS] = {
@@ -123,12 +122,12 @@ void Base::Light::prepareShadowMaps(const Scene* scene)
         };
 
         // Calculate box for the boundaries of the sub-frustum
-        float minX =  10000000.f;
-        float maxX = -10000000.f;
-        float minY =  10000000.f;
-        float maxY = -10000000.f;
-        float minZ =  10000000.f;
-        float maxZ = -10000000.f;
+        float minX = maxLimit<float>();
+        float maxX = minLimit<float>();
+        float minY = maxLimit<float>();
+        float maxY = minLimit<float>();
+        float minZ = maxLimit<float>();
+        float maxZ = minLimit<float>();
 
         frustumMesh->clear();
         orthoMesh->clear();

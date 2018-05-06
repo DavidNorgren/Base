@@ -197,21 +197,14 @@ namespace Base
         
         // Get/Set via [] operator
         
-        inline T operator [] (int i) const
-        {
-            return e[i];
-        }
-
-        inline T &operator [] (int i)
-        {
-            return e[i];
-        }
+        inline T  operator [] (int i) const { return e[i]; }
+        inline T &operator [] (int i)       { return e[i]; }
 
         // Binary operators
 
         Mat4& operator = (const Mat4& other)
         {
-            for (int i = 0; i < 16; i++)
+            for (uint i = 0; i < 16; i++)
                 e[i] = other[i];
             return *this;
         }
@@ -230,6 +223,11 @@ namespace Base
                 }
             }
             return product;
+        }
+        
+        inline void operator *= (const Mat4<T>& other)
+        {
+            *this = *this * other;
         }
 
         inline Vec3<T> operator * (const Vec3<T>& other) const
@@ -252,6 +250,8 @@ namespace Base
         }
     };
 
+    // Convert to string
+
     template<typename T> std::ostream& operator << (std::ostream& out, const Mat4<T>& mat)
     {
         for (uint i = 0; i < 4; i++)
@@ -262,13 +262,9 @@ namespace Base
         }
         return out;
     }
-
-    template<typename T> inline void operator *= (Mat4<T>& a, const Mat4<T>& b)
-    {
-        a = a * b;
-    }
-
+    
     // Define shorthands
+    
     using Mat4i = Mat4<int>;
     using Mat4f = Mat4<float>;
     using Mat4d = Mat4<double>;

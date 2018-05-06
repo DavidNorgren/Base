@@ -3,7 +3,6 @@
 #include "render/image.hpp"
 #include "render/colors.hpp"
 
-
 namespace Base
 {
     class Material

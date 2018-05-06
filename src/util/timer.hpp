@@ -1,6 +1,6 @@
 #pragma once
 
-#include <chrono>
+#include <chrono> // high_resolution_clock
 
 
 namespace Base
@@ -9,10 +9,14 @@ namespace Base
     {
       public:
         Timer(const string& name);
+
+        /* Timer functionality */
         void stop();
         void print() const;
         void stopAndPrint();
-        double getDuration() const;
+
+        /* Get the time elapsed in milliseconds. */
+        double getDuration() const { return time; }
 
       private:
         std::chrono::_V2::high_resolution_clock::time_point startTime, endTime;

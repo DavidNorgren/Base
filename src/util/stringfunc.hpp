@@ -12,18 +12,28 @@ namespace Base
     EXPORT string wstringToString(const wstring& str);
     EXPORT wstring stringToWstring(const string& wstr);
 
-    /* Creates a list of all the substrings in str separated by sep. */
+    /* Creates a list of all the substrings in a string separated by a string. */
     EXPORT List<string> stringSplit(const string& str, const string& sep);
     
+    /* Returns a substring of the given string. */
     EXPORT string stringSubstring(const string& str, int from, int length);
+
+    /* Returns a new string with a certain substring removed. */
     EXPORT string stringErase(const string& str, int from, int length);
+
+    /* Returns a new string with the given substring inserted at a position. */
     EXPORT string stringInsert(const string& str, const string& substr, int index);
+
+    /* Returns the given string repeated a number of times.*/
     EXPORT string stringRepeat(const string& str, int count);
+
+    /* Returns the lines in the given string as a list of strings.*/
+    EXPORT List<string> stringGetLines(const string& str);
 
     /* Replaces all occurrences of the given substring and returns the modified string. */
     EXPORT string stringReplace(const string& str, const string& from, const string& to);
 
-    /* Returns the amount of occurrences of a substring. */
+    /* Returns the amount of occurrences of a substring within the given string. */
     EXPORT int stringGetCount(const string& str, const string& sub, int index = 0);
 
     /* Converts a value into a string. */
@@ -33,8 +43,6 @@ namespace Base
         ss << val;
         return ss.str();
     }
-    
-    EXPORT List<string> stringGetLines(const string& str);
 
     /* Converts a value into a string with a given amount of decimal places. */
     template<typename T> string toStringPrec(const T& val, int prec)

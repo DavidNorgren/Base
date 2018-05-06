@@ -8,6 +8,7 @@ namespace Base
     /* 3D vector */
     template<typename T> struct Vec3 
     {
+        // Vector elements
         T x, y, z;
 
         // Constructors
@@ -33,7 +34,7 @@ namespace Base
             z = x[2];
         }
 
-        inline Vec3(const Vec3& other)
+        Vec3(const Vec3& other)
         {
             x = other.x;
             y = other.y;
@@ -198,17 +199,22 @@ namespace Base
         }
     };
 
+    // Convert to string
+
     template<typename T> inline std::ostream& operator << (std::ostream& out, const Vec3<T>& vec)
     {
         return out << "(" << vec.x << "," << vec.y << "," << vec.z << ")";
     }
 
+    // Multiply by factor (reversed)
+
     template<typename T> inline Vec3<T> operator * (const T& mul, const Vec3<T>& vec)
     {
-        return Vec3<T>(mul * vec.x, mul * vec.y, mul * vec.z);
+        return vec * mul;
     }
 
     // Define shorthands
+    
     using Vec3i  = Vec3<int>;
     using Vec3ui = Vec3<uint>;
     using Vec3f  = Vec3<float>;

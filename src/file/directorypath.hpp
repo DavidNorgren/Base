@@ -1,7 +1,5 @@
 #pragma once
 
-#include "util/stringfunc.hpp"
-
 
 namespace Base
 {
@@ -9,31 +7,32 @@ namespace Base
     class DirectoryPath
     {
       public:
-        DirectoryPath(const string& dirName)
-        {
-            this->dirName = stringReplace(dirName, "\\", "/");      // Use forward-slash
-            if (this->dirName[this->dirName.length() - 1] == '/')   // Remove trailing slash
-                this->dirName = this->dirName.substr(0, this->dirName.length() - 1);
-        };
+
+        // Constructors
+
+        DirectoryPath(const string& dirName);
+
+        // Binary operators
         
-        inline DirectoryPath& operator = (const DirectoryPath& other)
+        DirectoryPath& operator = (const DirectoryPath& other)
         {
             dirName = other.dirName;
             return *this;
         }
 
-        /* Returns the full name and path to the directory. */
-        inline const string& getFullPath() const
-        {
-            return dirName;
-        }
+        // Methods
 
         /* Returns the path to a file in the directory. */
-        inline FilePath getFilePath(const string& name);
+        FilePath getFilePath(const string& name);
+
+        /* Returns the full name and path to the directory. */
+        inline const string& getFullPath() const { return dirName; }
 
       private:
         string dirName;
     };
+
+    // Convert to string
     
     inline std::ostream& operator << (std::ostream& out, const DirectoryPath& directory)
     {

@@ -6,13 +6,14 @@
 
 namespace Base
 {
-    struct ResourceLoadException
+    struct ResourceException : public runtime_error
     {
-        ResourceLoadException(const string& message) : message(message) {};
-        const string& what() const { return message; }
+        ResourceException(const string& message) : runtime_error(message) {};
+    };
 
-      private:
-        string message;
+    struct ResourceLoadException : public ResourceException
+    {
+        ResourceLoadException(const string& message) : ResourceException(message) {};
     };
 
     /* A processed item in the "res" folder of the project. */

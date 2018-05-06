@@ -508,7 +508,7 @@ void Base::JsonFile::writeJsonNull()
 
 // Get methods
 
-EXPORT Base::JsonType Base::JsonArray::getType(uint index)
+EXPORT Base::JsonType Base::JsonArray::getType(uint index) const
 {
     if (index < 0 || index >= values.size())
         throw JsonException("Index " + toString(index) + " out of range [0, " + toString(values.size() - 1) + "]");
@@ -516,12 +516,7 @@ EXPORT Base::JsonType Base::JsonArray::getType(uint index)
     return values[index]->getType();
 }
 
-EXPORT bool Base::JsonArray::isNull(uint index)
-{
-    return (getType(index) == JsonType::NULLVALUE);
-}
-
-Base::JsonAny* Base::JsonArray::get(uint index, JsonType type)
+Base::JsonAny* Base::JsonArray::get(uint index, JsonType type) const
 {
     try
     {
@@ -537,45 +532,45 @@ Base::JsonAny* Base::JsonArray::get(uint index, JsonType type)
     }
 }
 
-EXPORT Base::JsonObject* Base::JsonArray::getObject(uint index)
+EXPORT Base::JsonObject* Base::JsonArray::getObject(uint index) const
 {
     return (JsonObject*)get(index, JsonType::OBJECT);
 }
 
-EXPORT Base::JsonArray* Base::JsonArray::getArray(uint index)
+EXPORT Base::JsonArray* Base::JsonArray::getArray(uint index) const
 {
     return (JsonArray*)get(index, JsonType::ARRAY);
 }
 
-EXPORT string Base::JsonArray::getString(uint index)
+EXPORT string Base::JsonArray::getString(uint index) const
 {
     return ((JsonString*)get(index, JsonType::STRING))->value;
 }
 
-EXPORT float Base::JsonArray::getNumber(uint index)
+EXPORT float Base::JsonArray::getNumber(uint index) const
 {
     return ((JsonNumber*)get(index, JsonType::NUMBER))->value;
 }
 
-EXPORT bool Base::JsonArray::getBool(uint index)
+EXPORT bool Base::JsonArray::getBool(uint index) const
 {
     return ((JsonBool*)get(index, JsonType::BOOL))->value;
 }
 
-EXPORT Base::JsonType Base::JsonObject::getType(const string& name)
+EXPORT bool Base::JsonArray::isNull(uint index) const
+{
+    return (getType(index) == JsonType::NULLVALUE);
+}
+
+EXPORT Base::JsonType Base::JsonObject::getType(const string& name) const
 {
     if (values.find(name) == values.end())
         throw JsonException("Value with name \"" + name + "\" was not found");
     
-    return values[name]->getType();
+    return values.at(name)->getType();
 }
 
-EXPORT bool Base::JsonObject::isNull(const string& name)
-{
-    return (getType(name) == JsonType::NULLVALUE);
-}
-
-Base::JsonAny* Base::JsonObject::get(const string& name, JsonType type)
+Base::JsonAny* Base::JsonObject::get(const string& name, JsonType type) const
 {
     try
     {
@@ -583,7 +578,7 @@ Base::JsonAny* Base::JsonObject::get(const string& name, JsonType type)
         if (vType != type)
             throw JsonException("Unexpected type " + JsonTypeName[(int)vType] + ", expected " + JsonTypeName[(int)type]);
 
-        return values[name];
+        return values.at(name);
     }
     catch (const JsonException& ex)
     {
@@ -591,29 +586,34 @@ Base::JsonAny* Base::JsonObject::get(const string& name, JsonType type)
     }
 }
 
-EXPORT Base::JsonObject* Base::JsonObject::getObject(const string& name)
+EXPORT Base::JsonObject* Base::JsonObject::getObject(const string& name) const
 {
     return (JsonObject*)get(name, JsonType::OBJECT);
 }
 
-EXPORT Base::JsonArray* Base::JsonObject::getArray(const string& name)
+EXPORT Base::JsonArray* Base::JsonObject::getArray(const string& name) const
 {
     return (JsonArray*)get(name, JsonType::ARRAY);
 }
 
-EXPORT string Base::JsonObject::getString(const string& name)
+EXPORT string Base::JsonObject::getString(const string& name) const
 {
     return ((JsonString*)get(name, JsonType::STRING))->value;
 }
 
-EXPORT float Base::JsonObject::getNumber(const string& name)
+EXPORT float Base::JsonObject::getNumber(const string& name) const
 {
     return ((JsonNumber*)get(name, JsonType::NUMBER))->value;
 }
 
-EXPORT bool Base::JsonObject::getBool(const string& name)
+EXPORT bool Base::JsonObject::getBool(const string& name) const
 {
     return ((JsonBool*)get(name, JsonType::BOOL))->value;
+}
+
+EXPORT bool Base::JsonObject::isNull(const string& name) const
+{
+    return (getType(name) == JsonType::NULLVALUE);
 }
 
 // Adding methods

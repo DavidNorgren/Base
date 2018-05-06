@@ -7,11 +7,15 @@
 
 namespace Base
 {
+    /* A vertex in 3D space, containing a position, texture coordinate and (normalized) normal vector. */
     template<typename T> struct Vertex3D
     {
+        // Vertex elements
         Vec3<T> pos;
         Tex2f texCoord;
         Vec3f normal;
+
+        // Constructors
 
         Vertex3D() {}
         
@@ -41,6 +45,8 @@ namespace Base
             return !(this == other);
         }
     };
+
+    // Define shorthands
 
     using Vertex3Di = Vertex3D<int>;
     using Vertex3Df = Vertex3D<float>;

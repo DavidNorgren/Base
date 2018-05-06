@@ -39,8 +39,8 @@ bool Base::Camera::boxVisible(const BoundingBox& box) const
 {
     for (uint i = 0; i < 6; i++)
     {
-        // If one point is completely outside the frustum,
-        // the box is not rendered.
+        // If all of the points lie behind one of the
+        // planes, the box is not rendered.
         bool pointInside = false;
         for (uint j = 0; j < 8; j++)
         {

@@ -23,7 +23,6 @@ EXPORT void Base::Scene::render(Shader* shader, Camera* camera, bool occludersOn
     }
 }
 
-
 EXPORT Base::Object* Base::Scene::findObject(const string& name) const
 {
     auto f = objectNames.find(name);

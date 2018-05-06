@@ -1,5 +1,6 @@
 #include "common.hpp"
 #include "apphandler.hpp"
+#include "util/stringfunc.hpp"
 #include "render/drawfunc.hpp"
 #include "render/renderfunc.hpp"
 
