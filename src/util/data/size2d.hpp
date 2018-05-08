@@ -66,6 +66,10 @@ namespace Base
         {
             return !(this == other);
         }
+
+        // Implicit cast to vector
+
+        operator Vec2<T>() const { return Vec2<T>(width, height); }
     };
 
     // Convert to string

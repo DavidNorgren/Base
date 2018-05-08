@@ -28,21 +28,21 @@ namespace Base
     class Light
     {
       public:
-        Light();
-        ~Light();
+        EXPORT Light();
+        EXPORT ~Light();
 
         /* Color */
         void setColor(const Color& color) { this->color = color; }
         const Color& getColor() const     { return color; }
         
         /* Position in the scene. */
-        void setPosition(const Vec3f& position);
-        Light* translate(const Vec3f& translate);
+        EXPORT void setPosition(const Vec3f& position);
+        EXPORT Light* translate(const Vec3f& translate);
         const Vec3f& getPosition() const { return pos; };
         const Vec3f& getDir() const      { return dir; }
 
         /* Prepares a pass for shading mapping. */
-        void prepareShadowMaps(const Scene* scene);
+        EXPORT void prepareShadowMaps(const Scene* scene);
 
         /* Returns references to the generated shadowmaps. */
         const List<ShadowMap*>& getShadowMaps() const { return shadowMaps; }
@@ -57,7 +57,7 @@ namespace Base
     class ShadowMap : public RenderTarget, public Camera
     {
       public:
-        ShadowMap(Size2Di size);
+        EXPORT ShadowMap(Size2Di size);
         const Mat4f& getBiasViewProjection() const { return matBiasVP; };
         float getCascadeEndClipSpaceDepth() const  { return cascadeEndClipSpaceDepth; }
         Model* debugCamFrustum;

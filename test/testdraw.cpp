@@ -9,7 +9,7 @@ void Base::TestApp::testDraw()
     drawImage(&surfaces[0], { 0, 0 });
     drawImage(&surfaces[1], { 0, mainWindow->getSize().height / 2 });
 
-    drawText("FPS: " + toString(mainWindow->getFps()), { 10, 10 }, Colors::YELLOW);
+    drawText("FPS: " + toString(mainWindow->getFps()) + "\nHello world ÅÄÖ!! HELLLOOoooooo OOMmm||[]]\nLine3\nline 4!", { 10, 10 }, Colors::YELLOW);
 
     static bool showMaps = false;
     if (keyPressed(GLFW_KEY_1))

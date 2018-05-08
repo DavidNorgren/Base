@@ -17,7 +17,7 @@ namespace Base
       private:
         void load(const FilePath& file) override;
         void load(const FileData& data) override;
-        void load(uchar* pixelData);
+        void load(const uchar* pixelData);
         void cleanUp() override;
     };
 }

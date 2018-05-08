@@ -17,11 +17,11 @@ namespace Base
         EXPORT ~Image();
 
         /* Get the dimensions of the image. */
-        EXPORT Size2Di getSize() const  { return size; };
-        EXPORT float   getRatio() const { return (float)size.width / size.height; }
+        Size2Di getSize() const  { return size; };
+        float   getRatio() const { return (float)size.width / size.height; }
 
         /* Get OpenGL texture used in shaders. */
-        EXPORT GLuint  getGlTexture() const { return glTexture; };
+        GLuint  getGlTexture() const { return glTexture; };
         
         /* Generates an image from a solid color. */
         EXPORT static Image* createSingleColor(const Color& color);

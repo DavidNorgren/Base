@@ -8,29 +8,21 @@
 #include "util/stringfunc.hpp"
 
 
-// DEBUG!
-//#define DYNAMIC_RESOURCES
-//#define DYNAMIC_RESOURCES_DIR ""
-
-#ifndef DYNAMIC_RESOURCES
-extern char resData[] asm("_binary_res_zip_start");
-extern char resSize[] asm("_binary_res_zip_size");
-#endif
-
-EXPORT Base::ResourceHandler::ResourceHandler()
+EXPORT Base::ResourceHandler::ResourceHandler(char resData[], uint resSize)
 {
-    #ifdef DYNAMIC_RESOURCES
-    cout << "[ResourceHandler] Loading dynamic resources from " << DYNAMIC_RESOURCES_DIR << endl;
-    #else
+    cout << "[ResourceHandler] Loading resources from memory" << endl;
+    dynamicResources = false;
+    
+    if ((uint)resSize == 0)
+    {
+        cout << "[ResourceHandler] No resource data found in memory." << endl;
+        return;
+    }
+
     zip_source_t *src;
     zip_t *za;
     zip_error_t error;
-    
-    if ((uint)resSize == 0)
-        return;
-
     src = zip_source_buffer_create(resData, (uint)resSize, 0, &error);
-    cout << "[ResourceHandler] Loading resources from memory" << endl;
 
     if (!src)
     {
@@ -77,7 +69,13 @@ EXPORT Base::ResourceHandler::ResourceHandler()
     }
     
     zip_close(za);
-    #endif
+}
+
+EXPORT Base::ResourceHandler::ResourceHandler(const Base::DirectoryPath& dynamicDir)
+{
+    cout << "[ResourceHandler] Loading resources dynamically from " << dynamicDir.getFullPath() << endl;
+    this->dynamicDir = dynamicDir;
+    dynamicResources = true;
 }
 
 EXPORT Base::Resource* Base::ResourceHandler::get(const string& name)
@@ -87,18 +85,21 @@ EXPORT Base::Resource* Base::ResourceHandler::get(const string& name)
 
     if (i == resMap.end())
     {
-    #ifdef DYNAMIC_RESOURCES
-        FilePath file = DirectoryPath(DYNAMIC_RESOURCES_DIR).getFilePath(name);
-        if (fileExists(file))
+        if (dynamicResources)
         {
-            // Add new resource and bind filename
-            res = Resource::createDynamic(name, file);
-            resMap[name] = res;
-            cout << "\tADDED: " << name << endl;
+            FilePath file = dynamicDir.getFilePath(name);
+            if (fileExists(file))
+            {
+                // Add new resource and bind filename
+                res = Resource::createDynamic(name, file);
+                resMap[name] = res;
+                cout << "\tADDED: " << name << endl;
+            }
+            else
+                throw ResourceException("Could not find " + name);
         }
         else
-    #endif
-        throw ResourceException("Could not find " + name);
+            throw ResourceException("Could not find " + name);
     }
     else
         res = i->second;

@@ -3,15 +3,12 @@
 #include "util/mathfunc.hpp"
 
 
-void Base::Camera::buildMatrix(float ratio)
+EXPORT void Base::Camera::buildMatrix(float ratio)
 {
     this->ratio = ratio;
 
-    float tanVfov = dtan(fov / 2.f);
-    float tanHfov = dtan((fov * ratio) / 2.f);
-
     matV = Mat4f::viewLookAt(pos, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f });
-    matP = Mat4f::perspective(tanVfov, ratio, zNear, zFar);
+    matP = Mat4f::perspective(dtan(fov / 2.f), ratio, zNear, zFar);
     matVP = matP * matV;
 
     // Update frustum
@@ -35,7 +32,7 @@ void Base::Camera::buildFrustum()
     }
 }
 
-bool Base::Camera::boxVisible(const BoundingBox& box) const
+EXPORT bool Base::Camera::boxVisible(const BoundingBox& box) const
 {
     for (uint i = 0; i < 6; i++)
     {
@@ -58,7 +55,7 @@ bool Base::Camera::boxVisible(const BoundingBox& box) const
     return true;
 }
 
-bool Base::Camera::pointVisible(const Base::Vec4f& point) const
+EXPORT bool Base::Camera::pointVisible(const Base::Vec4f& point) const
 {
     // The point must lie within all six planes of the frustum
     for (uint i = 0; i < 6; i++)

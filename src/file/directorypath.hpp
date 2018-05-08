@@ -10,7 +10,9 @@ namespace Base
 
         // Constructors
 
-        DirectoryPath(const string& dirName);
+        DirectoryPath() {}
+        
+        EXPORT DirectoryPath(const string& dirName);
 
         // Binary operators
         
@@ -23,10 +25,10 @@ namespace Base
         // Methods
 
         /* Returns the path to a file in the directory. */
-        FilePath getFilePath(const string& name);
+        EXPORT FilePath getFilePath(const string& name);
 
         /* Returns the full name and path to the directory. */
-        inline const string& getFullPath() const { return dirName; }
+        const string& getFullPath() const { return dirName; }
 
       private:
         string dirName;

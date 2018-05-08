@@ -7,7 +7,7 @@ constexpr int LIGHT_NUM_CASCADES = 3;
 constexpr int LIGHT_SHADOW_MAP_SIZE = 2048;
 constexpr int LIGHT_FRUSTUM_CORNERS = 8;
 
-Base::ShadowMap::ShadowMap(Size2Di size)
+EXPORT Base::ShadowMap::ShadowMap(Size2Di size)
 {
     this->size = size;
 
@@ -36,7 +36,7 @@ Base::ShadowMap::ShadowMap(Size2Di size)
     matBiasVP = Mat4f::identity();
 }
 
-Base::Light::Light()
+EXPORT Base::Light::Light()
 {
     Color debugColors[] = {
         Color(255, 0, 0, 128),
@@ -57,26 +57,26 @@ Base::Light::Light()
     }
 }
 
-Base::Light::~Light()
+EXPORT Base::Light::~Light()
 {
     for (ShadowMap* map : shadowMaps)
         delete map;
 }
 
-void Base::Light::setPosition(const Vec3f& position)
+EXPORT void Base::Light::setPosition(const Vec3f& position)
 {
     pos = position;
     dir = pos.normalize();
 }
 
-Base::Light* Base::Light::translate(const Vec3f& translate)
+EXPORT Base::Light* Base::Light::translate(const Vec3f& translate)
 {
     pos += translate;
     dir = pos.normalize();
     return this;
 }
 
-void Base::Light::prepareShadowMaps(const Scene* scene)
+EXPORT void Base::Light::prepareShadowMaps(const Scene* scene)
 {
     // Matrix for converting from -1->1 to 0->1 in the shader
     static Mat4f matBias = Mat4f(
@@ -90,13 +90,13 @@ void Base::Light::prepareShadowMaps(const Scene* scene)
     Mat4f lightMatV = Mat4f::viewLookAt(dir, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f });
     
     // Get camera properties
-    Camera* sceneCamera = scene->camera;
-    Mat4f camView       = sceneCamera->getView();
-    float tanHfov       = dtan(sceneCamera->getFovH() / 2.f);
-    float tanVfov       = dtan(sceneCamera->getFovV() / 2.f);
-    float zNear         = 5.f;
-    float zFar          = 1000.f;
-    float zDis          = zFar - zNear;
+    Camera* camera = scene->camera;
+    Mat4f camView  = camera->getView();
+    float tanHfov  = dtan(camera->getFovH() / 2.f);
+    float tanVfov  = dtan(camera->getFovV() / 2.f);
+    float zNear    = 5.f;
+    float zFar     = 1000.f;
+    float zDis     = zFar - zNear;
 
     for (uint i = 0; i < shadowMaps.size(); i++)
     {
@@ -108,7 +108,7 @@ void Base::Light::prepareShadowMaps(const Scene* scene)
 
         // Calculate the 8 points (4 + 4 for the near and far planes) that
         // make up this sub-section of the camera frustum.
-        Mat4f camProj = Mat4f::perspective(tanVfov, sceneCamera->getRatio(), zn, zf);
+        Mat4f camProj = Mat4f::perspective(tanVfov, camera->getRatio(), zn, zf);
         Mat4f camViewProjInv = (camProj * camView).inverse();
         Vec4f frustumCorners[LIGHT_FRUSTUM_CORNERS] = {
             camViewProjInv * Vec4f(-1,  1,  1, 1.f),
@@ -211,7 +211,7 @@ void Base::Light::prepareShadowMaps(const Scene* scene)
 
         // End depth in clipspace
         Vec4f vView = { 0.f, 0.f, -(zNear + (LIGHT_CASCADES[i + 1] * zDis)), 1.f };
-        Vec4f vClip = sceneCamera->getProjection() * vView;
+        Vec4f vClip = camera->getProjection() * vView;
         map->cascadeEndClipSpaceDepth = vClip.z;
     }
 }

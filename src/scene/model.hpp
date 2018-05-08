@@ -16,7 +16,7 @@ namespace Base
         EXPORT Model() {}
         EXPORT Model(TriangleMesh* mesh, Material* material = nullptr);
         
-        void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const;
+        EXPORT void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const;
 
         const AABB& getAxisAlignedBox() const { return axisAlignedBox; }
 

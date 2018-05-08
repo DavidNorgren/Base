@@ -2,60 +2,60 @@
 #include "scene/object.hpp"
 
 
-Base::Object::Object(const string& name)
+EXPORT Base::Object::Object(const string& name)
 {
     this->name = name;
     resetTransform();
 }
 
-Base::Object::Object(Base::Model* model, const string& name) : Object(name)
+EXPORT Base::Object::Object(Base::Model* model, const string& name) : Object(name)
 {
     this->model = model;
 }
 
-void Base::Object::render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const
+EXPORT void Base::Object::render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const
 {
     if (model)
         model->render(shader, matM * matrix, matVP);
 }
 
-Base::Object* Base::Object::translate(const Vec3f& translate)
+EXPORT Base::Object* Base::Object::translate(const Vec3f& translate)
 {
     pos += translate;
     return this;
 }
 
-Base::Object* Base::Object::scale(const Vec3f& scale)
+EXPORT Base::Object* Base::Object::scale(const Vec3f& scale)
 {
     sca *= scale;
     return this;
 }
 
-Base::Object* Base::Object::rotate(const Vec3f& angles)
+EXPORT Base::Object* Base::Object::rotate(const Vec3f& angles)
 {
     rot += angles;
     return this;
 }
 
-Base::Object* Base::Object::rotateX(float angle)
+EXPORT Base::Object* Base::Object::rotateX(float angle)
 {
     rot.x += angle;
     return this;
 }
 
-Base::Object* Base::Object::rotateY(float angle)
+EXPORT Base::Object* Base::Object::rotateY(float angle)
 {
     rot.y += angle;
     return this;
 }
 
-Base::Object* Base::Object::rotateZ(float angle)
+EXPORT Base::Object* Base::Object::rotateZ(float angle)
 {
     rot.z += angle;
     return this;
 }
 
-void Base::Object::resetTransform()
+EXPORT void Base::Object::resetTransform()
 {
     pos = { 0.f, 0.f, 0.f };
     rot = { 0.f, 0.f, 0.f };
@@ -63,7 +63,7 @@ void Base::Object::resetTransform()
     matrix = Mat4f::identity();
 }
 
-void Base::Object::buildMatrix()
+EXPORT Base::Object* Base::Object::buildMatrix()
 {
     matrix = Mat4f::translate(pos) *
              Mat4f::rotate({ 1.f, 0.f, 0.f }, rot.x) *
@@ -72,4 +72,5 @@ void Base::Object::buildMatrix()
              Mat4f::scale(sca);
 
     box = BoundingBox(model->getAxisAlignedBox(), matrix);
+    return this;
 }

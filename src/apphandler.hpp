@@ -4,6 +4,7 @@
 #include "GL/glew.h"
 
 #include "resource/resourcehandler.hpp"
+#include "file/directorypath.hpp"
 #include "resource/font.hpp"
 #include "resource/shader.hpp"
 #include "render/color.hpp"
@@ -19,8 +20,11 @@ namespace Base
     class AppHandler
     {
       protected:
-        /* Setup OpenGL and load resources. */
-        EXPORT AppHandler();
+        /* Setup the application and load resources from memory. */
+        EXPORT AppHandler(char resData[], uint resSize);
+
+        /* Setup the application and load resources dynamically. */
+        EXPORT AppHandler(const DirectoryPath& resDir);
 
         /* Called by the main window. Implemented by the child. */
         EXPORT virtual void loopEvent() = 0;
@@ -45,8 +49,12 @@ namespace Base
 
         // Scene
         Scene* currentScene;
-
+        
         bool debugShowLines = false;
+
+      private:
+        AppHandler();
+        void createResources();
     };
 }
 

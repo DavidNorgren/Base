@@ -10,7 +10,7 @@ namespace Base
       public:
         Material() {}
         Material(Image* texture) : texture(texture) {}
-        Image* getTexture();
+        EXPORT Image* getTexture();
 
       private:
         Image* texture = nullptr;

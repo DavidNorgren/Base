@@ -2,13 +2,13 @@
 #include "render/image.hpp"
 
 
-Base::Image::~Image()
+EXPORT Base::Image::~Image()
 {
     if (glTexture)
         glDeleteTextures(1, &glTexture);
 }
 
-Base::Image* Base::Image::createSingleColor(const Color& color)
+EXPORT Base::Image* Base::Image::createSingleColor(const Color& color)
 {
     Image* image = new Image();
     image->size = { 1, 1 };

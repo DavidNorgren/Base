@@ -15,9 +15,9 @@ namespace Base
     {
       public:
         RenderTarget() {};
-        ~RenderTarget();
+        EXPORT ~RenderTarget();
 
-        virtual void set();
+        EXPORT virtual void set();
         
         inline Mat4f getOrtho2D() const { return ortho2D; }
     

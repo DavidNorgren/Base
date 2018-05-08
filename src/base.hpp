@@ -27,7 +27,9 @@
 #pragma once
 
 #include "common.hpp"
+#include "file/directorypath.hpp"
 #include "file/filefunc.hpp"
+#include "file/filepath.hpp"
 #include "file/json.hpp"
 #include "file/zipfunc.hpp"
 #include "input/keyboardfunc.hpp"
@@ -44,6 +46,13 @@
 #include "resource/font.hpp"
 #include "resource/sprite.hpp"
 #include "resource/obj.hpp"
+#include "scene/camera.hpp"
+#include "scene/light.hpp"
+#include "scene/material.hpp"
+#include "scene/model.hpp"
+#include "scene/object.hpp"
+#include "scene/scene.hpp"
+#include "scene/trianglemesh.hpp"
 #include "util/data/list.hpp"
 #include "util/data/mat4.hpp"
 #include "util/data/region2d.hpp"

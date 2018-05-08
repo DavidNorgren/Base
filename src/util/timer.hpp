@@ -8,12 +8,12 @@ namespace Base
     class Timer
     {
       public:
-        Timer(const string& name);
+        EXPORT Timer(const string& name);
 
         /* Timer functionality */
-        void stop();
-        void print() const;
-        void stopAndPrint();
+        EXPORT void stop();
+        EXPORT void print() const;
+        EXPORT void stopAndPrint();
 
         /* Get the time elapsed in milliseconds. */
         double getDuration() const { return time; }

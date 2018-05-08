@@ -2,19 +2,19 @@
 #include "render/surface.hpp"
 
 
-Base::Surface::Surface()
+EXPORT Base::Surface::Surface()
 {
     glGenTextures(1, &glTexture);
     glGenRenderbuffers(1, &glDepthRenderbuffer);
     glGenFramebuffers(1, &glFramebuffer);
 }
 
-Base::Surface::Surface(Size2Di size) : Surface()
+EXPORT Base::Surface::Surface(Size2Di size) : Surface()
 {
     resize(size);
 }
 
-void Base::Surface::resize(Base::Size2Di size)
+EXPORT void Base::Surface::resize(Base::Size2Di size)
 {
     if (this->size == size)
         return;

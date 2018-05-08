@@ -3,17 +3,17 @@
 #include "util/stringfunc.hpp"
 
 
-Base::FilePath::FilePath(const string& fileName)
+EXPORT Base::FilePath::FilePath(const string& fileName)
 {
     this->fileName = stringReplace(fileName, "\\", "/");
 }
 
-inline string Base::FilePath::getRelativePath(Base::DirectoryPath directory) const
+EXPORT string Base::FilePath::getRelativePath(Base::DirectoryPath directory) const
 {
     return stringReplace(fileName, directory.getFullPath() + "/", "");
 }
 
-string Base::FilePath::getName() const
+EXPORT string Base::FilePath::getName() const
 {
     size_t pos = fileName.find_last_of("/");
 
@@ -23,7 +23,7 @@ string Base::FilePath::getName() const
     return fileName.substr(pos + 1, fileName.length() - pos - 1);
 }
 
-string Base::FilePath::getExtension() const
+EXPORT string Base::FilePath::getExtension() const
 {
     string name = getName();
     size_t pos = name.find_last_of('.');
@@ -35,7 +35,7 @@ string Base::FilePath::getExtension() const
     return fileName.substr(fileName.length() - extLen, extLen);
 }
 
-Base::FilePath Base::FilePath::setExtension(const string& newExt) const
+EXPORT Base::FilePath Base::FilePath::setExtension(const string& newExt) const
 {
     string name = getName();
     size_t pos = name.find_last_of('.');
@@ -47,7 +47,7 @@ Base::FilePath Base::FilePath::setExtension(const string& newExt) const
     return FilePath(fileName.substr(0, fileName.length() - extLen) + newExt);
 }
 
-Base::DirectoryPath Base::FilePath::getDirectoryPath() const
+EXPORT Base::DirectoryPath Base::FilePath::getDirectoryPath() const
 {
     size_t pos = fileName.find_last_of('/');
 

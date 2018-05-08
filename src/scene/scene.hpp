@@ -14,8 +14,6 @@ namespace Base
     class Scene
     {
       public:
-        Scene() { camera = new Camera(); }
-
         EXPORT void render(Shader* shader, Camera* camera = nullptr, bool occludersOnly = false);
         EXPORT Object* findObject(const string& name) const;
         

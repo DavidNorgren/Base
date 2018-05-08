@@ -21,13 +21,13 @@ namespace Base
         float getZFar() const  { return zFar; }
         float getRatio() const { return ratio; }
 
-        virtual void buildMatrix(float ratio);
+        EXPORT virtual void buildMatrix(float ratio);
         const Mat4f& getView() const { return matV; }
         const Mat4f& getProjection() const { return matP; }
         const Mat4f& getViewProjection() const { return matVP; }
         
-        bool boxVisible(const BoundingBox& box) const;
-        bool pointVisible(const Vec4f& point) const;
+        EXPORT bool boxVisible(const BoundingBox& box) const;
+        EXPORT bool pointVisible(const Vec4f& point) const;
 
       protected:
         void buildFrustum();

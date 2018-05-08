@@ -163,5 +163,5 @@ void Base::TestApp::testSceneRender()
     drawBegin();
     ScreenPos lightPos;
     if (cameras[1].getViewProjection().project(sceneLight->getPosition(), lightPos, surfaces[1].getSize()))
-        drawImage((Sprite*)resHandler->get("images/bulb.png"), lightPos - Vec2i(32, 32), Colors::WHITE, 0.f, { 0.5f });
+        drawImage((Sprite*)resHandler->get("images/bulb.png"), lightPos - Vec2i(32, 32));
 }

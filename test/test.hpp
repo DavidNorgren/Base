@@ -3,12 +3,22 @@
 #include "base.hpp"
 
 
+#ifndef DYNAMIC_RESOURCES
+extern char resData[] asm("_binary_res_zip_start");
+extern char resSize[] asm("_binary_res_zip_size");
+#endif
+
 namespace Base
 {
     class TestApp : public AppHandler
     {
       public:
-        TestApp()
+        TestApp() :
+        #ifdef DYNAMIC_RESOURCES
+            AppHandler::AppHandler(DirectoryPath(DYNAMIC_RESOURCES_DIR))
+        #else
+            AppHandler::AppHandler(resData, (uint)resSize)
+        #endif
         {
             mainWindow->setTitle("BaseTest");
             mainWindow->setTargetFramerate(60);

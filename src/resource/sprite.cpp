@@ -1,6 +1,8 @@
-#include "SOIL.h"
 #define GLEW_STATIC
 #include "GL/glew.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #include "common.hpp"
 #include "resource/sprite.hpp"
@@ -12,17 +14,19 @@ constexpr uint genMipmapLevels = 8;
 
 void Base::Sprite::load(const FilePath& file)
 {
-    uchar *pixelData = SOIL_load_image(&stringToWstring(file.getFullPath())[0], &size.width, &size.height, 0, SOIL_LOAD_RGBA);
+    int channels;
+    uchar *pixelData = stbi_load(file.getFullPath().c_str(), &size.width, &size.height, &channels, 4);
     load(pixelData);
 }
 
 void Base::Sprite::load(const FileData& data)
 {
-    uchar *pixelData = SOIL_load_image_from_memory((uchar*)&data[0], data.size(), &size.width, &size.height, 0, SOIL_LOAD_RGBA);
+    int channels;
+    uchar *pixelData = stbi_load_from_memory((const uchar*)&data[0], data.size(), &size.width, &size.height, &channels, 4);
     load(pixelData);
 }
 
-void Base::Sprite::load(uchar* pixelData)
+void Base::Sprite::load(const uchar* pixelData)
 {
     // Convert to OpenGL format (flip along Y)
     for (uint x = 0; x < size.x; x++)
@@ -54,7 +58,6 @@ void Base::Sprite::load(uchar* pixelData)
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
-    SOIL_free_image_data(pixelData);
 }
 
 void Base::Sprite::cleanUp()

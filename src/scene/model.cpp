@@ -11,7 +11,7 @@ EXPORT Base::Model::Model(Base::TriangleMesh* mesh, Base::Material* material)
     debugAABBmaterial = new Material(Image::createSingleColor(Color(255, 255, 0, 20)));
 }
 
-void Base::Model::render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const
+EXPORT void Base::Model::render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const
 {
     for (uint i = 0; i < meshes.size(); i++)
     {

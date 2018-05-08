@@ -13,20 +13,20 @@ namespace Base
     class Object
     {
       public:
-        Object(const string& name = "");
-        Object(Model* model, const string& name = "");
+        EXPORT Object(const string& name = "");
+        EXPORT Object(Model* model, const string& name = "");
         
-        virtual void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const;
+        EXPORT virtual void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const;
 
-        Object* translate(const Vec3f& translate);
-        Object* scale(const Vec3f& scale);
-        Object* rotate(const Vec3f& angles);
-        Object* rotateX(float angle);
-        Object* rotateY(float angle);
-        Object* rotateZ(float angle);
+        EXPORT Object* translate(const Vec3f& translate);
+        EXPORT Object* scale(const Vec3f& scale);
+        EXPORT Object* rotate(const Vec3f& angles);
+        EXPORT Object* rotateX(float angle);
+        EXPORT Object* rotateY(float angle);
+        EXPORT Object* rotateZ(float angle);
 
-        void buildMatrix();
-        void resetTransform();
+        EXPORT Object* buildMatrix();
+        EXPORT void resetTransform();
 
         const BoundingBox& getBoundingBox() const { return box; }
         bool getOcclude() const { return occlude; }

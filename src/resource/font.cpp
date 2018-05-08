@@ -1,17 +1,24 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "stb_truetype.h"
+
 #include "common.hpp"
 #include "resource/font.hpp"
 #include "resource/resourcehandler.hpp"
 #include "render/color.hpp"
 #include "util/stringfunc.hpp"
 #include "util/mathfunc.hpp"
+#include "file/filefunc.hpp"
 
 
-constexpr uint FONTS_SIZE  = 15;
-constexpr uint FONTS_START = 32;
-constexpr uint FONTS_END   = 128;
+constexpr uint FONTS_SIZE    = 24;
+constexpr uint FONTS_START   = 32;
+constexpr uint FONTS_END     = 128;
+constexpr uint BITMAP_WIDTH  = 512;
+constexpr uint BITMAP_HEIGHT = 512;
+constexpr float LINE_SPACE   = 1.f;
 
 EXPORT Base::List<Base::Vertex2Di> Base::Font::getTextVertices(const string& text)
 {
@@ -27,7 +34,7 @@ EXPORT Base::List<Base::Vertex2Di> Base::Font::getTextVertices(const string& tex
         if (curChar == '\n' || curChar == '\r')
         {
             charPos.x = 0;
-            charPos.y += size.height * LINE_SPACE;
+            charPos.y += charSize * LINE_SPACE;
             continue;
         }
 
@@ -35,29 +42,26 @@ EXPORT Base::List<Base::Vertex2Di> Base::Font::getTextVertices(const string& tex
         if (curChar < charStart || curChar > charEnd)
             continue;
 
-        CharInfo curCharInfo = chars[curChar];
+        CharQuad cInfo = chars[curChar - charStart];
 
         // Only render visible characters
-        if (curCharInfo.size.width && curCharInfo.size.height)
+        if (cInfo.size.width && cInfo.size.height)
         {
-            int vx   = charPos.x + curCharInfo.pos.x;
-            int vy   = charPos.y + size.height - curCharInfo.pos.y;
-            int vw   = curCharInfo.size.width;
-            int vh   = curCharInfo.size.height;
-            float tx = curCharInfo.mapX / size.width;
-            float tw = (float)curCharInfo.size.width / size.width;
-            float th = (float)curCharInfo.size.height / size.height;
+            const Vec2i& p1 = charPos + cInfo.offset;
+            const Vec2i& p2 = charPos + cInfo.offset + cInfo.size;
+            const Tex2f& t1 = cInfo.texStart;
+            const Tex2f& t2 = cInfo.texEnd;
 
-            vertexData.add({ { vx, vy },           { tx, 0.f } });
-            vertexData.add({ { vx, vy + vh },      { tx, th } });
-            vertexData.add({ { vx + vw, vy },      { tx + tw, 0.f } });
-            vertexData.add({ { vx + vw, vy },      { tx + tw, 0.f } });
-            vertexData.add({ { vx, vy + vh },      { tx, th } });
-            vertexData.add({ { vx + vw, vy + vh }, { tx + tw, th } });
+            vertexData.add({ { p1.x, p1.y }, { t1.x, t1.y } });
+            vertexData.add({ { p1.x, p2.y }, { t1.x, t2.y } });
+            vertexData.add({ { p2.x, p1.y }, { t2.x, t1.y } });
+            vertexData.add({ { p2.x, p1.y }, { t2.x, t1.y } });
+            vertexData.add({ { p1.x, p2.y }, { t1.x, t2.y } });
+            vertexData.add({ { p2.x, p2.y }, { t2.x, t2.y } });
             vertices += 6;
         }
 
-        charPos += curCharInfo.advance;
+        charPos += cInfo.advance;
     }
 
     vertexData.resize(vertices);
@@ -80,7 +84,7 @@ EXPORT int Base::Font::getTextWidth(const string& text)
         if (curChar < charStart || curChar > charEnd)
             continue;
         
-        CharInfo curCharInfo = chars[curChar];
+        CharQuad curCharInfo = chars[curChar - charStart];
         dx += curCharInfo.advance.x;
         
         width = max(width, dx);
@@ -96,40 +100,73 @@ EXPORT int Base::Font::getTextHeight(const string& text)
 
 void Base::Font::load(const FilePath& file)
 {
-    // Init library
-    FT_Library lib;
-    FT_Face face;
-    FT_Init_FreeType(&lib);
-
-    // Create the font map from a file on the disk
-    if (FT_New_Face(lib, &file.getFullPath()[0], 0, &face))
-        throw FontException("Could not open font " + file.getFullPath() + "!"); //TODO: can we get more info?
-    
-    load(face);
+    load(fileGetData(file));
 }
 
 void Base::Font::load(const FileData& data)
 {
-    // Init library
-    FT_Library lib;
-    FT_Face face;
-    FT_Init_FreeType(&lib);
+    charSize  = FONTS_SIZE;
+    charStart = FONTS_START;
+    charEnd   = FONTS_END;
+    size      = { BITMAP_WIDTH, BITMAP_HEIGHT };
 
-    // Create the font map from a file in memory
-    if (FT_New_Memory_Face(lib, (uchar*)&data[0], data.size(), 0, &face))
-        throw FontException("Could not open font!"); //TODO: can we get more info?
-    
-    load(face);
-}
+    stbtt_pack_context pc;
+    stbtt_packedchar* packedChar = new stbtt_packedchar[charEnd - charStart];
+    uchar* tempBitmap = new uchar[size.width * size.height];
+    Color* pixelData = new Color[size.width * size.height];
 
-void Base::Font::load(FT_Face& face)
-{
-    this->charSize  = FONTS_SIZE;
-    this->charStart = FONTS_START;
-    this->charEnd   = FONTS_END;
+    // Get info about font
+    stbtt_fontinfo info;
+    int baseline, ascent, descent, linegap;
+    int ret = stbtt_InitFont(&info, (const uchar*)&data[0], stbtt_GetFontOffsetForIndex((const uchar*)&data[0], 0));
+    float scale = stbtt_ScaleForPixelHeight(&info, charSize);
+    stbtt_GetFontVMetrics(&info, &ascent,&descent,&linegap);
+    baseline = (int) (ascent * scale);
+
+    // Pack font onto atlas
+    stbtt_PackBegin(&pc, tempBitmap, size.width, size.height, 0, 1, nullptr);
+    stbtt_PackSetOversampling(&pc, 1, 1);
+    stbtt_PackFontRange(&pc, (const uchar*)&data[0], 0, charSize, charStart, charEnd - charStart, packedChar);
+    stbtt_PackEnd(&pc);
+
+    // Parse characters
+    for (int c = charStart; c < charEnd; c++)
+    {
+        stbtt_aligned_quad quad;
+        float x, y;
+        x = y = 0.f;
+        stbtt_GetPackedQuad(packedChar, size.width, size.height, c - charStart, &x, &y, &quad, true);
+
+        CharQuad cInfo;
+        cInfo.offset   = { (int)quad.x0, baseline + (int)quad.y0 };
+        cInfo.size     = { (int)(quad.x1 - quad.x0), (int)(quad.y1 - quad.y0) };
+        cInfo.texStart = { quad.s0, quad.t0 };
+        cInfo.texEnd   = { quad.s1, quad.t1 };
+        cInfo.advance  = { (int)x, 0 };
+        chars.add(cInfo);
+    }
+
+    // Convert from 1 channel alpha to RGBA for the texture
+    for (uint x = 0; x < size.width; x++)
+        for (uint y = 0; y < size.height; y++)
+            pixelData[x + y * size.width] = Color(1.f, 1.f, 1.f, tempBitmap[x + y * size.width] / 255.f);
+
+    // Create atlas texture
+    glGenTextures(1, &glTexture);
+    glBindTexture(GL_TEXTURE_2D, glTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width, size.height, 0, GL_RGBA, GL_FLOAT, pixelData);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    // Clean up
+    delete packedChar;
+    delete tempBitmap;
+    delete pixelData;
+
 
     // Set size of the font
-    FT_GlyphSlot glyph = face->glyph;
+    /*FT_GlyphSlot glyph = face->glyph;
     FT_Set_Pixel_Sizes(face, 0, charSize);
 
     // Create character list
@@ -179,7 +216,7 @@ void Base::Font::load(FT_Face& face)
         delete glyphBuf;
     }
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);*/
 }
 
 void Base::Font::cleanUp()

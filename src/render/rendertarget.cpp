@@ -2,7 +2,7 @@
 #include "render/rendertarget.hpp"
 
 
-Base::RenderTarget::~RenderTarget()
+EXPORT Base::RenderTarget::~RenderTarget()
 {
     if (glFramebuffer)
         glDeleteFramebuffers(1, &glFramebuffer);
@@ -10,7 +10,7 @@ Base::RenderTarget::~RenderTarget()
         glDeleteRenderbuffers(1, &glDepthRenderbuffer);
 }
 
-void Base::RenderTarget::set()
+EXPORT void Base::RenderTarget::set()
 {
     ortho2D = Mat4f::ortho(0.f, size.width, size.height, 0.f, 0.f, 1.f);
     glBindFramebuffer(GL_FRAMEBUFFER, glFramebuffer);

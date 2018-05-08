@@ -3,7 +3,7 @@
 #include "apphandler.hpp"
 
 
-Base::Image* Base::Material::getTexture()
+EXPORT Base::Image* Base::Material::getTexture()
 {
     if (texture)
         return texture;

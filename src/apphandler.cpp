@@ -6,7 +6,7 @@
 // Reference to appHandler instance
 Base::AppHandler* appHandler;
 
-EXPORT Base::AppHandler::AppHandler()
+Base::AppHandler::AppHandler()
 {
     appHandler = this;
     
@@ -37,9 +37,22 @@ EXPORT Base::AppHandler::AppHandler()
     // Texture settings
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    
-    // Resources
-    resHandler    = new ResourceHandler();
+}
+
+EXPORT Base::AppHandler::AppHandler(char resData[], uint resSize) : AppHandler()
+{
+    resHandler = new ResourceHandler(resData, resSize);
+    createResources();
+}
+
+EXPORT Base::AppHandler::AppHandler(const DirectoryPath& resDir) : AppHandler()
+{
+    resHandler = new ResourceHandler(resDir);
+    createResources();
+}
+
+void Base::AppHandler::createResources()
+{
     drawingFont   = (Font*)resHandler->get("fonts/opensans.ttf");
     drawingShader = (Shader*)resHandler->get("shaders/texture.glsl");
     solidColor    = Image::createSingleColor(Colors::WHITE);
