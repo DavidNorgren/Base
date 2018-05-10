@@ -19,6 +19,11 @@ namespace Base
         void load(const FilePath& file) override;
         void load(const FileData& data) override;
         void load(const List<string>& lines);
+        void loadMaterials(const TextFile* mtlFile);
+        string loadReadString(std::stringstream& lineStream);
+        FilePath getFilePath(const string& name);
         void cleanUp() override;
+
+        Map<string, Material*> mtlMap;
     };
 }

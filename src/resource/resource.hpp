@@ -34,6 +34,7 @@ namespace Base
         virtual void load(const FileData& file) = 0;
 
         bool isLoaded = false;
+        string name;
 
       private:
         virtual void cleanUp() {};
@@ -45,11 +46,14 @@ namespace Base
         uint     dynamicLastChange;
     };
     
-    /* A good ol' fashioned text file. */
+    /* A good ol' fashioned ASCII text file. */
     class TextFile : public Resource
     {
       public:
         TextFile() {};
+        string getText() const { return text; };
+
+      private:
         void load(const FilePath& file) override;
         void load(const FileData& data) override;
         string text;

@@ -27,18 +27,14 @@ namespace Base
 
         void add(const Vec3f& pos)
         {
-            minPos.x = min(minPos.x, pos.x);
-            minPos.y = min(minPos.y, pos.y);
-            minPos.z = min(minPos.z, pos.z);
-            maxPos.x = max(maxPos.x, pos.x);
-            maxPos.y = max(maxPos.y, pos.y);
-            maxPos.z = max(maxPos.z, pos.z);
+            minPos = Vec3f::min(minPos, pos);
+            maxPos = Vec3f::max(maxPos, pos);
         }
 
         void add(const AABB& box)
         {
-            add(box.minPos);
-            add(box.maxPos);
+            minPos = Vec3f::min(minPos, box.minPos);
+            maxPos = Vec3f::max(maxPos, box.maxPos);
         }
 
         Size3Df getSize() const
@@ -68,8 +64,15 @@ namespace Base
             points[7] = M * Vec4f(maxP.x, maxP.y, maxP.z, 1.f);
         }
 
-        inline Vec4f  operator [] (int i) const { return points[i]; }
-        inline Vec4f& operator [] (int i)       { return points[i]; }
+        inline Vec4f  operator [] (int i) const
+        {
+            return points[i];
+        }
+
+        inline Vec4f& operator [] (int i)
+        {
+            return points[i];
+        }
     };
 
     // TODO?

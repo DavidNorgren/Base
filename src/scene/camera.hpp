@@ -35,7 +35,7 @@ namespace Base
         Vec3f pos;
         float fov = 90.f;
         float ratio = 1.f;
-        float zNear = 1.f, zFar = 4000.f;
+        float zNear = 1.f, zFar = 10000.f;
         Vec4f frustum[6];
         Mat4f matV, matP, matVP;
     };

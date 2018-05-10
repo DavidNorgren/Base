@@ -2,14 +2,19 @@
 #include "render/image.hpp"
 
 
+Map<Base::Color, Base::Image*> singleColorMap;
+
 EXPORT Base::Image::~Image()
 {
     if (glTexture)
         glDeleteTextures(1, &glTexture);
 }
 
-EXPORT Base::Image* Base::Image::createSingleColor(const Color& color)
+EXPORT Base::Image* Base::Image::getSingleColor(const Color& color)
 {
+    if (singleColorMap.find((int)color) != singleColorMap.end())
+        return singleColorMap[(int)color];
+    
     Image* image = new Image();
     image->size = { 1, 1 };
 
@@ -23,5 +28,6 @@ EXPORT Base::Image* Base::Image::createSingleColor(const Color& color)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_FLOAT, &color);
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    singleColorMap[(int)color] = image;
     return image;
 }

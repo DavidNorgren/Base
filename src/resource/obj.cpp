@@ -1,9 +1,11 @@
 
 #include "common.hpp"
 #include "resource/obj.hpp"
+#include "resource/sprite.hpp"
 #include "file/filefunc.hpp"
 #include "util/stringfunc.hpp"
 #include "util/timer.hpp"
+#include "apphandler.hpp"
 
 
 void Base::Obj::load(const FilePath& file)
@@ -24,17 +26,39 @@ void Base::Obj::load(const List<string>& lines)
     List<Tex2f> objTexCoords;
     List<Vec3i> objIndices;
     List<uint> objFaceNumVertices;
+    Map<uint, Material*> objMaterials;
 
     // todo OMP
-    Timer t1("Obj: Parse");
+    Timer t1("[Obj] " + name + " Parse");
     for (const string& line : lines)
     {
         std::stringstream lineStream(line);
-        string type;
-        lineStream >> type;
+        string command;
+        lineStream >> command;
+
+        // Blankspace or comments
+        if (command == "#" || command == "")
+            continue;
+
+        // Load material library (mtlib filename)
+        else if (command == "mtllib")
+        {
+            string name = loadReadString(lineStream);
+            loadMaterials(
+                (TextFile*)appHandler->resHandler->get(getFilePath(name).getFullPath())
+            );
+        }
+
+        // Use material (usemtl name)
+        if (command == "usemtl")
+        {
+            string name = loadReadString(lineStream);
+            if (mtlMap.find(name) != mtlMap.end())
+                objMaterials[objFaceNumVertices.size()] = mtlMap[name];
+        }
 
          // Position (v x y z [w])
-        if (type == "v")
+        else if (command == "v")
         {
             Vec3f pos;
             lineStream >> pos.x >> pos.y >> pos.z;
@@ -42,7 +66,7 @@ void Base::Obj::load(const List<string>& lines)
         }
 
          // Normal (vn x y z)
-        else if (type == "vn")
+        else if (command == "vn")
         {
             Vec3f norm;
             lineStream >> norm.x >> norm.y >> norm.z;
@@ -50,7 +74,7 @@ void Base::Obj::load(const List<string>& lines)
         }
 
         // Texture coordinate (vt u v [w])
-        else if (type == "vt")
+        else if (command == "vt")
         {
             Tex2f texCoord;
             lineStream >> texCoord.u >> texCoord.v;
@@ -59,7 +83,7 @@ void Base::Obj::load(const List<string>& lines)
 
         // Index (f v1 v2 v3 ... vN for a N-sided polygon)
         // The indices are 1-based for now, with 0 representing left-out values
-        else if (type == "f")
+        else if (command == "f")
         {
             string vertexStr;
             uint v = 0;
@@ -117,68 +141,85 @@ void Base::Obj::load(const List<string>& lines)
     }
     t1.stopAndPrint();
 
-    Timer t2("Obj: Generate data");
-    TriangleMesh* mesh = new TriangleMesh();
+    // No materials found, add an empty reference
+    if (objMaterials.size() == 0)
+        objMaterials[0] = nullptr;
 
-    // Go through each face
-    uint index = 0;
-    for (uint num : objFaceNumVertices)
+    // Go through each face and generate the meshes,
+    // separated by materials in the file
+    Timer t2("[Obj] " + name + " Generate triangles");
+    TriangleMesh* mesh = nullptr;
+    uint fileVertIndex = 0;
+
+    for (uint fileFaceIndex = 0; fileFaceIndex < objFaceNumVertices.size(); fileFaceIndex++)
     {
-        uint faceStartIndex, faceLastIndex;
-        for (uint v = 0; v < num; v++, index++)
+        // New material, create new mesh
+        if (objMaterials.find(fileFaceIndex) != objMaterials.end())
         {
-            Vec3i vIndices = objIndices[index];
+            // Finalize current mesh, if any
+            if (mesh)
+            {
+                mesh->setNormals();
+                mesh->update();
+            }
+
+            // Create new
+            mesh = new TriangleMesh();
+            meshes.add(mesh);
+            materials.add(objMaterials[fileFaceIndex]);
+        }
+
+        // Process face
+        uint num = objFaceNumVertices[fileFaceIndex];
+        for (uint v = 0; v < num; v++, fileVertIndex++)
+        {
+            Vec3i vertIndices = objIndices[fileVertIndex];
             Vertex3Df vertex;
 
             // Set texture/normal index to position index if unset
-            if (vIndices[1] == 0)
-                vIndices[1] = vIndices[0];
+            if (vertIndices[1] == 0)
+                vertIndices[1] = vertIndices[0];
 
-            if (vIndices[2] == 0)
-                vIndices[2] = vIndices[0];
+            if (vertIndices[2] == 0)
+                vertIndices[2] = vertIndices[0];
 
             // Make zero-based and find values
-            vIndices[0]--; vIndices[1]--; vIndices[2]--;
+            vertIndices[0]--;
+            vertIndices[1]--;
+            vertIndices[2]--;
 
-            vertex.pos      = (vIndices[0] < objPositions.size()) ? 
-                                objPositions[vIndices[0]] : Vec3f(0.f);
+            vertex.pos      = (vertIndices[0] < objPositions.size()) ? 
+                                objPositions[vertIndices[0]] : Vec3f(0.f);
                 
-            vertex.texCoord = (vIndices[1] < objTexCoords.size()) ? 
-                                objTexCoords[vIndices[1]] : Tex2f(0.f);
+            vertex.texCoord = (vertIndices[1] < objTexCoords.size()) ? 
+                                objTexCoords[vertIndices[1]] : Tex2f(0.f);
                             
             vertex.normal   = Vec3f(0.f);
 
             // Re-use vertex if possible, otherwise add new
-            int vIndex = mesh->getVertexIndex(vertex);
-            if (vIndex < 0)
-                vIndex = mesh->addVertex(vertex);
+            int meshVertIndex = mesh->getVertexIndex(vertex);
+            if (meshVertIndex < 0)
+            int    meshVertIndex = mesh->addVertex(vertex);
 
-            // Generate triangles by adding references to the first
-            // and last added vertex in this polygon
-            if (v == 0)
-                faceStartIndex = vIndex;
-            else if (v >= 3)
-            {
-                mesh->addIndex(faceStartIndex);
-                mesh->addIndex(faceLastIndex);
-            }
-
-            mesh->addIndex(vIndex);
-            faceLastIndex = vIndex;
+            mesh->addIndex(meshVertIndex, (v >= 3));
         }
+    }
+
+    // Finalize current mesh
+    if (mesh)
+    {
+        mesh->setNormals();
+        mesh->update();
     }
 
     t2.stopAndPrint();
 
-    mesh->setNormals();
-    mesh->update();
+    // Update bounding box
+    update();
 
-    meshes.add(mesh);
-    materials.add(nullptr); // TODO material from mtlib
-
-    axisAlignedBox = mesh->getAxisAlignedBox();
+    // Debug
     debugAABB = new Cube(axisAlignedBox.getSize());
-    debugAABBmaterial = new Material(Image::createSingleColor(Color(255, 255, 0, 20)));
+    debugAABBmaterial = new Material(Image::getSingleColor(Color(255, 255, 0, 20)));
 }
 
 void Base::Obj::cleanUp()
@@ -191,4 +232,169 @@ void Base::Obj::cleanUp()
     
     meshes.clear();
     materials.clear();
+}
+
+void Base::Obj::loadMaterials(const TextFile* mtlFile)
+{
+    List<string> lines = stringGetLines(mtlFile->getText());
+    Material* curMaterial = nullptr;
+
+    for (const string& line : lines)
+    {
+        std::stringstream lineStream(line);
+        string command;
+        lineStream >> command;
+
+        // Blankspace or comments
+        if (command == "#" || command == "")
+            continue;
+
+        // New material
+        else if (command == "newmtl")
+        {
+            string name = loadReadString(lineStream);
+            curMaterial = new Material();
+            mtlMap[name] = curMaterial;
+        }
+
+        // Only process remaining commands if a
+        // material has been defined via "newmtl"
+        else if (curMaterial)
+        {
+            // Ambient (Ka r g b)
+            if (command == "Ka")
+            {
+                Color ambient;
+                lineStream >> ambient.r >> ambient.g >> ambient.b;
+                curMaterial->setAmbient(ambient);
+            }
+            
+            // Diffuse (Kd r g b)
+            else if (command == "Kd")
+            {
+                Color diffuse;
+                lineStream >> diffuse.r >> diffuse.g >> diffuse.b;
+                curMaterial->setDiffuse(diffuse);
+            }
+            
+            // Specular (Ks r g b)
+            else if (command == "Ks")
+            {
+                Color specular;
+                lineStream >> specular.r >> specular.g >> specular.b;
+                curMaterial->setSpecular(specular);
+            }
+            
+            // Specular exponent (Ns f)
+            else if (command == "Ns")
+            {
+                float specularExp;
+                lineStream >> specularExp;
+                curMaterial->setSpecularExp(specularExp);
+            }
+            
+            // Transmission (Tf r g b)
+            else if (command == "Tf")
+            {
+                Color transmission;
+                lineStream >> transmission.r >> transmission.g >> transmission.b;
+                curMaterial->setTransmission(transmission);
+            }
+            
+            // Opacity (d f)
+            else if (command == "d")
+            {
+                float opacity;
+                lineStream >> opacity;
+                curMaterial->setOpacity(opacity);
+            }
+            
+            // Transparency (Tr f)
+            else if (command == "Tr")
+            {
+                float transparency;
+                lineStream >> transparency;
+                curMaterial->setOpacity(1 - transparency);
+            }
+
+            // Ambient texture (map_Ka filename)
+            else if (command == "map_Ka")
+            {
+                string name = loadReadString(lineStream);
+                curMaterial->setAmbientTexture(
+                    (Sprite*)appHandler->resHandler->get(getFilePath(name).getFullPath())
+                );
+            }
+
+            // Diffuse texture (map_Kd filename)
+            else if (command == "map_Kd")
+            {
+                string name = loadReadString(lineStream);
+                curMaterial->setDiffuseTexture(
+                    (Sprite*)appHandler->resHandler->get(getFilePath(name).getFullPath())
+                );
+            }
+
+            // Specular texture (map_Ks filename)
+            else if (command == "map_Ks")
+            {
+                string name = loadReadString(lineStream);
+                curMaterial->setSpecularTexture(
+                    (Sprite*)appHandler->resHandler->get(getFilePath(name).getFullPath())
+                );
+            }
+
+            // Specular exponent texture (map_Ns filename)
+            else if (command == "map_Ns")
+            {
+                string name = loadReadString(lineStream);
+                curMaterial->setSpecularExpTexture(
+                    (Sprite*)appHandler->resHandler->get(getFilePath(name).getFullPath())
+                );
+            }
+
+            // Opacity texture (map_d filename)
+            else if (command == "map_d")
+            {
+                string name = loadReadString(lineStream);
+                curMaterial->setOpacityTexture(
+                    (Sprite*)appHandler->resHandler->get(getFilePath(name).getFullPath())
+                );
+            }
+
+            // Bump texture (map_bump filename)
+            else if (command == "map_bump")
+            {
+                curMaterial->setBumpTexture(
+                    (Sprite*)appHandler->resHandler->get(getFilePath(name).getFullPath())
+                );
+            }
+
+            // Illumination model (illum n)
+            else if (command == "illum")
+            {
+                int illum;
+                lineStream >> illum;
+                curMaterial->setIllumModel((IlluminationModel)illum);
+            }
+        }
+    }
+}
+
+Base::FilePath Base::Obj::getFilePath(const string& name)
+{
+    return FilePath(this->name).getDirectoryPath().getFilePath(name);
+}
+
+string Base::Obj::loadReadString(std::stringstream& lineStream)
+{
+    string str, word;
+    str = "";
+    while (!lineStream.eof())
+    {
+        lineStream >> word;
+        str += (str != "") ? " " + word : word;
+    }
+
+    return str;
 }

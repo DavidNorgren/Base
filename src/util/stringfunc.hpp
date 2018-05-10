@@ -12,6 +12,15 @@ namespace Base
     EXPORT string wstringToString(const wstring& str);
     EXPORT wstring stringToWstring(const string& wstr);
 
+    /* Converts a string to lowercase. */
+    EXPORT string stringGetLower(const string& str);
+
+    /* Converts a string to uppercase. */
+    EXPORT string stringGetUpper(const string& str);
+
+    /* Checks whether two strings are equal, ignoring case. */
+    EXPORT bool stringEqualsIgnoreCase(const string& a, const string& b);
+
     /* Creates a list of all the substrings in a string separated by a string. */
     EXPORT List<string> stringSplit(const string& str, const string& sep);
     

@@ -92,6 +92,31 @@ namespace Base
                 a.x * b.y - a.y * b.x
             );
         }
+
+        static inline Vec3 min(const Vec3& a, const Vec3& b)
+        {
+            return Vec3(Base::min(a.x, b.x), Base::min(a.y, b.y), Base::min(a.z, b.z));
+        }
+
+        static inline Vec3 max(const Vec3& a, const Vec3& b)
+        {
+            return Vec3(Base::max(a.x, b.x), Base::max(a.y, b.y), Base::max(a.z, b.z));
+        }
+
+        inline Vec3 floor() const
+        {
+            return Vec3(Base::floor(x), Base::floor(y), Base::floor(z));
+        }
+
+        inline Vec3 ceil() const
+        {
+            return Vec3(Base::ceil(x), Base::ceil(y), Base::ceil(z));
+        }
+
+        inline Vec3 round() const
+        {
+            return Vec3(Base::round(x), Base::round(y), Base::round(z));
+        }
         
         // Get/Set via [] operator
         
@@ -155,16 +180,9 @@ namespace Base
             z -= other.z;
         }
 
-        inline Vec3 operator * (const T& mul) const
+        inline Vec3 operator * (const Vec3& other) const
         {
-            return Vec3(x * mul, y * mul, z * mul);
-        }
-
-        inline void operator *= (const T& mul)
-        {
-            x *= mul;
-            y *= mul;
-            z *= mul;
+            return Vec3(x * other.x, y * other.y, z * other.z); 
         }
 
         inline void operator *= (const Vec3& other)
@@ -174,12 +192,36 @@ namespace Base
             z *= other.z;
         }
 
-        inline Vec3 operator / (const T& mul) const
+        template<typename R> inline Vec3 operator * (const R& mul) const
+        {
+            return Vec3(x * mul, y * mul, z * mul);
+        }
+
+        template<typename R> inline void operator *= (const R& mul)
+        {
+            x *= mul;
+            y *= mul;
+            z *= mul;
+        }
+
+        inline Vec3 operator / (const Vec3& other) const
+        {
+            return Vec3(x / other.x, y / other.y, z / other.z); 
+        }
+
+        inline void operator /= (const Vec3& other)
+        {
+            x /= other.x;
+            y /= other.y;
+            z /= other.z;
+        }
+
+        template<typename R> inline Vec3 operator / (const R& mul) const
         {
             return Vec3(x / mul, y / mul, z / mul);
         }
 
-        inline void operator /= (const T& mul)
+        template<typename R> inline void operator /= (const R& mul)
         {
             x /= mul;
             y /= mul;
@@ -208,7 +250,7 @@ namespace Base
 
     // Multiply by factor (reversed)
 
-    template<typename T> inline Vec3<T> operator * (const T& mul, const Vec3<T>& vec)
+    template<typename T, typename R> inline Vec3<T> operator * (const T& mul, const Vec3<R>& vec)
     {
         return vec * mul;
     }

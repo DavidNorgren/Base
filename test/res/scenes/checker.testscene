@@ -1,5 +1,12 @@
 {
     "backgroundColor": "#101050",
+    "lights": [
+        {
+            "type": "directional",
+            "position": [ 100, 100, 0 ],
+            "color": "#ffffff"
+        }
+    ],
     "materials": {
         "checkerBoard": {
             "image": "images/checker.png"
@@ -11,7 +18,6 @@
     "objects": [
         {
             "model": "plane",
-            "occlude": false,
             "size": [ 2000, 2000 ],
             "repeat": [ 40, 40 ],
             "material": "checkerBoard"
@@ -38,6 +44,7 @@
             "name": "box",
             "model": "cube",
             "size": [ 20, 20, 20 ],
+            "repeat": [ 1, 1 ],
             "material": "checkerBoard",
             "rotation": [ 0, 45, 45 ],
             "position": [ 15, 30, 30 ]
@@ -66,13 +73,6 @@
             "model": "cube",
             "size": [ 200, 200, 200 ],
             "position": [ -305, 100, -330 ]
-        }
-    ],
-    "lights": [
-        {
-            "type": "directional",
-            "position": [ 100, 100, 0 ],
-            "color": "#ffffff"
         }
     ]
 }

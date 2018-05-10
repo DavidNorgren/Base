@@ -113,7 +113,6 @@ include_directories("${LIBS_DIR}/stb")
 # Add GLEW
 # """TARGET_PDB_FILE" not supported by the target linker" -> https://github.com/nigels-com/glew/issues/138
 # https://stackoverflow.com/questions/27472813/linking-glew-with-cmake
-# Version 2.1.0 gives warnings about redeclared statements
 # The find module for GLEW prefers the shared library, so we must manually point to static (.a)
 
 set(GLEW_ROOT "${LIBS_DIR}/glew-2.1.0")
@@ -164,7 +163,11 @@ include_directories("${GLFW_ROOT}/include")
 target_include_directories(${PROJECT_NAME} PUBLIC "${GLFW_ROOT}/include")
 
 # Add Libzip
-# Must define ZLIB_LIBRARY and ZLIB_INCLUDE_DIR in CMakeLists.txt
+# in CMakeLists.txt:
+#   SET(ZLIB_LIBRARY "C:/Dev/Libs/zlib-1.2.11/build/libzlibstatic.a")
+#   SET(ZLIB_INCLUDE_DIR "C:/Dev/Libs/zlib-1.2.11")
+# Copy zconf.h from ZLIB_INCLUDE_DIR/build to ZLIB_INCLUDE_DIR
+# Copy zipconf.h from Libzip /build to /src
 # https://stackoverflow.com/a/46549009/2229164
 # if error about __mingw_stdio_redirect__(snprintf), comment it out in stdio.h
 set(LIBZIP_ROOT "${LIBS_DIR}/libzip-1.5.1")

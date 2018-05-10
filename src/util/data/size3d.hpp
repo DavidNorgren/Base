@@ -49,12 +49,12 @@ namespace Base
             return *this;
         }
 
-        inline Size3D operator * (const T& mul) const
+        template<typename R> inline Size3D operator * (const R& mul) const
         {
             return Size3D(x * mul, y * mul, z * mul);
         }
 
-        inline Size3D operator / (const T& mul) const
+        template<typename R> inline Size3D operator / (const R& mul) const
         {
             return Size3D(x / mul, y / mul, z / mul);
         }
@@ -85,9 +85,9 @@ namespace Base
 
     // Multiply by factor (reversed)
 
-    template<typename T> inline Size3D<T> operator * (const T& mul, const Size3D<T>& size)
+    template<typename T, typename R> inline Size3D<T> operator * (const T& mul, const Size3D<R>& size)
     {
-        return Size3D<T>(mul * size.x, mul * size.y, mul * size.z);
+        return size * mul;
     }
 
     // Define shorthands

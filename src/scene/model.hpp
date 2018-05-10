@@ -15,7 +15,11 @@ namespace Base
       public:
         EXPORT Model() {}
         EXPORT Model(TriangleMesh* mesh, Material* material = nullptr);
+
+        /* Updates the bounding box of the model. */
+        EXPORT void update();
         
+        /* Renders the meshes and materials of the model. */
         EXPORT void render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const;
 
         const AABB& getAxisAlignedBox() const { return axisAlignedBox; }

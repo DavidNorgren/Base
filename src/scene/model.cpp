@@ -8,7 +8,17 @@ EXPORT Base::Model::Model(Base::TriangleMesh* mesh, Base::Material* material)
     materials.add(material);
     axisAlignedBox = mesh->getAxisAlignedBox();
     debugAABB = new Cube(axisAlignedBox.getSize());
-    debugAABBmaterial = new Material(Image::createSingleColor(Color(255, 255, 0, 20)));
+    debugAABBmaterial = new Material(Image::getSingleColor(Color(255, 255, 0, 20)));
+}
+
+EXPORT void Base::Model::update()
+{
+    if (meshes.isEmpty())
+        return;
+    
+    axisAlignedBox = meshes[0]->getAxisAlignedBox();
+    for (uint i = 1; i < meshes.size(); i++)
+        axisAlignedBox.add(meshes[i]->getAxisAlignedBox());
 }
 
 EXPORT void Base::Model::render(Shader* shader, const Mat4f& matM, const Mat4f& matVP) const

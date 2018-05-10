@@ -1,38 +1,47 @@
 #include "common.hpp"
 #include "scene/light.hpp"
 #include "util/mathfunc.hpp"
+#include "input/keyboardfunc.hpp"
+#include "apphandler.hpp"
 
 
 constexpr int LIGHT_NUM_CASCADES = 3;
-constexpr int LIGHT_SHADOW_MAP_SIZE = 2048;
+constexpr int LIGHT_SHADOW_MAP_SIZE = 4096;
+constexpr int LIGHT_ZFAR = 1500;
 constexpr int LIGHT_FRUSTUM_CORNERS = 8;
 
 EXPORT Base::ShadowMap::ShadowMap(Size2Di size)
 {
     this->size = size;
 
-    // Create depth texture
+    // Create texture
     Color borderColor(1.f);
     glGenTextures(1, &glTexture);
     glBindTexture(GL_TEXTURE_2D, glTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, (float*)&borderColor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, size.width, size.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, size.width, size.height, 0, GL_RG, GL_FLOAT, 0);
     
+    // Create depth render buffer
+    glGenRenderbuffers(1, &glDepthRenderbuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, glDepthRenderbuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, size.width, size.height);
+
     // Create framebuffer
     glGenFramebuffers(1, &glFramebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, glFramebuffer);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, glTexture, 0);
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, glTexture, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, glDepthRenderbuffer);
 
     // Unbind
     glBindTexture(GL_TEXTURE_2D, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    blurSurface = new Surface(size * 0.25f, GL_RG32F, GL_RG);
     matBiasVP = Mat4f::identity();
 }
 
@@ -49,7 +58,7 @@ EXPORT Base::Light::Light()
     {
         ShadowMap* map = new ShadowMap({ LIGHT_SHADOW_MAP_SIZE, LIGHT_SHADOW_MAP_SIZE });
         shadowMaps.add(map);
-        map->debugMaterial = new Material(Image::createSingleColor(debugColors[i]));
+        map->debugMaterial = new Material(Image::getSingleColor(debugColors[i]));
         map->debugCamFrustumMesh = new TriangleMesh();
         map->debugOrthoBoxMesh = new TriangleMesh();
         map->debugCamFrustum = new Model(map->debugCamFrustumMesh, map->debugMaterial);
@@ -95,7 +104,7 @@ EXPORT void Base::Light::prepareShadowMaps(const Scene* scene)
     float tanHfov  = dtan(camera->getFovH() / 2.f);
     float tanVfov  = dtan(camera->getFovV() / 2.f);
     float zNear    = 5.f;
-    float zFar     = 1000.f;
+    float zFar     = LIGHT_ZFAR;
     float zDis     = zFar - zNear;
 
     for (uint i = 0; i < shadowMaps.size(); i++)
@@ -111,38 +120,30 @@ EXPORT void Base::Light::prepareShadowMaps(const Scene* scene)
         Mat4f camProj = Mat4f::perspective(tanVfov, camera->getRatio(), zn, zf);
         Mat4f camViewProjInv = (camProj * camView).inverse();
         Vec4f frustumCorners[LIGHT_FRUSTUM_CORNERS] = {
-            camViewProjInv * Vec4f(-1,  1,  1, 1.f),
-            camViewProjInv * Vec4f( 1,  1,  1, 1.f),
-            camViewProjInv * Vec4f( 1, -1,  1, 1.f),
-            camViewProjInv * Vec4f(-1, -1,  1, 1.f),
-            camViewProjInv * Vec4f(-1,  1, -1, 1.f),
-            camViewProjInv * Vec4f( 1,  1, -1, 1.f),
-            camViewProjInv * Vec4f( 1, -1, -1, 1.f),
-            camViewProjInv * Vec4f(-1, -1, -1, 1.f)
+            Vec4f(-1,  1,  1, 1.f),
+            Vec4f( 1,  1,  1, 1.f),
+            Vec4f( 1, -1,  1, 1.f),
+            Vec4f(-1, -1,  1, 1.f),
+            Vec4f(-1,  1, -1, 1.f),
+            Vec4f( 1,  1, -1, 1.f),
+            Vec4f( 1, -1, -1, 1.f),
+            Vec4f(-1, -1, -1, 1.f)
         };
 
         // Calculate box for the boundaries of the sub-frustum
-        float minX = maxLimit<float>();
-        float maxX = minLimit<float>();
-        float minY = maxLimit<float>();
-        float maxY = minLimit<float>();
-        float minZ = maxLimit<float>();
-        float maxZ = minLimit<float>();
+        Vec4f orthoMin = Vec4f(maxLimit<float>());
+        Vec4f orthoMax = Vec4f(minLimit<float>());
 
         frustumMesh->clear();
         orthoMesh->clear();
         for (uint j = 0; j < LIGHT_FRUSTUM_CORNERS; j++)
         {
             // Convert the points from camera space to world space, and then into light space
-            Vec3f cornerWorldSpace = frustumCorners[j].homogenize();
-            Vec4f cornerLightSpace = lightMatV * cornerWorldSpace;
-            minX = min(minX, cornerLightSpace.x);
-            maxX = max(maxX, cornerLightSpace.x);
-            minY = min(minY, cornerLightSpace.y);
-            maxY = max(maxY, cornerLightSpace.y);
-            minZ = min(minZ, cornerLightSpace.z);
-            maxZ = max(maxZ, cornerLightSpace.z);
-            frustumMesh->addVertex(Vertex3Df(cornerWorldSpace));
+            frustumCorners[j] = Vec4f((camViewProjInv * frustumCorners[j]).homogenize());
+            Vec4f cornerLightSpace = lightMatV * frustumCorners[j];
+            orthoMin = Vec4f::min(orthoMin, cornerLightSpace);
+            orthoMax = Vec4f::max(orthoMax, cornerLightSpace);
+            frustumMesh->addVertex(Vertex3Df(Vec3f(frustumCorners[j].x, frustumCorners[j].y, frustumCorners[j].z)));
         }
         
         // Debug frustum
@@ -153,9 +154,28 @@ EXPORT void Base::Light::prepareShadowMaps(const Scene* scene)
         frustumMesh->addTriangle({0, 1, 2}); frustumMesh->addTriangle({2, 3, 0}); // Z-
         frustumMesh->addTriangle({4, 7, 6}); frustumMesh->addTriangle({6, 5, 4}); // Z+
         frustumMesh->update();
-        
-        // Build frustum for culling occluders
-        map->matP = Mat4f::ortho(minX, maxX, minY, maxY, -zFar, -minZ);
+
+        // Fight shadow jittering
+        if (appHandler->debugStabilizeShadows)
+        {
+            // Pad the box to always contain the entire frustum
+            float diagonalXY = (frustumCorners[1] - frustumCorners[3]).length();
+            Vec4f borderOffset = (Vec4f(diagonalXY) - (orthoMax - orthoMin)) / 2;
+            borderOffset.z = borderOffset.w = 0.f;
+            orthoMax += borderOffset;
+            orthoMin -= borderOffset;
+
+            // Snap to 1px increments to avoid shadow jittering
+            Vec4f worldUnitsPerTexel = Vec4f(diagonalXY / map->getSize().width);
+            orthoMin /= worldUnitsPerTexel;
+            orthoMin = orthoMin.floor();
+            orthoMin *= worldUnitsPerTexel;
+            orthoMax /= worldUnitsPerTexel;
+            orthoMax = orthoMax.floor();
+            orthoMax *= worldUnitsPerTexel;
+        }
+        // Build frustum for culling objects outside the map
+        map->matP = Mat4f::ortho(orthoMin.x, orthoMax.x, orthoMin.y, orthoMax.y, -zFar, -orthoMin.z);
         map->matVP = map->matP * lightMatV;
         map->buildFrustum();
 
@@ -174,21 +194,21 @@ EXPORT void Base::Light::prepareShadowMaps(const Scene* scene)
                 // Convert bounding box from world space to
                 // light space and shift the ortho box to include the object.
                 Vec4f boxCornerLightSpace = lightMatV * box[i];
-                maxZ = max(maxZ, boxCornerLightSpace.z);
+                orthoMax.z = max(orthoMax.z, boxCornerLightSpace.z);
             }
         }
 
         // Debug ortho box
         Mat4f lightMatVinv = lightMatV.inverse();
         Vec3f lightPoints[] = {
-            { minX, maxY, maxZ },
-            { minX, minY, maxZ },
-            { maxX, minY, maxZ },
-            { maxX, maxY, maxZ },
-            { minX, maxY, minZ },
-            { minX, minY, minZ },
-            { maxX, minY, minZ },
-            { maxX, maxY, minZ }
+            { orthoMin.x, orthoMax.y, orthoMax.z },
+            { orthoMin.x, orthoMin.y, orthoMax.z },
+            { orthoMax.x, orthoMin.y, orthoMax.z },
+            { orthoMax.x, orthoMax.y, orthoMax.z },
+            { orthoMin.x, orthoMax.y, orthoMin.z },
+            { orthoMin.x, orthoMin.y, orthoMin.z },
+            { orthoMax.x, orthoMin.y, orthoMin.z },
+            { orthoMax.x, orthoMax.y, orthoMin.z }
         };
         for (uint j = 0; j < LIGHT_FRUSTUM_CORNERS; j++)
         {
@@ -204,9 +224,9 @@ EXPORT void Base::Light::prepareShadowMaps(const Scene* scene)
         orthoMesh->update();
 
         // Use the box as the orthographic projection of this shadow map
-        map->matP = Mat4f::ortho(minX, maxX, minY, maxY, -maxZ, -minZ);
+        map->matP = Mat4f::ortho(orthoMin.x, orthoMax.x, orthoMin.y, orthoMax.y, -orthoMax.z, -orthoMin.z);
         map->matVP  = map->matP * lightMatV;
-        map->matBiasVP = matBias * shadowMaps[i]->matVP;
+        map->matBiasVP = /*matBias * */shadowMaps[i]->matVP;
         map->buildFrustum();
 
         // End depth in clipspace

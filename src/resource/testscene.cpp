@@ -87,6 +87,7 @@ void Base::TestScene::load(const string& json)
                 }
                 catch (const ResourceException& e)
                 {
+                    cout << "[TestScene] ResourceException: " << e.what() << endl;
                     continue; // Ignore missing resources
                 }
             }

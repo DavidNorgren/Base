@@ -8,6 +8,7 @@
 #include "resource/obj.hpp"
 #include "resource/testscene.hpp"
 #include "file/filefunc.hpp"
+#include "util/stringfunc.hpp"
 
 #ifdef DYNAMIC_RESOURCES
 #include "windows.h" // Sleep
@@ -19,6 +20,7 @@ namespace bfs = boost::filesystem;
 Base::Resource* Base::Resource::createDynamic(const string& name, FilePath file)
 {
     Resource* res = create(file.getExtension());
+    res->name = name;
     res->isDynamic = true;
     res->dynamicFile = file;
     res->dynamicLastChange = 0;
@@ -28,6 +30,7 @@ Base::Resource* Base::Resource::createDynamic(const string& name, FilePath file)
 Base::Resource* Base::Resource::createInternal(const string& name, FileData data)
 {
     Resource* res = create(FilePath(name).getExtension());
+    res->name = name;
     res->isDynamic = false;
     res->data = data;
     return res;
@@ -35,16 +38,17 @@ Base::Resource* Base::Resource::createInternal(const string& name, FileData data
 
 Base::Resource* Base::Resource::create(const string& fileExt)
 {
-    if (fileExt == ".ttf")
+    string fileExtLower = stringGetLower(fileExt);
+    if (fileExtLower == ".ttf")
         return new Font();
-    else if (fileExt == ".glsl")
+    else if (fileExtLower == ".glsl")
         return new Shader();
-    else if (fileExt == ".png" ||
-             fileExt == ".jpg")
+    else if (fileExtLower == ".png" ||
+             fileExtLower == ".jpg")
         return new Sprite();
-    else if (fileExt == ".obj")
+    else if (fileExtLower == ".obj")
         return new Obj();
-    else if (fileExt == ".testscene")
+    else if (fileExtLower == ".testscene")
         return new TestScene();
     else
         return new TextFile();

@@ -23,8 +23,8 @@ namespace Base
         /* Get OpenGL texture used in shaders. */
         GLuint  getGlTexture() const { return glTexture; };
         
-        /* Generates an image from a solid color. */
-        EXPORT static Image* createSingleColor(const Color& color);
+        /* Returns an image of a solid color. */
+        EXPORT static Image* getSingleColor(const Color& color);
 
       protected:
         Size2Di size = { 0, 0 };

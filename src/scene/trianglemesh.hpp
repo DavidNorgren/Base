@@ -30,10 +30,11 @@ namespace Base
            indices of the last added vertices. */
         EXPORT void addTriangle(const Vec3i& indices);
 
-        /* Adds a single index reference to a vertex.
-           If a negative number is supplied, it will be relative to the
-           indices of the last added vertices. */
-        EXPORT void addIndex(int index);
+        /* Adds a single index reference to a vertex. If a negative
+           number is supplied, it will be relative to the indices of
+           the last added vertices. if newTriangle is true, a new triangle
+           will be added using this index and two previous indices. */
+        EXPORT void addIndex(int index, bool newTriangle = false);
 
         /* Adds a set of three vertices to represent a triangle.
            Indices are automatically generated and added. */

@@ -44,12 +44,12 @@ namespace Base
 
         // Methods
 
-        inline T length()
+        inline T length() const
         {
             return sqrt(x * x + y * y);
         }
 
-        inline Vec2 normalize()
+        inline Vec2 normalize() const
         {
             T len = length();
             if (len == (T)0)
@@ -70,6 +70,31 @@ namespace Base
         static inline bool approxEq(const Vec2& a, const Vec2& b)
         {
             return (approxEq(a.x, b.x) && approxEq(a.y, b.y));
+        }
+
+        static inline Vec2 min(const Vec2& a, const Vec2& b)
+        {
+            return Vec2(Base::min(a.x, b.x), Base::min(a.y, b.y));
+        }
+
+        static inline Vec2 max(const Vec2& a, const Vec2& b)
+        {
+            return Vec2(Base::max(a.x, b.x), Base::max(a.y, b.y));
+        }
+
+        inline Vec2 floor() const
+        {
+            return Vec2(Base::floor(x), Base::floor(y));
+        }
+
+        inline Vec2 ceil() const
+        {
+            return Vec2(Base::ceil(x), Base::ceil(y));
+        }
+
+        inline Vec2 round() const
+        {
+            return Vec2(Base::round(x), Base::round(y));
         }
         
         // Get/Set via [] operator
@@ -126,15 +151,9 @@ namespace Base
             y -= other.y;
         }
 
-        inline Vec2 operator * (const T& mul) const
+        inline Vec2 operator * (const Vec2& other) const
         {
-            return Vec2(x * mul, y * mul);
-        }
-
-        inline void operator *= (const T& mul)
-        {
-            x *= mul;
-            y *= mul;
+            return Vec2(x * other.x, y * other.y); 
         }
 
         inline void operator *= (const Vec2& other)
@@ -143,12 +162,34 @@ namespace Base
             y *= other.y;
         }
 
-        inline Vec2 operator / (const T& mul) const
+        template<typename R> inline Vec2 operator * (const R& mul) const
+        {
+            return Vec2(x * mul, y * mul);
+        }
+
+        template<typename R> inline void operator *= (const R& mul)
+        {
+            x *= mul;
+            y *= mul;
+        }
+
+        inline Vec2 operator / (const Vec2& other) const
+        {
+            return Vec2(x / other.x, y / other.y); 
+        }
+
+        inline void operator /= (const Vec2& other)
+        {
+            x /= other.x;
+            y /= other.y;
+        }
+
+        template<typename R> inline Vec2 operator / (const R& mul) const
         {
             return Vec2(x / mul, y / mul);
         }
 
-        inline void operator /= (const T& mul)
+        template<typename R> inline void operator /= (const R& mul)
         {
             x /= mul;
             y /= mul;

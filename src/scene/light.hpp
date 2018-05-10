@@ -4,6 +4,7 @@
 #include "scene/scene.hpp"
 #include "render/color.hpp"
 #include "render/rendertarget.hpp"
+#include "render/surface.hpp"
 #include "util/data/vec3.hpp"
 #include "util/data/mat4.hpp"
 #include "util/data/size2d.hpp"
@@ -12,7 +13,7 @@
 
 namespace Base
 {
-    constexpr float LIGHT_CASCADES[] = { 0.f, 0.05f, 0.2f, 1.f };
+    constexpr float LIGHT_CASCADES[] = { 0.f, 0.25f, 0.5f, 1.f };
 
     /* The format of the shadow mapping for this light. */
     enum class ShadowMapFormat
@@ -60,6 +61,8 @@ namespace Base
         EXPORT ShadowMap(Size2Di size);
         const Mat4f& getBiasViewProjection() const { return matBiasVP; };
         float getCascadeEndClipSpaceDepth() const  { return cascadeEndClipSpaceDepth; }
+        Surface* getBlurSurface() const { return blurSurface; }
+
         Model* debugCamFrustum;
         Model* debugOrthoBox;
 
@@ -70,5 +73,6 @@ namespace Base
         Material* debugMaterial;
         TriangleMesh* debugCamFrustumMesh;
         TriangleMesh* debugOrthoBoxMesh;
+        Surface* blurSurface;
     };
 }

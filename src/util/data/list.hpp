@@ -72,6 +72,11 @@ namespace Base
             return vec.size();
         }
 
+        bool isEmpty() const
+        {
+            return size() == 0;
+        }
+
         void clear()
         {
             vec.clear();

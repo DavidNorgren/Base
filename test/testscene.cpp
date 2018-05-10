@@ -19,6 +19,14 @@ void Base::TestApp::testSceneInit()
     camZoom[1]    = camGoalZoom[1]    = 200.f;
     camMove = -1;
 
+    // Blur shader setup
+    ((Shader*)resHandler->get("shaders/blur.glsl"))->setSetupFunc([&](GLuint glProgram, const Mat4f& matM)
+    {
+        GLint uBlurDir = glGetUniformLocation(glProgram, "uBlurDir");
+        glUniform2fv(uBlurDir, 1, (float*)&appHandler->blurDir);
+    });
+
+    // CSM shader setup
     ((Shader*)resHandler->get("shaders/csm.glsl"))->setSetupFunc([&](GLuint glProgram, const Mat4f& matM)
     {
         GLint uLightDir = glGetUniformLocation(glProgram, "uLightDir");
@@ -60,7 +68,8 @@ void Base::TestApp::testSceneInput()
 {
     for (int i = 0; i < 2; i++)
     {
-        bool mouseInCamera = (mousePos().y > (mainWindow->getSize().height / 2) * i && mousePos().y < (mainWindow->getSize().height / 2) * (i + 1));
+        bool mouseInCamera = (mousePos().y > (mainWindow->getSize().height / (debugSplit + 1)) * i &&
+                              mousePos().y < (mainWindow->getSize().height / (debugSplit + 1)) * (i + 1));
 
         // Left click rotates
         if (camMove == i)
@@ -92,6 +101,14 @@ void Base::TestApp::testSceneInput()
         (keyDown(GLFW_KEY_Q) - keyDown(GLFW_KEY_E)) * 4.f,
         (keyDown(GLFW_KEY_S) - keyDown(GLFW_KEY_W)) * 4.f
     });
+
+    // Debug
+    if (keyPressed(GLFW_KEY_1)) debugShadows = !debugShadows;
+    if (keyPressed(GLFW_KEY_2)) debugSplit = !debugSplit;
+    if (keyPressed(GLFW_KEY_3)) debugStabilizeShadows = !debugStabilizeShadows;
+    if (keyPressed(GLFW_KEY_4)) debugCamFrustum = !debugCamFrustum;
+    if (keyPressed(GLFW_KEY_5)) debugOrthoBox = !debugOrthoBox;
+    if (keyPressed(GLFW_KEY_6)) debugMaps = !debugMaps;
 }
 
 void Base::TestApp::testSceneRender()
@@ -102,13 +119,21 @@ void Base::TestApp::testSceneRender()
     sceneLight = currentScene->lights[0];
 
     // Resize
-    surfaces[0].resize({ mainWindow->getSize().width, mainWindow->getSize().height / 2});
-    surfaces[1].resize({ mainWindow->getSize().width, mainWindow->getSize().height / 2});
-
+    if (debugSplit)
+    {
+        surfaces[0].resize({ mainWindow->getSize().width, mainWindow->getSize().height / 2});
+        surfaces[1].resize({ mainWindow->getSize().width, mainWindow->getSize().height / 2});
+    }
+    else
+        surfaces[0].resize(mainWindow->getSize());
+    
     // Animate some objects
     float d = mainWindow->getFrameDelay();
-    currentScene->findObject("teapot")->rotateY(d)->buildMatrix();
-    currentScene->findObject("box")->rotateX(d)->rotateY(d)->rotateZ(d)->buildMatrix();
+    if (testScene == "scenes/checker.testscene")
+    {
+        currentScene->findObject("teapot")->rotateY(d)->buildMatrix();
+        currentScene->findObject("box")->rotateX(d)->rotateY(d)->rotateZ(d)->buildMatrix();
+    }
 
     // Smoothen the camera motion
     for (int i = 0; i < 2; i++)
@@ -127,41 +152,60 @@ void Base::TestApp::testSceneRender()
     }
 
     // Render to shadow maps
-    sceneLight->prepareShadowMaps(currentScene);
-    for (ShadowMap* map : sceneLight->getShadowMaps())
+    if (debugShadows)
     {
-        setRenderTarget(map);
-        currentScene->render((Shader*)resHandler->get("shaders/depth.glsl"), map, true);
+        sceneLight->prepareShadowMaps(currentScene);
+        float d = 1.f;
+        for (ShadowMap* map : sceneLight->getShadowMaps())
+        {
+            setRenderTarget(map);
+            currentScene->render((Shader*)resHandler->get("shaders/depth.glsl"), map, true);
+
+            // Blur H
+            setRenderTarget(map->getBlurSurface());
+            drawBegin((Shader*)resHandler->get("shaders/blur.glsl"));
+            drawClear();
+            blurDir = { 1.f / map->getBlurSurface()->getSize().width, 0.f };
+            blurDir /= d;
+            drawImage(map, { 0, 0 }, 0.25f);
+
+            // Blur V
+            setRenderTarget(map);
+            drawBegin((Shader*)resHandler->get("shaders/blur.glsl"));
+            blurDir = { 0.f, 1.f / map->getBlurSurface()->getSize().height };
+            blurDir /= d;
+            drawImage(map->getBlurSurface(), { 0, 0 }, 4.f);
+            d*=10.f;
+        }
     }
 
     // Render some goodness
     setRenderTarget(&surfaces[0]);
-    currentScene->render((Shader*)resHandler->get(testShader), &cameras[0]);
-
-    // Debug window
-    static bool showCamFrustum = true;
-    static bool showOrthoBox = false;
+    if (debugShadows)
+        currentScene->render((Shader*)resHandler->get(testShader), &cameras[0]);
+    else
+        currentScene->render((Shader*)resHandler->get("shaders/texture.glsl"), &cameras[0]);
     
-    if (keyPressed(GLFW_KEY_2))
-        showCamFrustum = !showCamFrustum;
-    if (keyPressed(GLFW_KEY_3))
-        showOrthoBox = !showOrthoBox;
-
-    setRenderTarget(&surfaces[1]);
-    currentScene->render((Shader*)resHandler->get("shaders/texture.glsl"), &cameras[1]);
-    for (ShadowMap* map : sceneLight->getShadowMaps())
+    // Debug window
+    if (debugSplit)
     {
-        debugShowLines = true;
-        if (showCamFrustum)
-            map->debugCamFrustum->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), cameras[1].getViewProjection());
-        if (showOrthoBox)
-            map->debugOrthoBox->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), cameras[1].getViewProjection());
-        debugShowLines = false;
-    }
+        setRenderTarget(&surfaces[1]);
+        currentScene->render((Shader*)resHandler->get("shaders/normals.glsl"), &cameras[1]);
+        ((Shader*)resHandler->get("shaders/texture.glsl"))->select();
+        for (ShadowMap* map : sceneLight->getShadowMaps())
+        {
+            debugShowLines = true;
+            if (debugCamFrustum)
+                map->debugCamFrustum->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), cameras[1].getViewProjection());
+            if (debugOrthoBox)
+                map->debugOrthoBox->render(((Shader*)resHandler->get("shaders/texture.glsl")), Mat4f::identity(), cameras[1].getViewProjection());
+            debugShowLines = false;
+        }
 
-    // Light position
-    drawBegin();
-    ScreenPos lightPos;
-    if (cameras[1].getViewProjection().project(sceneLight->getPosition(), lightPos, surfaces[1].getSize()))
-        drawImage((Sprite*)resHandler->get("images/bulb.png"), lightPos - Vec2i(32, 32));
+        // Light position
+        drawBegin();
+        ScreenPos lightPos;
+        if (cameras[1].getViewProjection().project(sceneLight->getPosition(), lightPos, surfaces[1].getSize()))
+            drawImage((Sprite*)resHandler->get("images/bulb.png"), lightPos - Vec2i(32, 32), 0.5);
+    }
 }

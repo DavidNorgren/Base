@@ -55,7 +55,6 @@ void Base::AppHandler::createResources()
 {
     drawingFont   = (Font*)resHandler->get("fonts/opensans.ttf");
     drawingShader = (Shader*)resHandler->get("shaders/texture.glsl");
-    solidColor    = Image::createSingleColor(Colors::WHITE);
 }
 
 EXPORT void Base::AppHandler::launch()

@@ -46,7 +46,7 @@ EXPORT void Base::Shader::render2D(const Mat4f& matMVP, List<Vertex2Di> vertexDa
 
     // Send in texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, (image ? image->getGlTexture() : appHandler->solidColor->getGlTexture()));
+    glBindTexture(GL_TEXTURE_2D, (image ? image->getGlTexture() : Image::getSingleColor(Colors::WHITE)->getGlTexture()));
     glUniform1i(uSampler, 0);
 
     // Call setup
@@ -98,7 +98,7 @@ EXPORT void Base::Shader::render3D(const Mat4f& matM, const Mat4f& matVP, Base::
 
     // Send in texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, (material ? material->getTexture()->getGlTexture() : appHandler->solidColor->getGlTexture()));
+    glBindTexture(GL_TEXTURE_2D, (material ? material->getTexture()->getGlTexture() : Image::getSingleColor(Colors::WHITE)->getGlTexture()));
     glUniform1i(uSampler, 0);
 
     // Call setup
@@ -111,11 +111,11 @@ EXPORT void Base::Shader::render3D(const Mat4f& matM, const Mat4f& matVP, Base::
 
     if (appHandler->debugShowLines)
     {
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glLineWidth(4);
         glUniform4fv(uColor, 1, (float*)&Colors::BLACK);
         glDrawElements(GL_TRIANGLES, mesh->indexData.size(), GL_UNSIGNED_INT, 0);
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
     glDisable(GL_DEPTH_TEST);

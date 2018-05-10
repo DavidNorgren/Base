@@ -47,6 +47,30 @@ uniform sampler2D uSampler;
 uniform sampler2D uDepthSampler[NUM_CASCADES];
 uniform float uCascadeEndClipSpace[NUM_CASCADES]; 
 
+float chebyshevUpperBound(int i)
+{
+    vec4 coord = vShadowCoord[i];
+    coord = coord / coord.w;
+    coord = coord * 0.5 + 0.5;
+    // We retrive the two moments previously stored (depth and depth*depth)
+    float dis = coord.z;
+    vec2 moments = texture2D(uDepthSampler[i], coord.xy).rg;
+    
+    // Surface is fully lit. as the current fragment is before the light occluder
+    if (dis < moments.x)
+        return 1.0;
+
+    // The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
+    // How likely this pixel is to be lit (p_max)
+    float variance = moments.y - (moments.x * moments.x);
+    variance = max(variance, 0.000002);
+
+    float d = dis - moments.x;
+    float p_max = variance / (variance + d * d);
+
+    return p_max;
+}
+
 void main()
 {
     // Find the cascade to use
@@ -54,28 +78,25 @@ void main()
     for (i = 0; i < NUM_CASCADES; i++)
         if (vClipSpaceDepth < uCascadeEndClipSpace[i])
             break;
-    
-    // Outside the frustum somehow, ignore pixel
-    if (i == NUM_CASCADES)
-        discard;
 
     float light = 1.0;
     float dif = max(0.00, dot(vNormal, uLightDir));
   
-    if (dif > 0.0)
+    if (dif > 0.0 && i < NUM_CASCADES)
     { 
-        float bias = 0.003 * tan(acos(dif));
-        bias = clamp(bias, 0.0, 0.003);
+        float bias = 0.005 * tan(acos(dif));
+        bias = clamp(bias, 0.0, 0.005);
 
-        if (vShadowCoord[i].x > 0.0 && vShadowCoord[i].y > 0.0 && vShadowCoord[i].z > 0.0 &&
-            vShadowCoord[i].x < 1.0 && vShadowCoord[i].y < 1.0 && vShadowCoord[i].z < 1.0)
+        //if (vShadowCoord[i].x > 0.0 && vShadowCoord[i].y > 0.0 && vShadowCoord[i].z > 0.0 &&
+        //    vShadowCoord[i].x < 1.0 && vShadowCoord[i].y < 1.0 && vShadowCoord[i].z < 1.0)
         {
-            float sampleDepth = texture2D(uDepthSampler[i], vShadowCoord[i].xy).z;
-            if (sampleDepth < vShadowCoord[i].z - bias)
-                light = 0.0;
+            light = chebyshevUpperBound(i);
+            //float sampleDepth = texture2D(uDepthSampler[i], vShadowCoord[i].xy).r;
+            //if (sampleDepth < vShadowCoord[i].z - bias)
+            //    light = 0.0;
         }
     }
-    vec4 ambient = vec4(0.1, 0.1, 0.2, 1.0);
+    vec4 ambient = vec4(0.1, 0.2, 0.2, 1.0);
     vec4 baseColor = uColor * texture2D(uSampler, vTexCoord);
     out_FragColor = (ambient + light * dif) * baseColor;
         

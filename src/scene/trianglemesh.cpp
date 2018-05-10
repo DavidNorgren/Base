@@ -34,8 +34,14 @@ EXPORT void Base::TriangleMesh::addTriangle(const Vec3i& indices)
     addIndex(indices[2]);
 }
 
-EXPORT void Base::TriangleMesh::addIndex(int index)
+EXPORT void Base::TriangleMesh::addIndex(int index, bool newTriangle)
 {
+    if (newTriangle)
+    {
+        indexData.add(indexData[indexData.size() - 3]);
+        indexData.add(indexData[indexData.size() - 2]);
+    }
+
     if (index >= 0)
         indexData.add(index);
     else 

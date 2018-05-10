@@ -5,6 +5,7 @@
 #include "render/color.hpp"
 #include "render/colors.hpp"
 #include "render/image.hpp"
+#include "resource/shader.hpp"
 #include "resource/font.hpp"
 
 
@@ -19,10 +20,10 @@ namespace Base
     };
 
     /* Begins drawing. */
-    EXPORT void drawBegin();
+    EXPORT void drawBegin(Shader* shader = nullptr);
 
     /* Clears using a drawing color. */
-    EXPORT void drawClear(const Color& color);
+    EXPORT void drawClear(const Color& color = Colors::BLACK);
 
     /* Sets a render area. */
     EXPORT void setDrawingArea(const ScreenArea& area);
@@ -40,10 +41,10 @@ namespace Base
     EXPORT void drawTextAligned(const string& text, const ScreenPos& pos, Font* font, const TextAlign& align, const Color& color = Colors::BLACK);
 
     /* Draws an image. */
-    EXPORT void drawImage(const string& name, const ScreenPos& pos, const Color& color = Colors::WHITE, float rotation = 0.f, const Vec2f& scale = { 1.f, 1.f });
-    EXPORT void drawImage(Image* image,       const ScreenPos& pos, const Color& color = Colors::WHITE, float rotation = 0.f, const Vec2f& scale = { 1.f, 1.f });
-    EXPORT void drawSubImage(const string& image, int subImage, const ScreenPos& pos, const Color& color = Colors::WHITE, float rotation = 0.f, const Vec2f& scale = { 1.f, 1.f });
-    EXPORT void drawSubImage(Image* image,        int subImage, const ScreenPos& pos, const Color& color = Colors::WHITE, float rotation = 0.f, const Vec2f& scale = { 1.f, 1.f });
+    EXPORT void drawImage(const string& name, const ScreenPos& pos, const Vec2f& scale = { 1.f, 1.f }, const Color& color = Colors::WHITE, float rotation = 0.f);
+    EXPORT void drawImage(Image* image,       const ScreenPos& pos, const Vec2f& scale = { 1.f, 1.f }, const Color& color = Colors::WHITE, float rotation = 0.f);
+    EXPORT void drawSubImage(const string& image, int subImage, const ScreenPos& pos, const Vec2f& scale = { 1.f, 1.f }, const Color& color = Colors::WHITE, float rotation = 0.f);
+    EXPORT void drawSubImage(Image* image,        int subImage, const ScreenPos& pos, const Vec2f& scale = { 1.f, 1.f }, const Color& color = Colors::WHITE, float rotation = 0.f);
 
     /* Draws a colored box. */
     EXPORT void drawBox(const ScreenArea& box, const Color& color, bool outline = false, int outlineThickness = 1);

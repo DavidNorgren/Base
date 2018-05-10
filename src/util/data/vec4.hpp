@@ -94,6 +94,31 @@ namespace Base
                     approxEq(a.z, b.z) &&
                     approxEq(a.w, b.w));
         }
+
+        static inline Vec4 min(const Vec4& a, const Vec4& b)
+        {
+            return Vec4(Base::min(a.x, b.x), Base::min(a.y, b.y), Base::min(a.z, b.z), Base::min(a.w, b.w));
+        }
+
+        static inline Vec4 max(const Vec4& a, const Vec4& b)
+        {
+            return Vec4(Base::max(a.x, b.x), Base::max(a.y, b.y), Base::max(a.z, b.z), Base::min(a.w, b.w));
+        }
+
+        inline Vec4 floor() const
+        {
+            return Vec4(Base::floor(x), Base::floor(y), Base::floor(z), Base::floor(w));
+        }
+
+        inline Vec4 ceil() const
+        {
+            return Vec4(Base::ceil(x), Base::ceil(y), Base::ceil(z), Base::ceil(w));
+        }
+
+        inline Vec4 round() const
+        {
+            return Vec4(Base::round(x), Base::round(y), Base::round(z), Base::round(w));
+        }
         
         // Get/Set via [] operator
         
@@ -164,17 +189,9 @@ namespace Base
             w -= other.w;
         }
 
-        inline Vec4 operator * (const T& mul) const
+        inline Vec4 operator * (const Vec4& other) const
         {
-            return Vec4(x * mul, y * mul, z * mul, w * mul);
-        }
-
-        inline void operator *= (const T& mul)
-        {
-            x *= mul;
-            y *= mul;
-            z *= mul;
-            w *= mul;
+            return Vec4(x * other.x, y * other.y, z * other.z, w * other.w); 
         }
 
         inline void operator *= (const Vec4& other)
@@ -185,12 +202,38 @@ namespace Base
             w *= other.w;
         }
 
-        inline Vec4 operator / (const T& mul) const
+        template<typename R> inline Vec4 operator * (const R& mul) const
+        {
+            return Vec4(x * mul, y * mul, z * mul, w * mul);
+        }
+
+        template<typename R> inline void operator *= (const R& mul)
+        {
+            x *= mul;
+            y *= mul;
+            z *= mul;
+            w *= mul;
+        }
+
+        inline Vec4 operator / (const Vec4& other) const
+        {
+            return Vec4(x / other.x, y / other.y, z / other.z, w / other.w); 
+        }
+
+        inline void operator /= (const Vec4& other)
+        {
+            x /= other.x;
+            y /= other.y;
+            z /= other.z;
+            w /= other.w;
+        }
+
+        template<typename R> inline Vec4 operator / (const R& mul) const
         {
             return Vec4(x / mul, y / mul, z / mul, w / mul);
         }
 
-        inline void operator /= (const T& mul)
+        template<typename R> inline void operator /= (const R& mul)
         {
             x /= mul;
             y /= mul;
@@ -220,7 +263,7 @@ namespace Base
 
     // Multiply by factor (reversed)
 
-    template<typename T> inline Vec4<T> operator * (const T& mul, const Vec4<T>& vec)
+    template<typename T, typename R> inline Vec4<T> operator * (const T& mul, const Vec4<R>& vec)
     {
         return vec * mul;
     }

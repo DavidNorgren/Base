@@ -104,38 +104,27 @@ EXPORT void Base::Window::open(function<void()> loopEventFunc,
         // Call loop function
         loopEventFunc();
 
-        // Reset/update keyboard input
-        bool isAnyDown = false;
-        for (uint k = 0; k < GLFW_KEY_LAST; k++)
-        {
+        // Update key down status
+        uint k;
+        for (k = 0; k < GLFW_KEY_LAST; k++)
             if (keyDown[k])
-                isAnyDown = true;
-            keyPressed[k]  = false;
-            keyReleased[k] = false;
-        }
-        
-        if (isAnyDown && keyEventFunc)
+                break;
+
+        if (k < GLFW_KEY_LAST && keyEventFunc)
             keyEventFunc();
 
-        // Reset/update mouse input
-        isAnyDown = false;
-        for (uint m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++)
-        {
-            if (mouseDown[m])
-                isAnyDown = true;
-            mousePressed[m]  = false;
-            mouseReleased[m] = false;
-        }
+        // Update mouse down status
+        uint m;
+        for (m = 0; m < GLFW_MOUSE_BUTTON_LAST; m++)
+            if (mouseDown[k])
+                break;
 
-        mouseMove   = { 0, 0 };
-        mouseScroll = { 0.f, 0.f };
-
-        if (isAnyDown && mouseEventFunc)
+        if (m < GLFW_MOUSE_BUTTON_LAST && mouseEventFunc)
             mouseEventFunc();
 
         // Swap buffers
-        glfwSwapBuffers(handle);
         glfwPollEvents();
+        glfwSwapBuffers(handle);
 
         // Calculate FPS from the number of frames rendered in the last second
         double curTime = glfwGetTime();
@@ -225,6 +214,9 @@ void Base::Window::glfwMouseButtonCallback(int button, int action, int mods)
         mouseEventFunc();
         glfwSetCursor(handle, currentCursor);
     }
+
+    mousePressed[button] = false;
+    mouseReleased[button] = false;
 }
 
 void Base::Window::glfwScrollCallback(double x, double y)
@@ -232,6 +224,7 @@ void Base::Window::glfwScrollCallback(double x, double y)
     mouseScroll = { (float)x, (float)y };
     if (mouseEventFunc)
         mouseEventFunc();
+    mouseScroll = { 0.f, 0.f };
 }
 
 void Base::Window::glfwCursorPosCallback(double x, double y)
@@ -248,6 +241,8 @@ void Base::Window::glfwCursorPosCallback(double x, double y)
         mouseEventFunc();
         glfwSetCursor(handle, currentCursor);
     }
+    
+    mouseMove = { 0, 0 };
 }
 
 void Base::Window::glfwKeyCallback(int key, int scancode, int action, int mods)
@@ -273,13 +268,18 @@ void Base::Window::glfwKeyCallback(int key, int scancode, int action, int mods)
     
     if (keyEventFunc)
         keyEventFunc();
+    
+    keyPressed[key] = false;
+    keyReleased[key] = false;
 }
 
 void Base::Window::glfwCharModsCallback(uint codepoint, int mods)
 {
     charPressed = (char)codepoint;
+
     if (keyEventFunc)
         keyEventFunc();
+
     charPressed = 0;
 }
 

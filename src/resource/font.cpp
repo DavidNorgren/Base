@@ -163,60 +163,6 @@ void Base::Font::load(const FileData& data)
     delete packedChar;
     delete tempBitmap;
     delete pixelData;
-
-
-    // Set size of the font
-    /*FT_GlyphSlot glyph = face->glyph;
-    FT_Set_Pixel_Sizes(face, 0, charSize);
-
-    // Create character list
-    chars.reserve(charEnd);
-
-    // Get map dimensions
-    size = { 0, 0 };
-    for (uint i = charStart; i < charEnd; i++)
-    {
-        if (FT_Load_Char(face, i, FT_LOAD_RENDER))
-            continue;
-
-        chars[i] = {
-            { (int)glyph->bitmap.width, (int)glyph->bitmap.rows },
-            { glyph->bitmap_left, glyph->bitmap_top },
-            { (int)(glyph->advance.x / 64.f), (int)(glyph->advance.y / 64.f) },
-            (float)size.width,
-        };
-
-        size.width += glyph->bitmap.width;
-        size.height = max(size.height, (int)glyph->bitmap.rows);
-    }
-
-    // Create map texture
-    glGenTextures(1, &glTexture);
-    glBindTexture(GL_TEXTURE_2D, glTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width, size.height, 0, GL_RGBA, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Draw bitmaps onto map
-    for (uint i = charStart; i < charEnd; i++)
-    {
-        CharInfo curChar = chars[i];
-
-        if (FT_Load_Char(face, i, FT_LOAD_RENDER))
-            continue;
-
-        // Convert buffer to RGBA
-        Color* glyphBuf = new Color[curChar.size.x * curChar.size.y];
-        for (uint x = 0; x < curChar.size.x; x++)
-            for (uint y = 0; y < curChar.size.y; y++)
-                glyphBuf[x + y * curChar.size.x] = Color(1.f, 1.f, 1.f, glyph->bitmap.buffer[x + (curChar.size.y - 1 - y) * curChar.size.x] / 255.f);
-
-        glTexSubImage2D(GL_TEXTURE_2D, 0, curChar.mapX, size.height - curChar.size.height, curChar.size.width, curChar.size.height, GL_RGBA, GL_FLOAT, glyphBuf);
-
-        delete glyphBuf;
-    }
-
-    glBindTexture(GL_TEXTURE_2D, 0);*/
 }
 
 void Base::Font::cleanUp()

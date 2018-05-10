@@ -9,8 +9,10 @@ EXPORT Base::Surface::Surface()
     glGenFramebuffers(1, &glFramebuffer);
 }
 
-EXPORT Base::Surface::Surface(Size2Di size) : Surface()
+EXPORT Base::Surface::Surface(Size2Di size, GLint internalFormat, GLint format) : Surface()
 {
+    this->internalFormat = internalFormat;
+    this->format = format;
     resize(size);
 }
 
@@ -23,11 +25,11 @@ EXPORT void Base::Surface::resize(Base::Size2Di size)
 
     // Create texture
     glBindTexture(GL_TEXTURE_2D, glTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width, size.height, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.width, size.height, 0, format, GL_FLOAT, 0);
     
     // Create depth render buffer
     glBindRenderbuffer(GL_RENDERBUFFER, glDepthRenderbuffer);
@@ -43,5 +45,6 @@ EXPORT void Base::Surface::resize(Base::Size2Di size)
 
     // Unbind
     glBindTexture(GL_TEXTURE_2D, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

@@ -1,25 +1,24 @@
 #pragma once
 
 #include <cmath> // abs, fabs, sqrt, sin, cos, tan
+#include <algorithm> // min, max
 #include <limits> // numeric_limits
-
-using std::abs;
-using std::sqrt;
 
 
 namespace Base
 {
+    using std::abs;
+    using std::sqrt;
+    using std::floor;
+    using std::round;
+    using std::ceil;
+    using std::min;
+    using std::max;
+    using std::sin;
+    using std::cos;
+    using std::tan;
+
     constexpr float PI = 3.14159265;
-
-    template<typename T> inline T min(const T& a, const T& b)
-    {
-        return a < b ? a : b;
-    }
-
-    template<typename T> inline T max(const T& a, const T& b)
-    {
-        return a > b ? a : b;
-    }
 
     template<typename T> inline T minLimit()
     {
@@ -52,16 +51,16 @@ namespace Base
     
     inline float dsin(float a)
     {
-        return std::sin(a * (PI / 180.f));
+        return sin(a * (PI / 180.f));
     }
     
     inline float dcos(float a)
     {
-        return std::cos(a * (PI / 180.f));
+        return cos(a * (PI / 180.f));
     }
     
     inline float dtan(float a)
     {
-        return std::tan(a * (PI / 180.f));
+        return tan(a * (PI / 180.f));
     }
 }

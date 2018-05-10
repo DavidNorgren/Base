@@ -1,3 +1,5 @@
+#include <algorithm> // transform
+
 #include "common.hpp"
 #include "util/stringfunc.hpp"
 
@@ -21,6 +23,25 @@ EXPORT wstring Base::stringToWstring(const string& str)
     result.resize(str.length());
     mbstowcs(&result[0], &str[0], result.length());
     return result;
+}
+
+EXPORT string Base::stringGetLower(const string& str)
+{
+    string lower = str;
+    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    return lower;
+}
+
+EXPORT string Base::stringGetUpper(const string& str)
+{
+    string upper = str;
+    std::transform(upper.begin(), upper.end(), upper.begin(), ::toupper);
+    return upper;
+}
+
+EXPORT bool Base::stringEqualsIgnoreCase(const string& a, const string& b)
+{
+    return (stringGetLower(a) == stringGetLower(b));
 }
 
 EXPORT Base::List<string> Base::stringSplit(const string& str, const string& sep)

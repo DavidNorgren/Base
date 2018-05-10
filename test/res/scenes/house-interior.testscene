@@ -1,0 +1,16 @@
+{
+    "backgroundColor": "#C6C0FF",
+    "lights": [
+        {
+            "type": "directional",
+            "position": [ 140, 50, 100 ],  
+            "color": "#ffffff"
+        }
+    ],
+    "objects": [
+        {
+            "model": "models/house-interior/house interior.obj",
+            "scale": [ 1, 1, 1 ]
+        }
+    ]
+}

@@ -93,7 +93,7 @@ EXPORT Base::Resource* Base::ResourceHandler::get(const string& name)
                 // Add new resource and bind filename
                 res = Resource::createDynamic(name, file);
                 resMap[name] = res;
-                cout << "\tADDED: " << name << endl;
+                cout << "[ResourceHandler] ADDED " << name << endl;
             }
             else
                 throw ResourceException("Could not find " + name);
@@ -112,7 +112,7 @@ EXPORT Base::Resource* Base::ResourceHandler::get(const string& name)
     }
     catch (const ResourceLoadException& ex)
     {
-        cout << "Resource load exception for " << name << ":\n" << ex.what() << endl << std::flush;
+        cout << "[ResourceHandler] Resource load exception for " << name << ":\n" << ex.what() << endl << std::flush;
     }
 
     return res;

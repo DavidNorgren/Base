@@ -45,12 +45,12 @@ namespace Base
             return *this;
         }
 
-        inline Size2D operator * (const T& mul) const
+        template<typename R> inline Size2D operator * (const R& mul) const
         {
             return Size2D(x * mul, y * mul);
         }
 
-        inline Size2D operator / (const T& mul) const
+        template<typename R> inline Size2D operator / (const R& mul) const
         {
             return Size2D(x / mul, y / mul);
         }
@@ -81,9 +81,9 @@ namespace Base
 
     // Multiply by factor (reversed)
 
-    template<typename T> inline Size2D<T> operator * (const T& mul, const Size2D<T>& size)
+    template<typename T, typename R> inline Size2D<T> operator * (const T& mul, const Size2D<R>& size)
     {
-        return Size2D<T>(mul * size.x, mul * size.y);
+        return size * mul;
     }
 
     // Define shorthands

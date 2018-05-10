@@ -11,7 +11,7 @@ void Base::TestApp::testJSON()
     try
     {
         Timer t1("JSON load");
-        JsonFile jf(((TextFile*)resHandler->get("hello.json"))->text);
+        JsonFile jf(((TextFile*)resHandler->get("hello.json"))->getText());
         t1.stopAndPrint();
 
         Timer t2("JSON save");

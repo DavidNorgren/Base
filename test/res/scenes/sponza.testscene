@@ -1,5 +1,12 @@
 {
     "backgroundColor": "#C6C0FA",
+    "lights": [
+        {
+            "type": "directional",
+            "position": [ 100, 100, 0 ],
+            "color": "#ffffff"
+        }
+    ],
     "objects": [
         {
             "model": "models/sponza/sponza.obj",

@@ -136,6 +136,26 @@ namespace Base
         {
             return !(*this == other);
         }
+        
+        inline bool operator < (const Color& other) const
+        {
+            return (r + g + b + a < other.r + other.g + other.b + other.a);
+        }
+        
+        inline bool operator > (const Color& other) const
+        {
+            return (r + g + b + a > other.r + other.g + other.b + other.a);
+        }
+
+        // Explicit cast
+
+        explicit operator int() const
+        {
+            return (int)(r * 255.f) + 
+                   (int)(g * 255.f) * (1 << 8) + 
+                   (int)(b * 255.f) * (1 << 16) + 
+                   (int)(a * 255.f) * (1 << 24);
+        }
     };
 
     // Convert to string

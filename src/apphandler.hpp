@@ -45,12 +45,19 @@ namespace Base
         Shader* drawingShader;
         float drawingAlpha = 1.f;
         ScreenArea drawingArea;
-        Image* solidColor;
 
         // Scene
         Scene* currentScene;
         
+        bool debugCamFrustum = true;
+        bool debugOrthoBox = false;
+        bool debugStabilizeShadows = true;
+        bool debugMaps = false;
+        bool debugSplit = false;
+        bool debugShadows = true;
         bool debugShowLines = false;
+
+        Vec2f blurDir;
 
       private:
         AppHandler();
