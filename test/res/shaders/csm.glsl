@@ -35,6 +35,8 @@ void main()
 #version 420 core
 
 const int NUM_CASCADES = 3;
+const int NUM_PCF_SAMPLES = 16;
+const int NUM_PCSS_BLOCKER_SAMPLES = 16;
 
 in vec2 vTexCoord; 
 in vec3 vNormal;
@@ -45,30 +47,77 @@ uniform vec4 uColor;
 uniform vec3 uLightDir;
 uniform sampler2D uSampler;
 uniform sampler2D uDepthSampler[NUM_CASCADES];
-uniform float uCascadeEndClipSpace[NUM_CASCADES]; 
+uniform ivec2 uDepthSamplerSize;
+uniform float uCascadeEndClipSpace[NUM_CASCADES];
+uniform float uFrustumSize;
+uniform vec3 uEyePosition;
 
-float chebyshevUpperBound(int i)
+vec2 poissonDisk[16] = vec2[](
+    vec2(-0.94201624, -0.39906216 ),
+    vec2(0.94558609, -0.76890725 ),
+    vec2(-0.094184101, -0.92938870 ),
+    vec2(0.34495938, 0.29387760 ),
+    vec2(-0.91588581, 0.45771432 ),
+    vec2(-0.81544232, -0.87912464 ),
+    vec2(-0.38277543, 0.27676845 ),
+    vec2(0.97484398, 0.75648379 ),
+    vec2(0.44323325, -0.97511554 ),
+    vec2(0.53742981, -0.47373420 ),
+    vec2(-0.26496911, -0.41893023 ),
+    vec2(0.79197514, 0.19090188 ),
+    vec2(-0.24188840, 0.99706507 ),
+    vec2(-0.81409955, 0.91437590 ),
+    vec2(0.19984126, 0.78641367 ),
+    vec2(0.14383161, -0.14100790 ) 
+);
+
+float rand(float x)
 {
-    vec4 coord = vShadowCoord[i];
-    coord = coord / coord.w;
-    coord = coord * 0.5 + 0.5;
-    // We retrive the two moments previously stored (depth and depth*depth)
-    float dis = coord.z;
-    vec2 moments = texture2D(uDepthSampler[i], coord.xy).rg;
+    return fract(sin(dot(vec2(x * 10.3,  x * 10.3), vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+float pcf(int i, float bias, float radius)
+{
+    float sum = 0.0;
+    for (int s = 0; s < NUM_PCF_SAMPLES; s++)
+    {
+        float sampleDepth = texture(uDepthSampler[i], vShadowCoord[i].xy + poissonDisk[s] * radius).r;
+        if (sampleDepth < vShadowCoord[i].z - bias)
+            sum += 1.0;
+    }
+
+    return sum / NUM_PCF_SAMPLES;
+}
+
+float pcss(int i, float bias)
+{
+    // http://developer.download.nvidia.com/whitepapers/2008/PCSS_Integration.pdf
+
+    // Find blockers
+	int blockers = 0;
+	float avgBlockerDistance = 0.0;
+    float worldLightSize = 10.0;
+    float uvLightSize = worldLightSize / uDepthSamplerSize.x;
+	float searchWidth = uvLightSize * (vShadowCoord[i].z - 1.f) / vShadowCoord[i].z; // 1->zNear
+	for (int s = 0; s < NUM_PCSS_BLOCKER_SAMPLES; s++)
+	{
+		float sampleDepth = texture(uDepthSampler[i], vShadowCoord[i].xy + poissonDisk[s] * searchWidth).r;
+		if (sampleDepth < vShadowCoord[i].z - bias)
+		{
+			blockers++;
+			avgBlockerDistance += sampleDepth;
+		}
+	}
     
-    // Surface is fully lit. as the current fragment is before the light occluder
-    if (dis < moments.x)
-        return 1.0;
+    if (blockers < 1)
+        return 0.0;
+    
+	avgBlockerDistance /= blockers;
 
-    // The fragment is either in shadow or penumbra. We now use chebyshev's upperBound to check
-    // How likely this pixel is to be lit (p_max)
-    float variance = moments.y - (moments.x * moments.x);
-    variance = max(variance, 0.000002);
-
-    float d = dis - moments.x;
-    float p_max = variance / (variance + d * d);
-
-    return p_max;
+	// Penumbra estimation
+	float penumbraWidth = (vShadowCoord[i].z - avgBlockerDistance) / avgBlockerDistance;
+	float uvRadius = (penumbraWidth * uvLightSize * 1.f) ;
+    return pcf(i, bias, uvRadius);
 }
 
 void main()
@@ -83,23 +132,17 @@ void main()
     float dif = max(0.00, dot(vNormal, uLightDir));
   
     if (dif > 0.0 && i < NUM_CASCADES)
-    { 
-        float bias = 0.005 * tan(acos(dif));
-        bias = clamp(bias, 0.0, 0.005);
+    {
+        float bias = 0.001 * tan(acos(dif));
+        bias = clamp(bias, 0.0, 0.001);
 
-        //if (vShadowCoord[i].x > 0.0 && vShadowCoord[i].y > 0.0 && vShadowCoord[i].z > 0.0 &&
-        //    vShadowCoord[i].x < 1.0 && vShadowCoord[i].y < 1.0 && vShadowCoord[i].z < 1.0)
+        if (vShadowCoord[i].x > 0.0 && vShadowCoord[i].y > 0.0 && vShadowCoord[i].z > 0.0 &&
+            vShadowCoord[i].x < 1.0 && vShadowCoord[i].y < 1.0 && vShadowCoord[i].z < 1.0)
         {
-            light = chebyshevUpperBound(i);
-            //float sampleDepth = texture2D(uDepthSampler[i], vShadowCoord[i].xy).r;
-            //if (sampleDepth < vShadowCoord[i].z - bias)
-            //    light = 0.0;
+            light = 1.0 - pcss(i, bias);
         }
     }
     vec4 ambient = vec4(0.1, 0.2, 0.2, 1.0);
-    vec4 baseColor = uColor * texture2D(uSampler, vTexCoord);
+    vec4 baseColor = uColor * texture(uSampler, vTexCoord);
     out_FragColor = (ambient + light * dif) * baseColor;
-        
-    float debug = texture2D(uDepthSampler[i], vShadowCoord[i].xy).z;
-    //out_FragColor = vec4(vec3(debug), 1);
 }

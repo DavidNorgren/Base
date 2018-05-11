@@ -17,8 +17,8 @@ namespace Base
         EXPORT ~Image();
 
         /* Get the dimensions of the image. */
-        Size2Di getSize() const  { return size; };
-        float   getRatio() const { return (float)size.width / size.height; }
+        const Size2Di& getSize() const  { return size; };
+        float getRatio() const { return (float)size.width / size.height; }
 
         /* Get OpenGL texture used in shaders. */
         GLuint  getGlTexture() const { return glTexture; };

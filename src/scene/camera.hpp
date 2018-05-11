@@ -14,6 +14,7 @@ namespace Base
         void setFov(float angle)                { fov = angle; }
         void setPosition(const Vec3f& position) { pos = position; }
         Camera* translate(const Vec3f& vec)     { pos += vec; }
+        const Vec3f& getPosition() const { return pos; }
 
         float getFovV() const  { return fov; }
         float getFovH() const  { return fov * ratio; }
@@ -25,6 +26,7 @@ namespace Base
         const Mat4f& getView() const { return matV; }
         const Mat4f& getProjection() const { return matP; }
         const Mat4f& getViewProjection() const { return matVP; }
+        EXPORT const float& getFrustumSize() const { return frustumSize; }
         
         EXPORT bool boxVisible(const BoundingBox& box) const;
         EXPORT bool pointVisible(const Vec4f& point) const;
@@ -37,6 +39,7 @@ namespace Base
         float ratio = 1.f;
         float zNear = 1.f, zFar = 10000.f;
         Vec4f frustum[6];
+        float frustumSize;
         Mat4f matV, matP, matVP;
     };
 }

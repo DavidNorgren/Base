@@ -3,7 +3,7 @@
     "lights": [
         {
             "type": "directional",
-            "position": [ 100, 100, 0 ],
+            "position": [ 100, 100, 50 ],
             "color": "#ffffff"
         }
     ],
@@ -13,11 +13,15 @@
         },
         "woot": {
             "image": "images/woot.png"
+        },
+        "fence": {
+            "image": "images/fence.png"
         }
     },
     "objects": [
         {
             "model": "plane",
+            "occlude": false,
             "size": [ 2000, 2000 ],
             "repeat": [ 40, 40 ],
             "material": "checkerBoard"
@@ -61,8 +65,10 @@
         },
         {
             "model": "cube",
-            "size": [ 30, 460, 20 ],
-            "position": [ 185, 120, 60 ]
+            "size": [ 1, 200, 200 ],
+            "position": [ 185, 100, 160 ],
+            "repeat": [ 5, 5 ],
+            "material": "fence"
         }, 
         {
             "model": "cube",

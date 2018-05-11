@@ -23,25 +23,17 @@ EXPORT Base::ShadowMap::ShadowMap(Size2Di size)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, (float*)&borderColor);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, size.width, size.height, 0, GL_RG, GL_FLOAT, 0);
-    
-    // Create depth render buffer
-    glGenRenderbuffers(1, &glDepthRenderbuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, glDepthRenderbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, size.width, size.height);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, size.width, size.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
     // Create framebuffer
     glGenFramebuffers(1, &glFramebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, glFramebuffer);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, glTexture, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, glDepthRenderbuffer);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, glTexture, 0);
 
     // Unbind
     glBindTexture(GL_TEXTURE_2D, 0);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    blurSurface = new Surface(size * 0.25f, GL_RG32F, GL_RG);
     matBiasVP = Mat4f::identity();
 }
 
@@ -226,7 +218,7 @@ EXPORT void Base::Light::prepareShadowMaps(const Scene* scene)
         // Use the box as the orthographic projection of this shadow map
         map->matP = Mat4f::ortho(orthoMin.x, orthoMax.x, orthoMin.y, orthoMax.y, -orthoMax.z, -orthoMin.z);
         map->matVP  = map->matP * lightMatV;
-        map->matBiasVP = /*matBias * */shadowMaps[i]->matVP;
+        map->matBiasVP = matBias * shadowMaps[i]->matVP;
         map->buildFrustum();
 
         // End depth in clipspace

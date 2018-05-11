@@ -27,7 +27,7 @@ uniform vec2 uBlurDir;
 
 void main()
 {
-    vec2 blur = uBlurDir * 1.0;
+    vec2 blur = uBlurDir * 0.0;
 	vec4 color = vec4(0.0);
 	color += texture2D(uSampler, vTexCoord + vec2(-3.0 * blur.x, -3.0 * blur.y)) * 0.015625;
 	color += texture2D(uSampler, vTexCoord + vec2(-2.0 * blur.x, -2.0 * blur.y)) * 0.09375;

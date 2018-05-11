@@ -7,12 +7,14 @@ EXPORT void Base::Camera::buildMatrix(float ratio)
 {
     this->ratio = ratio;
 
+    float tFov = dtan(fov / 2.f);
     matV = Mat4f::viewLookAt(pos, { 0.f, 0.f, 0.f }, { 0.f, 1.f, 0.f });
-    matP = Mat4f::perspective(dtan(fov / 2.f), ratio, zNear, zFar);
+    matP = Mat4f::perspective(tFov, ratio, zNear, zFar);
     matVP = matP * matV;
 
     // Update frustum
     buildFrustum();
+    frustumSize = 2.f * zNear * tFov * ratio;
 }
 
 void Base::Camera::buildFrustum()

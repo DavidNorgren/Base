@@ -33,6 +33,9 @@ void Base::TestApp::testSceneInit()
         GLint uMatLightMVP = glGetUniformLocation(glProgram, "uMatLightMVP");
         GLint uMatLightBiasMVP = glGetUniformLocation(glProgram, "uMatLightBiasMVP");
         GLint uCascadeEndClipSpace = glGetUniformLocation(glProgram, "uCascadeEndClipSpace");
+        GLint uFrustumSize = glGetUniformLocation(glProgram, "uFrustumSize");
+        GLint uDepthSamplerSize = glGetUniformLocation(glProgram, "uDepthSamplerSize");
+        GLint uEyePosition = glGetUniformLocation(glProgram, "uEyePosition");
 
         // Send in depth
         const List<ShadowMap*>& maps = sceneLight->getShadowMaps();
@@ -52,12 +55,16 @@ void Base::TestApp::testSceneInit()
             cascadeEndClipSpaceDepth.add(maps[i]->getCascadeEndClipSpaceDepth());
         }
 
+        glUniform2iv(uDepthSamplerSize, 1, (int*)&maps[0]->getSize());
+
         // Send in light matrices
         glUniformMatrix4fv(uMatLightMVP,     maps.size(), GL_FALSE, matsLightMVP[0].e);
         glUniformMatrix4fv(uMatLightBiasMVP, maps.size(), GL_FALSE, matsLightBiasMVP[0].e);
 
         // Send in cascade splits
         glUniform1fv(uCascadeEndClipSpace, maps.size(), &cascadeEndClipSpaceDepth[0]);
+        glUniform1f(uFrustumSize, cameras[0].getFrustumSize());
+        glUniform3fv(uEyePosition, 1, (float*)&cameras[0].getPosition());
 
         // Light direction for shading
         glUniform3fv(uLightDir, 1, (float*)&sceneLight->getDir());
@@ -160,22 +167,6 @@ void Base::TestApp::testSceneRender()
         {
             setRenderTarget(map);
             currentScene->render((Shader*)resHandler->get("shaders/depth.glsl"), map, true);
-
-            // Blur H
-            setRenderTarget(map->getBlurSurface());
-            drawBegin((Shader*)resHandler->get("shaders/blur.glsl"));
-            drawClear();
-            blurDir = { 1.f / map->getBlurSurface()->getSize().width, 0.f };
-            blurDir /= d;
-            drawImage(map, { 0, 0 }, 0.25f);
-
-            // Blur V
-            setRenderTarget(map);
-            drawBegin((Shader*)resHandler->get("shaders/blur.glsl"));
-            blurDir = { 0.f, 1.f / map->getBlurSurface()->getSize().height };
-            blurDir /= d;
-            drawImage(map->getBlurSurface(), { 0, 0 }, 4.f);
-            d*=10.f;
         }
     }
 
