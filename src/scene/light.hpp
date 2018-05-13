@@ -13,7 +13,7 @@
 
 namespace Base
 {
-    constexpr float LIGHT_CASCADES[] = { 0.f, 0.05f, 0.2f, 1.f };
+    constexpr float LIGHT_CASCADES[] = { 0.f, 0.1f, 0.3f, 1.f };
     constexpr float LIGHT_BLUR_FACTOR = 0.25;
 
     /* The format of the shadow mapping for this light. */
@@ -65,7 +65,8 @@ namespace Base
 
         Model* debugCamFrustum;
         Model* debugOrthoBox;
-        float cascadeZnear, cascadeZfar; // Todo getters...
+        float cascadeWidth, cascadeHeight; // Todo getters...
+        Surface* blurSurface;
 
       friend class Light;
       protected:

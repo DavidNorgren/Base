@@ -15,9 +15,6 @@ EXPORT void Base::Scene::render(Shader* shader, Camera* camera, bool occludersOn
 
     for (Object* obj : objects) 
     {
-        if (occludersOnly && !obj->getOcclude())
-            continue;
-
         if (camera->boxVisible(obj->getBoundingBox()))
             obj->render(shader, Mat4f::identity(), camera->getViewProjection());
     }
