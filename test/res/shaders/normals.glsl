@@ -14,7 +14,7 @@ uniform mat4 uMatMVP;
 
 void main()
 {
-	vec3 norm = normalize((uMatM * vec4(aNormal, 0.0)).xyz);
+    vec3 norm = normalize((uMatM * vec4(aNormal, 0.0)).xyz);
     vColor = vec4((norm + vec3(1.0)) / 2.0, 1.0);
     gl_Position = uMatMVP * vec4(aPos, 1.0);
 }

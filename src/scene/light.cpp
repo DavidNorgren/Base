@@ -166,6 +166,7 @@ EXPORT void Base::Light::prepareShadowMaps(const Scene* scene)
             orthoMax = orthoMax.floor();
             orthoMax *= worldUnitsPerTexel;
         }
+
         // Build frustum for culling objects outside the map
         map->matP = Mat4f::ortho(orthoMin.x, orthoMax.x, orthoMin.y, orthoMax.y, -zFar, -orthoMin.z);
         map->matVP = map->matP * lightMatV;
@@ -214,6 +215,11 @@ EXPORT void Base::Light::prepareShadowMaps(const Scene* scene)
         orthoMesh->addTriangle({0, 1, 2}); orthoMesh->addTriangle({2, 3, 0}); // Z-
         orthoMesh->addTriangle({4, 7, 6}); orthoMesh->addTriangle({6, 5, 4}); // Z+
         orthoMesh->update();
+        
+        // For PCSS
+        map->frustumSize = max(orthoMax.x - orthoMin.x, orthoMax.y - orthoMin.y);
+        map->cascadeZnear = orthoMin.z;
+        map->cascadeZfar = orthoMax.z;
 
         // Use the box as the orthographic projection of this shadow map
         map->matP = Mat4f::ortho(orthoMin.x, orthoMax.x, orthoMin.y, orthoMax.y, -orthoMax.z, -orthoMin.z);

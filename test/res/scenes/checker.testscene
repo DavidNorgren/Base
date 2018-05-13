@@ -23,7 +23,7 @@
             "model": "plane",
             "occlude": false,
             "size": [ 2000, 2000 ],
-            "repeat": [ 40, 40 ],
+            "repeat": [ 500, 500 ],
             "material": "checkerBoard"
         },
         {

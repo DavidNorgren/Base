@@ -28,13 +28,13 @@ uniform vec2 uBlurDir;
 void main()
 {
     vec2 blur = uBlurDir * 0.0;
-	vec4 color = vec4(0.0);
-	color += texture2D(uSampler, vTexCoord + vec2(-3.0 * blur.x, -3.0 * blur.y)) * 0.015625;
-	color += texture2D(uSampler, vTexCoord + vec2(-2.0 * blur.x, -2.0 * blur.y)) * 0.09375;
-	color += texture2D(uSampler, vTexCoord + vec2(-1.0 * blur.x, -1.0 * blur.y)) * 0.234375;
-	color += texture2D(uSampler, vTexCoord) * 0.3125;
-	color += texture2D(uSampler, vTexCoord + vec2(1.0 * blur.x,  1.0 * blur.y)) * 0.234375;
-	color += texture2D(uSampler, vTexCoord + vec2(2.0 * blur.x,  2.0 * blur.y)) * 0.09375;
-	color += texture2D(uSampler, vTexCoord + vec2(3.0 * blur.x, -3.0 * blur.y)) * 0.015625;
+    vec4 color = vec4(0.0);
+    color += texture2D(uSampler, vTexCoord + vec2(-3.0 * blur.x, -3.0 * blur.y)) * 0.015625;
+    color += texture2D(uSampler, vTexCoord + vec2(-2.0 * blur.x, -2.0 * blur.y)) * 0.09375;
+    color += texture2D(uSampler, vTexCoord + vec2(-1.0 * blur.x, -1.0 * blur.y)) * 0.234375;
+    color += texture2D(uSampler, vTexCoord) * 0.3125;
+    color += texture2D(uSampler, vTexCoord + vec2(1.0 * blur.x,  1.0 * blur.y)) * 0.234375;
+    color += texture2D(uSampler, vTexCoord + vec2(2.0 * blur.x,  2.0 * blur.y)) * 0.09375;
+    color += texture2D(uSampler, vTexCoord + vec2(3.0 * blur.x, -3.0 * blur.y)) * 0.015625;
     out_FragColor = color;
 }

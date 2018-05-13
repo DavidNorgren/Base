@@ -30,17 +30,19 @@ void Base::TestApp::testSceneInit()
     ((Shader*)resHandler->get("shaders/csm.glsl"))->setSetupFunc([&](GLuint glProgram, const Mat4f& matM)
     {
         GLint uLightDir = glGetUniformLocation(glProgram, "uLightDir");
+        GLint uMatLightV = glGetUniformLocation(glProgram, "uMatLightV");
         GLint uMatLightMVP = glGetUniformLocation(glProgram, "uMatLightMVP");
         GLint uMatLightBiasMVP = glGetUniformLocation(glProgram, "uMatLightBiasMVP");
         GLint uCascadeEndClipSpace = glGetUniformLocation(glProgram, "uCascadeEndClipSpace");
-        GLint uFrustumSize = glGetUniformLocation(glProgram, "uFrustumSize");
+        GLint uCascadeSize = glGetUniformLocation(glProgram, "uCascadeSize");
+        GLint uCascadeZnear = glGetUniformLocation(glProgram, "uCascadeZnear");
+        GLint uCascadeZfar = glGetUniformLocation(glProgram, "uCascadeZfar");
         GLint uDepthSamplerSize = glGetUniformLocation(glProgram, "uDepthSamplerSize");
-        GLint uEyePosition = glGetUniformLocation(glProgram, "uEyePosition");
 
         // Send in depth
         const List<ShadowMap*>& maps = sceneLight->getShadowMaps();
-        List<Mat4f> matsLightMVP, matsLightBiasMVP;
-        List<float> cascadeEndClipSpaceDepth;
+        List<Mat4f> matsLightV, matsLightMVP, matsLightBiasMVP;
+        List<float> cascadeEndClipSpaceDepth, cascadeSize, cascadeZnear, cascadeZfar;
         
         for (uint i = 0; i < maps.size(); i++)
         {
@@ -50,21 +52,27 @@ void Base::TestApp::testSceneInit()
             glBindTexture(GL_TEXTURE_2D, maps[i]->getGlTexture());
             glUniform1i(uDepthSampler, 1 + i);
 
+            matsLightV.add(maps[i]->getView() * matM);
             matsLightMVP.add(maps[i]->getViewProjection() * matM);
             matsLightBiasMVP.add(maps[i]->getBiasViewProjection() * matM);
             cascadeEndClipSpaceDepth.add(maps[i]->getCascadeEndClipSpaceDepth());
+            cascadeSize.add(maps[i]->getFrustumSize());
+            cascadeZnear.add(maps[i]->cascadeZnear);
+            cascadeZfar.add(maps[i]->cascadeZfar);
         }
 
         glUniform2iv(uDepthSamplerSize, 1, (int*)&maps[0]->getSize());
 
         // Send in light matrices
+        glUniformMatrix4fv(uMatLightV,       1, GL_FALSE, &maps[maps.size()-1]->getView().e[0]);
         glUniformMatrix4fv(uMatLightMVP,     maps.size(), GL_FALSE, matsLightMVP[0].e);
         glUniformMatrix4fv(uMatLightBiasMVP, maps.size(), GL_FALSE, matsLightBiasMVP[0].e);
 
         // Send in cascade splits
         glUniform1fv(uCascadeEndClipSpace, maps.size(), &cascadeEndClipSpaceDepth[0]);
-        glUniform1f(uFrustumSize, cameras[0].getFrustumSize());
-        glUniform3fv(uEyePosition, 1, (float*)&cameras[0].getPosition());
+        glUniform1fv(uCascadeSize, maps.size(), &cascadeSize[0]);
+        glUniform1fv(uCascadeZnear, maps.size(), &cascadeZnear[0]);
+        glUniform1fv(uCascadeZfar, maps.size(), &cascadeZfar[0]);
 
         // Light direction for shading
         glUniform3fv(uLightDir, 1, (float*)&sceneLight->getDir());
@@ -162,7 +170,6 @@ void Base::TestApp::testSceneRender()
     if (debugShadows)
     {
         sceneLight->prepareShadowMaps(currentScene);
-        float d = 1.f;
         for (ShadowMap* map : sceneLight->getShadowMaps())
         {
             setRenderTarget(map);

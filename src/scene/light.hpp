@@ -65,6 +65,7 @@ namespace Base
 
         Model* debugCamFrustum;
         Model* debugOrthoBox;
+        float cascadeZnear, cascadeZfar; // Todo getters...
 
       friend class Light;
       protected:

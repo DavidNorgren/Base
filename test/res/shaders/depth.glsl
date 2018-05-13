@@ -26,7 +26,7 @@ layout(location = 0) out float out_FragDepth;
 
 void main()
 {
-    if (texture2D(uSampler, vTexCoord).a < 0.1)
+    if (texture2D(uSampler, vTexCoord).a < 0.02)
         discard;
     
     out_FragDepth = gl_FragCoord.z;
